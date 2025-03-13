@@ -5,6 +5,7 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import { AppInstallationParameters } from "../ConfigScreen";
 import tokens from "@contentful/f36-tokens";
 import PromptAreaNavList, {
+  NAVIGATION,
   PromptAreas,
 } from "../../components/PromptAreaNavList";
 import ConversationPanel from "../../components/ConversationPanel/ConversationPanel";
@@ -16,8 +17,9 @@ import {
   AIMessage,
 } from "../../ai/AIAction/AIActionTypes";
 import { AIAction } from "../../ai/AIAction/AIAction";
-import { CreateContentTypeAIAction } from "../../ai/AIAction/actions/CreateContentTypeAIAction";
 import ContentPanel from "../../components/ContentPanel/ContentPanel";
+import { findAIAction } from "./utils/findAIAction";
+import findMessageStack from "./utils/findMessageStack";
 
 export enum PROMPT_AREAS {
   research = "research",
@@ -27,7 +29,7 @@ export enum PROMPT_AREAS {
 
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
-  const [navFocus, setNavFocus] = useState<PromptAreas>("research");
+  const [navFocus, setNavFocus] = useState<PromptAreas>("content_model");
 
   // we will have a stack for each of the contexts...sessions
   const [messageStackManager, setMessageStackManager] =
@@ -66,23 +68,35 @@ const Page = () => {
       // setChatSessions([tmpChat]);
 
       // v3
-      const newMessageStackManager = new MessageStackManager(setMessageStack);
+      const nav = NAVIGATION[navFocus];
+      const newMessageStackManager = findMessageStack(
+        nav.aiAction,
+        setMessageStack,
+        setAIAction
+      );
       setMessageStackManager(newMessageStackManager);
+      newMessageStackManager.initialize();
       const newAIActionConfig: AIActionConfig = {
         cma: params.cma,
         openAiApiKey: params.openai,
         spaceId: sdk.ids.space,
         environmentId: sdk.ids.environment,
       };
-      const aiAction = new CreateContentTypeAIAction(
-        setAIActionState,
-        newAIActionConfig,
-        newMessageStackManager,
-        () => setInvalidated((prev) => prev + 1)
-      );
-      aiAction.initialize();
       setAIActionConfig(newAIActionConfig);
-      setAIAction(aiAction);
+
+      // First AI Action
+
+      const aiActionClass = findAIAction(nav.aiAction);
+      if (aiActionClass) {
+        const aiAction = new aiActionClass(
+          setAIActionState,
+          newAIActionConfig,
+          newMessageStackManager,
+          () => setInvalidated((prev) => prev + 1)
+        );
+        aiAction.initialize();
+        newMessageStackManager.setAIAction(aiAction);
+      }
     })();
   }, []);
 
@@ -92,16 +106,43 @@ const Page = () => {
       aiActionConfig &&
       messageStackManager
     ) {
-      const aiAction = new CreateContentTypeAIAction(
+      const nav = NAVIGATION[navFocus];
+      const aiActionClass = findAIAction(nav.aiAction);
+      const aiAction = new aiActionClass(
         setAIActionState,
         aiActionConfig,
         messageStackManager,
         () => setInvalidated((prev) => prev + 1)
       );
       aiAction.initialize("Great, should we try another?");
-      setAIAction(aiAction);
+      messageStackManager.setAIAction(aiAction);
     }
   }, [invalidated]);
+
+  // Navigation was changed...
+  useEffect(() => {
+    if (aiActionConfig && messageStackManager) {
+      const nav = NAVIGATION[navFocus];
+      const newMessageStackManager = findMessageStack(
+        nav.aiAction,
+        setMessageStack,
+        setAIAction
+      );
+      setMessageStackManager(newMessageStackManager);
+      newMessageStackManager.initialize();
+      const aiActionClass = findAIAction(nav.aiAction);
+      const aiAction = new aiActionClass(
+        setAIActionState,
+        aiActionConfig,
+        newMessageStackManager,
+        () => setInvalidated((prev) => prev + 1)
+      );
+      if (newMessageStackManager.isEmpty()) {
+        aiAction.initialize();
+      }
+      newMessageStackManager.setAIAction(aiAction);
+    }
+  }, [navFocus]);
 
   return (
     <Flex
@@ -134,8 +175,8 @@ const Page = () => {
         <ContentPanel
           navFocus={navFocus}
           sdk={sdk}
-          aiActionState={aiActionState}
           invalidated={invalidated}
+          invalidate={() => setInvalidated((prev) => prev + 1)}
         />
         <ConversationPanel
           aiAction={aiAction}

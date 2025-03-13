@@ -9,6 +9,7 @@ export type AIMessage = {
   role: "system" | "user" | "assistant";
   message: string;
   toolCalls?: any[];
+  phase?: AIActionPhase;
 };
 
 export type AIContentPrefixSelect = {
@@ -43,6 +44,7 @@ export type AIActionState = {
   contentPrefix: AIActionContentPrefix;
   userPrompt: string;
   phase: AIActionPhase;
+  ignoreExecutionPrompt: boolean;
 };
 
 export type AIActionConfig = {

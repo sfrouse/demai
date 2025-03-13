@@ -1,6 +1,6 @@
 import tokens from "@contentful/f36-tokens";
 import { CSSProperties } from "react";
-import { AIMessage } from "../../../ai/AIAction/AIActionTypes";
+import { AIActionPhase, AIMessage } from "../../../ai/AIAction/AIActionTypes";
 
 const ConversationBubble = ({ aiMessage }: { aiMessage: AIMessage }) => {
   if (!aiMessage) return null;
@@ -33,19 +33,35 @@ const ConversationBubble = ({ aiMessage }: { aiMessage: AIMessage }) => {
       );
     }
     case "assistant": {
-      return (
-        <>
-          <pre
-            style={{
-              alignSelf: "flex-start",
-              backgroundColor: tokens.gray100,
-              ...baseCSS,
-            }}
-          >
-            {aiMessage.message}
-          </pre>
-        </>
-      );
+      if (aiMessage.phase === AIActionPhase.executed) {
+        return (
+          <>
+            <pre
+              style={{
+                alignSelf: "flex-start",
+                backgroundColor: tokens.green100,
+                ...baseCSS,
+              }}
+            >
+              {aiMessage.message}
+            </pre>
+          </>
+        );
+      } else {
+        return (
+          <>
+            <pre
+              style={{
+                alignSelf: "flex-start",
+                backgroundColor: tokens.gray100,
+                ...baseCSS,
+              }}
+            >
+              {aiMessage.message}
+            </pre>
+          </>
+        );
+      }
     }
     default: {
       return "";

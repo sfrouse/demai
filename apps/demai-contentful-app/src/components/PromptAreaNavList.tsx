@@ -3,15 +3,41 @@ import React from "react";
 import Divider from "./Divider";
 import tokens from "@contentful/f36-tokens";
 import { Heading, SectionHeading, Text } from "@contentful/f36-components";
+import { AIActionName } from "../locations/page/utils/findAIAction";
 
 export const NAVIGATION = {
-  research: { label: "Research", header: "Prospect Research", end: true },
-  content_model: { label: "Content Types", header: "Space Actions" },
-  entries: { label: "Entries / Content" },
-  personalization: { label: "Personalization", end: true },
-  design_tokens: { label: "Design Tokens", header: "Design System" },
-  components: { label: "Components", end: true },
-  space: { label: "Space", header: "Configuration" },
+  research: {
+    label: "Research",
+    header: "Prospect Research",
+    end: true,
+    aiAction: AIActionName.RESEARCH,
+  },
+  content_model: {
+    label: "Content Types",
+    header: "Space Actions",
+    aiAction: AIActionName.CONTENT_MODEL,
+  },
+  entries: { label: "Entries / Content", aiAction: AIActionName.ENTRIES },
+  personalization: {
+    label: "Personalization",
+    end: true,
+    aiAction: AIActionName.PERSONALIZATION,
+  },
+  design_tokens: {
+    label: "Design Tokens",
+    header: "Design System",
+    aiAction: AIActionName.DESIGN_TOKENS,
+  },
+  components: {
+    label: "Components",
+    end: true,
+    aiAction: AIActionName.COMPONENTS,
+  },
+  space: {
+    label: "Space",
+    header: "Configuration",
+    aiAction: AIActionName.SPACE,
+  },
 } as const;
 
 export type PromptAreas = keyof typeof NAVIGATION;

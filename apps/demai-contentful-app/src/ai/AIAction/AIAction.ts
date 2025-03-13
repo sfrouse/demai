@@ -39,9 +39,11 @@ export class AIAction {
       "You are an expert in Contentful, help this SE learn about Contentful demos.",
   };
   protected toolChoice: "none" | "auto" | "required" = "none";
+  protected isTool: boolean = true; // no easy way to figure out if something is a tool or not from AI results
 
   // UI Stuff
   public executionPrompt: string = "";
+  public ignoreExecutionPrompt: boolean = false;
   public prompts: AIActionPrompts = {
     cancel: "Nope, Cancel",
     run: "Yes, Let's Do This",
@@ -79,12 +81,18 @@ export class AIAction {
       this.config.environmentId
     );
     this.messageStackManager = messageStackManager;
-    this.state = this._refreshState(); // trickery to get typings to quiet
     this.contentChangeEvent = contentChangeEvent;
-    // this.initialize(); // need to do this manually, sometimes you don't want the intro message
+
+    const lastMessage = this.messageStackManager.getLastMessage();
+    if (this.isTool && lastMessage?.phase === AIActionPhase.described) {
+      this.phase = AIActionPhase.described;
+      this.description = lastMessage.message;
+    }
+    this.state = this._refreshState(); // trickery to get typings to quiet
   }
 
   public initialize(introMessageOverride?: string) {
+    // todo look for last message...not one or one that ended...
     this.introMessage = introMessageOverride || this.introMessage;
     if (this.introMessage) {
       this.messageStackManager.addMessage({
@@ -99,24 +107,36 @@ export class AIAction {
   }
 
   public async run() {
+    if (this.phase === AIActionPhase.described) {
+      return this._executeDescription();
+    } else {
+      return this._findDescription();
+    }
+  }
+
+  private async _findDescription() {
     if (this.isRunning) return;
     this._refreshState(true);
 
+    const prevConvos = this.getPreviousConversation();
     this.messageStackManager.addMessage({
       role: "user",
       message: this.createContent(this.userPrompt),
     });
 
     // run LLM
-    const ctfTools = await this.mcpClient.getToolsForOpenAI();
-    const { data: stream, response } = await this.openAIClient.chat.completions
-      .create({
+    const ctfTools = this.isTool
+      ? await this.mcpClient.getToolsForOpenAI()
+      : [];
+    const body: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming =
+      {
         model: this.model,
         max_tokens: OPEN_AI_MAX_TOKENS,
         top_p: OPEN_AI_TOP_P,
         temperature: OPEN_AI_TEMPERATURE,
         messages: [
           this.system,
+          ...prevConvos,
           {
             role: "user",
             content: this.createContent(this.userPrompt),
@@ -124,9 +144,13 @@ export class AIAction {
         ],
         tools: ctfTools,
         tool_choice: "none",
-        store: true,
-      })
+        // store: true, // not working the way I think...
+      };
+    console.log("body", body);
+    const { data: stream, response } = await this.openAIClient.chat.completions
+      .create(body)
       .withResponse();
+    console.log("run results:", stream);
     this.description =
       stream.choices && stream.choices.length > 0
         ? stream.choices[0].message.content
@@ -135,15 +159,20 @@ export class AIAction {
     this.messageStackManager.addMessage({
       role: "assistant",
       message: `${this.description}`,
-      toolCalls: this.toolCalls,
+      phase: AIActionPhase.described,
     });
 
-    this.phase = AIActionPhase.described;
+    if (this.isTool) {
+      this.phase = AIActionPhase.described;
+    } else {
+      this.phase = AIActionPhase.prompting;
+      this.userPrompt = "";
+    }
 
     this._refreshState(false);
   }
 
-  public async execute() {
+  protected async _executeDescription() {
     if (this.isRunning) return;
     this._refreshState(true);
     try {
@@ -162,25 +191,32 @@ export class AIAction {
             },
           ],
           tools: ctfTools,
-          tool_choice: "auto",
-          store: true,
+          tool_choice: "required",
+          // store: true, // not working the way I think...
         })
         .withResponse();
-      console.log("resulsss", toolStream);
+      console.log("execute result:", toolStream);
       this.toolCalls =
         toolStream.choices && toolStream.choices.length > 0
           ? toolStream.choices[0].message.tool_calls
           : undefined;
 
-      console.log("toolDescription", this.toolCalls);
+      this.messageStackManager.addMessage({
+        role: "assistant",
+        message: `Executing ${this.toolCalls
+          ?.map((call) => call.function.name)
+          .join(", ")}`,
+        phase: AIActionPhase.executed,
+      });
 
       if (this.toolCalls) {
         for (const toolCall of this.toolCalls) {
+          console.log("toolCall", toolCall);
           const exeResult = await this.mcpClient.callFunction(
             toolCall.function.name,
             JSON.parse(toolCall.function.arguments)
           );
-          console.log("exeResult", exeResult);
+          console.log("mcp execute results:", exeResult);
           this.onToolExecuted(exeResult);
         }
       }
@@ -202,6 +238,7 @@ export class AIAction {
     this.messageStackManager.addMessage({
       role: "assistant",
       message: `Executed request.`,
+      phase: AIActionPhase.executed,
     });
   }
 
@@ -221,30 +258,51 @@ export class AIAction {
     return this._refreshState();
   }
 
+  public updateIgnoreExecutionPrompt(newIgnoreExecutionPrompt: boolean) {
+    this.ignoreExecutionPrompt = newIgnoreExecutionPrompt;
+    return this._refreshState();
+  }
+
   public revert() {
     this.userPrompt = "";
     this.contentPrefix = this.initContentPrefix;
+    this.ignoreExecutionPrompt = false;
     this.phase = AIActionPhase.prompting;
+    this.messageStackManager.resetMessages();
+    this.initialize();
     this._refreshState();
   }
 
-  private _refreshState(isRunning?: boolean) {
+  protected _refreshState(isRunning?: boolean) {
     this.state = {
       isRunning: isRunning === undefined ? this.isRunning : isRunning,
       contentPrefix: [...this.contentPrefix],
       userPrompt: this.userPrompt,
       phase: this.phase,
+      ignoreExecutionPrompt: this.ignoreExecutionPrompt,
     };
     this.setState(this.state);
     return this.state;
   }
 
   private createContent(userMessage: string): string {
+    if (this.ignoreExecutionPrompt) {
+      return this.content ? this.content(userMessage) : "";
+    }
     return [
       ...(this.contentPrefix?.map((item) =>
         typeof item === "string" ? item : item.value || item.options[0]
       ) || []),
       this.content ? this.content(userMessage) : "",
     ].join(" ");
+  }
+
+  private getPreviousConversation() {
+    const convos = this.messageStackManager.getMessages();
+    const lastFour = convos.slice(Math.max(convos.length - 4, 0));
+    return lastFour.map((msg) => ({
+      role: msg.role,
+      content: msg.message,
+    }));
   }
 }

@@ -31,7 +31,7 @@ const ConversationPanel = ({
       const lastChild = chatRef.current.lastElementChild as HTMLElement;
       lastChild?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messageStack]);
+  }, [messageStack, aiActionState?.isRunning]);
 
   return (
     <Flex
@@ -106,7 +106,7 @@ const ConversationPanel = ({
           }}
           message={aiAction?.executionPrompt}
           onCancel={() => aiAction?.updatePhase(AIActionPhase.prompting)}
-          onConfirm={() => aiAction?.execute()}
+          onConfirm={() => aiAction?.run()}
           prompts={aiAction?.prompts}
           visible={aiActionState?.phase === AIActionPhase.described}
         />

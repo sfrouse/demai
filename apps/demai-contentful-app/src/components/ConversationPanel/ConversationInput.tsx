@@ -3,6 +3,7 @@ import tokens from "@contentful/f36-tokens";
 import {
   Button,
   Flex,
+  IconButton,
   Paragraph,
   Select,
   Textarea,
@@ -33,8 +34,42 @@ const ConversationInput: React.FC<ConversationInputProps> = ({
         paddingBottom: tokens.spacingM,
       }}
     >
-      {aiActionState?.contentPrefix &&
-        renderContentPrefix(aiActionState.contentPrefix, () => {})}
+      <Flex alignItems="center">
+        <div
+          style={{
+            flex: 1,
+            opacity: aiActionState?.ignoreExecutionPrompt ? 0.2 : 1.0,
+          }}
+        >
+          {aiActionState?.contentPrefix &&
+            renderContentPrefix(
+              aiActionState.contentPrefix,
+              (val: string, index: number) => {
+                const select = aiActionState.contentPrefix[index];
+                if (typeof select !== "string") {
+                  select.value = val;
+                }
+                aiAction?.updateContentPrefix([...aiActionState.contentPrefix]);
+              }
+            )}
+        </div>
+        <IconButton
+          style={{ maxHeight: 40 }}
+          icon={
+            aiActionState?.ignoreExecutionPrompt ? (
+              <icons.PreviewOffIcon />
+            ) : (
+              <icons.PreviewIcon />
+            )
+          }
+          aria-label="Ignore Execution "
+          onClick={() => {
+            aiAction?.updateIgnoreExecutionPrompt(
+              !aiActionState?.ignoreExecutionPrompt
+            );
+          }}
+        />
+      </Flex>
       <Textarea
         value={aiActionState?.userPrompt}
         placeholder={aiAction?.placeholder}
@@ -69,7 +104,7 @@ const ConversationInput: React.FC<ConversationInputProps> = ({
 
 const renderContentPrefix = (
   contentPrefix: AIActionContentPrefix,
-  onChange: (value: string) => void
+  onChange: (value: string, index: number) => void
 ) => {
   return (
     <Flex
@@ -89,7 +124,7 @@ const renderContentPrefix = (
           <Select
             key={index}
             value={item.value || (item.options[0] as any)}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onChange(e.target.value, index)}
           >
             {item.options.map((option) => (
               <Select.Option key={option as any} value={option as any}>

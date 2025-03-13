@@ -28,12 +28,12 @@ const ConversationConfirm: React.FC<ConversationConfirmProps> = ({
       style={{
         opacity: visible ? 1 : 0, // 🔹 Animate opacity
         visibility: visible ? "visible" : "hidden",
-        transition: "opacity 0.3s ease-in-out, visibility 0.3s",
+        // transition: "opacity 0.s ease-in-out, visibility 0.3s",
         backgroundColor: tokens.colorWhite,
         ...style,
       }}
     >
-      <Paragraph>{message}</Paragraph>
+      {/* <Paragraph>{message}</Paragraph> */}
       <Flex flexDirection="row" justifyContent="center" alignItems="center">
         <Button
           startIcon={

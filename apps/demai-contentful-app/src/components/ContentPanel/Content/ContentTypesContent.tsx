@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { EntityStatusBadge, Flex, Text } from "@contentful/f36-components";
+import {
+  EntityStatusBadge,
+  Flex,
+  Text,
+  Caption,
+} from "@contentful/f36-components";
 import {
   Collection,
   ContentType,
@@ -55,7 +60,6 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
               <Flex
                 key={contentType.sys.id}
                 flexDirection="column"
-                gap={tokens.spacingXs}
                 style={{
                   padding: `${tokens.spacingS} ${tokens.spacingXs}`,
                 }}
@@ -64,6 +68,7 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
                   fontSize="fontSizeXl"
                   style={{
                     color: tokens.gray800,
+                    marginBottom: tokens.spacing2Xs,
                   }}
                 >
                   {contentType.name}{" "}
@@ -71,6 +76,13 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
                     <EntityStatusBadge entityStatus="draft" />
                   ) : null}
                 </Text>
+                <Caption
+                  style={{
+                    color: tokens.gray600,
+                  }}
+                >
+                  {contentType.sys.id}
+                </Caption>
                 <Text
                   fontSize="fontSizeM"
                   style={{
