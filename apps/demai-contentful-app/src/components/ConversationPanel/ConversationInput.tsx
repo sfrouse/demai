@@ -4,7 +4,6 @@ import {
   Button,
   Flex,
   IconButton,
-  Paragraph,
   Select,
   Textarea,
 } from "@contentful/f36-components";
@@ -14,6 +13,8 @@ import {
   AIActionState,
 } from "../../ai/AIAction/AIActionTypes";
 import { AIAction } from "../../ai/AIAction/AIAction";
+import updateColorSetInTokens from "../../ai/mcp/designSystemMCP/utils/tokens/updateColorSetInTokens";
+import transformTokens from "demai-design-system-core/src/tokens/scripts/transformTokens";
 
 interface ConversationInputProps {
   aiAction: AIAction | undefined;

@@ -19,6 +19,7 @@ import {
 } from "./AIActionTypes";
 import { MessageStackManager } from "../MessageStackManager/MessageStackManager";
 import * as icons from "@contentful/f36-icons";
+import { DesignSystemMCPClient } from "../mcp/designSystemMCP/DesignSystemMCPClient";
 
 export class AIAction {
   // Messaging
@@ -28,6 +29,7 @@ export class AIAction {
   private config: AIActionConfig;
   private openAIClient: OpenAI;
   private mcpClient: MCPClient;
+  private designSystemCMPClient: DesignSystemMCPClient;
   protected messageStackManager: MessageStackManager;
   protected contentChangeEvent?: () => void;
 
@@ -40,6 +42,7 @@ export class AIAction {
   };
   protected toolChoice: "none" | "auto" | "required" = "none";
   protected isTool: boolean = true; // no easy way to figure out if something is a tool or not from AI results
+  protected toolType: "DemAIDesignSystem" | "Contentful" = "Contentful";
 
   // UI Stuff
   public executionPrompt: string = "";
@@ -89,9 +92,16 @@ export class AIAction {
       this.description = lastMessage.message;
     }
     this.state = this._refreshState(); // trickery to get typings to quiet
+
+    this.designSystemCMPClient = new DesignSystemMCPClient(
+      this.config.cma,
+      this.config.spaceId,
+      this.config.environmentId
+    );
   }
 
   public initialize(introMessageOverride?: string) {
+    this.designSystemCMPClient.getToolsForOpenAI();
     // todo look for last message...not one or one that ended...
     this.introMessage = introMessageOverride || this.introMessage;
     if (this.introMessage) {
@@ -125,9 +135,13 @@ export class AIAction {
     });
 
     // run LLM
-    const ctfTools = this.isTool
-      ? await this.mcpClient.getToolsForOpenAI()
+    const tools = this.isTool
+      ? this.toolType === "DemAIDesignSystem"
+        ? await this.designSystemCMPClient.getToolsForOpenAI()
+        : await this.mcpClient.getToolsForOpenAI()
       : [];
+    console.log("ctfTool", tools);
+
     const body: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming =
       {
         model: this.model,
@@ -142,11 +156,10 @@ export class AIAction {
             content: this.createContent(this.userPrompt),
           },
         ],
-        tools: ctfTools,
+        tools,
         tool_choice: "none",
         // store: true, // not working the way I think...
       };
-    console.log("body", body);
     const { data: stream, response } = await this.openAIClient.chat.completions
       .create(body)
       .withResponse();
@@ -176,7 +189,10 @@ export class AIAction {
     if (this.isRunning) return;
     this._refreshState(true);
     try {
-      const ctfTools = await this.mcpClient.getToolsForOpenAI();
+      const tools =
+        this.toolType === "DemAIDesignSystem"
+          ? await this.designSystemCMPClient.getToolsForOpenAI()
+          : await this.mcpClient.getToolsForOpenAI();
       const { data: toolStream } = await this.openAIClient.chat.completions
         .create({
           model: this.model,
@@ -190,7 +206,7 @@ export class AIAction {
               content: this.description,
             },
           ],
-          tools: ctfTools,
+          tools,
           tool_choice: "required",
           // store: true, // not working the way I think...
         })
@@ -212,7 +228,11 @@ export class AIAction {
       if (this.toolCalls) {
         for (const toolCall of this.toolCalls) {
           console.log("toolCall", toolCall);
-          const exeResult = await this.mcpClient.callFunction(
+          const mcpClient =
+            this.toolType === "DemAIDesignSystem"
+              ? await this.designSystemCMPClient
+              : await this.mcpClient;
+          const exeResult = await mcpClient.callFunction(
             toolCall.function.name,
             JSON.parse(toolCall.function.arguments)
           );

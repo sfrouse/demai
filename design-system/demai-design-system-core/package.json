@@ -1,0 +1,11 @@
+{
+  "name": "demai-design-system-core",
+  "version": "1.0.0",
+  "description": "[Demo Design System](https://www.figma.com/design/vJo1XwhYEVZNs0LdWRQVdd/Demo-Design-System?node-id=2-742&t=akQBYWwU10qPbSgi-1)",
+  "main": "index.js",
+  "scripts": {
+    "build": "node ./src/tokens/scripts/transform.mjs && yalc push"
+  },
+  "author": "",
+  "license": "ISC"
+}

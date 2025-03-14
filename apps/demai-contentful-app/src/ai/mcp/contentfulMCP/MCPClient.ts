@@ -1,8 +1,9 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { ChatCompletionTool } from "openai/resources/index.mjs";
 import { createTransport } from "@smithery/sdk";
+import { IMCPClient } from "../IMCPClient";
 
-export class MCPClient {
+export class MCPClient implements IMCPClient {
   private cma: string;
   private spaceId: string;
   private environmentId: string;

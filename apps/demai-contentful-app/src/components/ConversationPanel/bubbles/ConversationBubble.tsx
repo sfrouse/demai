@@ -1,64 +1,63 @@
 import tokens from "@contentful/f36-tokens";
 import { CSSProperties } from "react";
 import { AIActionPhase, AIMessage } from "../../../ai/AIAction/AIActionTypes";
+import { marked } from "marked";
 
 const ConversationBubble = ({ aiMessage }: { aiMessage: AIMessage }) => {
   if (!aiMessage) return null;
 
   const baseCSS: CSSProperties = {
-    maxWidth: "95%",
-    whiteSpace: "pre-wrap",
-    wordBreak: "break-word",
+    maxWidth: "85%",
+    // whiteSpace: "pre-wrap",
+    // wordBreak: "break-word",
     margin: 0,
     marginBottom: tokens.spacingS,
     // fontFamily: "monospace",
     fontFamily: tokens.fontStackPrimary,
-    padding: `${tokens.spacingM} ${tokens.spacingL}`,
+    padding: `${tokens.spacingM} ${tokens.spacingM}`,
     borderRadius: tokens.borderRadiusMedium,
-    fontSize: 13,
+    fontSize: 12,
   };
 
+  const html = marked(aiMessage.message);
   switch (aiMessage.role) {
     case "user": {
       return (
-        <pre
+        <div
           style={{
             alignSelf: "flex-end",
             backgroundColor: tokens.blue100,
             ...baseCSS,
           }}
-        >
-          {aiMessage.message}
-        </pre>
+          dangerouslySetInnerHTML={{ __html: html }}
+        ></div>
       );
     }
     case "assistant": {
       if (aiMessage.phase === AIActionPhase.executed) {
         return (
           <>
-            <pre
+            <div
               style={{
                 alignSelf: "flex-start",
                 backgroundColor: tokens.green100,
                 ...baseCSS,
               }}
-            >
-              {aiMessage.message}
-            </pre>
+              dangerouslySetInnerHTML={{ __html: html }}
+            ></div>
           </>
         );
       } else {
         return (
           <>
-            <pre
+            <div
               style={{
                 alignSelf: "flex-start",
                 backgroundColor: tokens.gray100,
                 ...baseCSS,
               }}
-            >
-              {aiMessage.message}
-            </pre>
+              dangerouslySetInnerHTML={{ __html: html }}
+            ></div>
           </>
         );
       }

@@ -1,5 +1,5 @@
+import { ChangeTokenColorSetAIAction } from "../../../ai/AIAction/actions/ChangeTokenColorSetAIAction";
 import { CreateContentTypeAIAction } from "../../../ai/AIAction/actions/CreateContentTypeAIAction";
-import { OpenEndedAIAction } from "../../../ai/AIAction/actions/OpenEndedAIAction";
 import { OpenEndedToolAIAction } from "../../../ai/AIAction/actions/OpenEndedToolAIAction";
 import { PublishContentTypeAIAction } from "../../../ai/AIAction/actions/PublishContentTypesAIAction";
 
@@ -21,6 +21,9 @@ export function findAIAction(actionName: AIActionName) {
     }
     case AIActionName.PUBLISH_CONTENT_MODEL: {
       return PublishContentTypeAIAction;
+    }
+    case AIActionName.DESIGN_TOKENS: {
+      return ChangeTokenColorSetAIAction;
     }
     default: {
       return OpenEndedToolAIAction; // OpenEndedAIAction;

@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "demai-design-system-core": {
+      "signature": "9cee22dddefc8d2063877b454a17040e",
+      "file": true
+    }
+  }
+}

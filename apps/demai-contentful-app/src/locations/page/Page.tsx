@@ -85,7 +85,6 @@ const Page = () => {
       setAIActionConfig(newAIActionConfig);
 
       // First AI Action
-
       const aiActionClass = findAIAction(nav.aiAction);
       if (aiActionClass) {
         const aiAction = new aiActionClass(
