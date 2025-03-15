@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import getOpeAIClient from "../openAI/getOpenAIClient";
 import OpenAI from "openai";
-import { MCPClient } from "../mcp/contentfulMCP/MCPClient";
+import { ContentfulMCP } from "../mcp/contentfulMCP/ContentfulMCP";
 import {
   AIModels,
   OPEN_AI_MAX_TOKENS,
@@ -28,7 +28,7 @@ export class AIAction {
   // Resources
   private config: AIActionConfig;
   private openAIClient: OpenAI;
-  private mcpClient: MCPClient;
+  private contentfulMCP: ContentfulMCP;
   private designSystemCMPClient: DesignSystemMCPClient;
   protected messageStackManager: MessageStackManager;
   protected contentChangeEvent?: () => void;
@@ -78,7 +78,7 @@ export class AIAction {
     this.setState = setState;
     this.config = config;
     this.openAIClient = getOpeAIClient(config.openAiApiKey);
-    this.mcpClient = new MCPClient(
+    this.contentfulMCP = new ContentfulMCP(
       this.config.cma,
       this.config.spaceId,
       this.config.environmentId
@@ -138,7 +138,7 @@ export class AIAction {
     const tools = this.isTool
       ? this.toolType === "DemAIDesignSystem"
         ? await this.designSystemCMPClient.getToolsForOpenAI()
-        : await this.mcpClient.getToolsForOpenAI()
+        : await this.contentfulMCP.getToolsForOpenAI()
       : [];
     console.log("ctfTool", tools);
 
@@ -192,7 +192,7 @@ export class AIAction {
       const tools =
         this.toolType === "DemAIDesignSystem"
           ? await this.designSystemCMPClient.getToolsForOpenAI()
-          : await this.mcpClient.getToolsForOpenAI();
+          : await this.contentfulMCP.getToolsForOpenAI();
       const { data: toolStream } = await this.openAIClient.chat.completions
         .create({
           model: this.model,
@@ -228,11 +228,11 @@ export class AIAction {
       if (this.toolCalls) {
         for (const toolCall of this.toolCalls) {
           console.log("toolCall", toolCall);
-          const mcpClient =
+          const contentfulMCP =
             this.toolType === "DemAIDesignSystem"
               ? await this.designSystemCMPClient
-              : await this.mcpClient;
-          const exeResult = await mcpClient.callFunction(
+              : await this.contentfulMCP;
+          const exeResult = await contentfulMCP.callFunction(
             toolCall.function.name,
             JSON.parse(toolCall.function.arguments)
           );

@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import getOpeAIClient from "../../openAI/getOpenAIClient";
 import OpenAI from "openai";
-import { MCPClient } from "../../mcp/contentfulMCP/MCPClient";
+import { ContentfulMCP } from "../../mcp/contentfulMCP/ContentfulMCP";
 import {
   AIModels,
   OPEN_AI_MAX_TOKENS,
@@ -68,7 +68,7 @@ export class ChatSession {
   private chatMessages: ChatMessage[] = [];
   private config: ChatConfig;
   private openAIClient: OpenAI;
-  private mcpClient: MCPClient;
+  private contentfulMCP: ContentfulMCP;
 
   public state: ChatState;
   private setState: Dispatch<SetStateAction<ChatState | undefined>>; // (state: ChatState) => void;
@@ -86,7 +86,7 @@ export class ChatSession {
     });
     this.config = config;
     this.openAIClient = getOpeAIClient(config.openAiApiKey);
-    this.mcpClient = new MCPClient(
+    this.contentfulMCP = new ContentfulMCP(
       this.config.cma,
       this.config.spaceId,
       this.config.environmentId
@@ -116,7 +116,7 @@ export class ChatSession {
   }
 
   async runLLM(userPrompt: string) {
-    const ctfTools = await this.mcpClient.getToolsForOpenAI();
+    const ctfTools = await this.contentfulMCP.getToolsForOpenAI();
     const { data: stream, response } = await this.openAIClient.chat.completions
       .create({
         model: this.model,
@@ -179,7 +179,7 @@ export class ChatSession {
   async execute(message: ChatMessage) {
     if (message.toolCalls) {
       for (const toolCall of message.toolCalls) {
-        const exeResult = await this.mcpClient.callFunction(
+        const exeResult = await this.contentfulMCP.callFunction(
           toolCall.function.name,
           JSON.parse(toolCall.function.arguments)
         );

@@ -20,6 +20,11 @@ import { AIAction } from "../../ai/AIAction/AIAction";
 import ContentPanel from "../../components/ContentPanel/ContentPanel";
 import { findAIAction } from "./utils/findAIAction";
 import findMessageStack from "./utils/findMessageStack";
+import AIState from "../../ai/AIState/AIState";
+import { AIStateConfig, AIStateStatus } from "../../ai/AIState/AIStateTypes";
+import AISessionManager from "../../ai/AIState/AISessionManager";
+import { AIPromptEngineID } from "../../ai/AIState/utils/createAIPromptEngine";
+import findAISessionManager from "./utils/findAISessionManager";
 
 export enum PROMPT_AREAS {
   research = "research",
@@ -41,6 +46,13 @@ const Page = () => {
   >();
   const [aiActionConfig, setAIActionConfig] = useState<AIActionConfig>();
   const [invalidated, setInvalidated] = useState<number>(0);
+
+  // v4
+  const [aiStateConfig, setAIStateConfig] = useState<AIStateConfig>();
+  const [aiState, setAIState] = useState<AIState>();
+  const [aiStateStatus, setAIStateStatus] = useState<AIStateStatus>();
+  const [, setAISessionManager] = useState<AISessionManager>();
+  const [aiSession, setAISession] = useState<AIState[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -96,10 +108,34 @@ const Page = () => {
         aiAction.initialize();
         newMessageStackManager.setAIAction(aiAction);
       }
+
+      // v4
+      const newAIConfig: AIStateConfig = {
+        cma: params.cma,
+        openAiApiKey: params.openai,
+        spaceId: sdk.ids.space,
+        environmentId: sdk.ids.environment,
+      };
+      setAIStateConfig(newAIConfig);
+      // const newAIStackManager = findAISessionManager(
+      //   nav.aiAction,
+      //   setAISession,
+      //   setAIState
+      // );
+      // setAISessionManager(newAIStackManager);
+      // const newAIState = new AIState(
+      //   newAIStackManager,
+      //   newAIConfig,
+      //   setAIStateStatus,
+      //   AIPromptEngineID.CONTENT_MODEL,
+      //   true
+      // );
+      // newAIStackManager.addAndActivateAIState(newAIState);
     })();
   }, []);
 
   useEffect(() => {
+    // v3
     if (
       aiActionState?.phase === AIActionPhase.done &&
       aiActionConfig &&
@@ -120,28 +156,57 @@ const Page = () => {
 
   // Navigation was changed...
   useEffect(() => {
-    if (aiActionConfig && messageStackManager) {
+    // v3
+    // if (aiActionConfig && messageStackManager) {
+    //   const nav = NAVIGATION[navFocus];
+    //   const newMessageStackManager = findMessageStack(
+    //     nav.aiAction,
+    //     setMessageStack,
+    //     setAIAction
+    //   );
+    //   setMessageStackManager(newMessageStackManager);
+    //   newMessageStackManager.initialize();
+    //   const aiActionClass = findAIAction(nav.aiAction);
+    //   const aiAction = new aiActionClass(
+    //     setAIActionState,
+    //     aiActionConfig,
+    //     newMessageStackManager,
+    //     () => setInvalidated((prev) => prev + 1)
+    //   );
+    //   if (newMessageStackManager.isEmpty()) {
+    //     aiAction.initialize();
+    //   }
+    //   newMessageStackManager.setAIAction(aiAction);
+    // }
+
+    // v4
+    if (aiStateConfig) {
       const nav = NAVIGATION[navFocus];
-      const newMessageStackManager = findMessageStack(
+      const newAIStackManager = findAISessionManager(
         nav.aiAction,
-        setMessageStack,
-        setAIAction
+        setAISession,
+        setAIState
       );
-      setMessageStackManager(newMessageStackManager);
-      newMessageStackManager.initialize();
-      const aiActionClass = findAIAction(nav.aiAction);
-      const aiAction = new aiActionClass(
-        setAIActionState,
-        aiActionConfig,
-        newMessageStackManager,
-        () => setInvalidated((prev) => prev + 1)
-      );
-      if (newMessageStackManager.isEmpty()) {
-        aiAction.initialize();
+      setAISessionManager(newAIStackManager);
+      console.log("newAIStackManager", newAIStackManager);
+      // need to establish AIState from previous state or with new one...
+      let newFocusedAIState = newAIStackManager.getLastState();
+      if (!newFocusedAIState) {
+        const newAIState = new AIState(
+          newAIStackManager,
+          aiStateConfig,
+          setAIStateStatus,
+          nav.aiStateEngine,
+          true
+        );
+        newAIStackManager.addAndActivateAIState(newAIState);
+      } else {
+        newAIStackManager.refreshState();
+        setAIState(newFocusedAIState);
+        newFocusedAIState.refreshState();
       }
-      newMessageStackManager.setAIAction(aiAction);
     }
-  }, [navFocus]);
+  }, [navFocus, aiStateConfig]);
 
   return (
     <Flex
@@ -181,6 +246,9 @@ const Page = () => {
           aiAction={aiAction}
           aiActionState={aiActionState}
           messageStack={messageStack}
+          aiSession={aiSession}
+          aiState={aiState}
+          aiStateStatus={aiStateStatus}
         />
       </Flex>
     </Flex>

@@ -21,11 +21,11 @@ export class DesignSystemMCPClient implements IMCPClient {
     this.environmentId = environmentId;
 
     (async () => {
-      console.log("tokens", tokens);
-      console.log(
-        "transformTokens",
-        await transformTokens(tokens, "dmai", "../")
-      );
+      // console.log("tokens", tokens);
+      // console.log(
+      //   "transformTokens",
+      //   await transformTokens(tokens, "dmai", "../")
+      // );
     })();
   }
 

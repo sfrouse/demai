@@ -12,17 +12,27 @@ import { AIAction } from "../../ai/AIAction/AIAction";
 import ConversationBubble from "./bubbles/ConversationBubble";
 import ConversationInput from "./ConversationInput";
 import ConversationConfirm from "./ConversationConfirm";
+import AIState from "../../ai/AIState/AIState";
+import ConversationState from "./bubbles/ConversationState";
+import ConversationStateEditor from "./ConversationStateEditor";
+import { AIStateStatus } from "../../ai/AIState/AIStateTypes";
 
 interface ConversationPanelProps {
   messageStack: AIMessage[];
   aiAction: AIAction | undefined;
   aiActionState: AIActionState | undefined;
+  aiSession: AIState[];
+  aiState: AIState | undefined;
+  aiStateStatus: AIStateStatus | undefined;
 }
 
 const ConversationPanel = ({
   messageStack,
   aiAction,
   aiActionState,
+  aiSession,
+  aiState,
+  aiStateStatus,
 }: ConversationPanelProps) => {
   const chatRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +51,7 @@ const ConversationPanel = ({
         flex: 1.5,
       }}
     >
-      <Flex
+      {/* <Flex
         flexDirection="column"
         style={{
           paddingLeft: tokens.spacingL,
@@ -59,16 +69,16 @@ const ConversationPanel = ({
           <Heading style={{ marginBottom: tokens.spacingS, flex: 1 }}>
             Content Type
           </Heading>
-          {/* <Tabs></Heading>
+          <Tabs>
             <Tabs.List>
               <Tabs.Tab panelId="first">First</Tabs.Tab>
               <Tabs.Tab panelId="second">Second</Tabs.Tab>
               <Tabs.Tab panelId="third">Third</Tabs.Tab>
             </Tabs.List>
-          </Tabs> */}
+          </Tabs>
         </Flex>
         <Divider style={{ marginTop: 0, marginBottom: 0 }} />
-      </Flex>
+      </Flex> */}
       <div
         ref={chatRef}
         style={{
@@ -83,34 +93,38 @@ const ConversationPanel = ({
           overflowY: "scroll",
         }}
       >
-        {messageStack.map((msg: AIMessage, index) => {
-          return (
-            <ConversationBubble
-              key={`${msg.message}-${index}`}
-              aiMessage={msg}
-            />
-          );
+        {aiSession.map((aiState: AIState) => {
+          return <ConversationState key={aiState.key} aiState={aiState} />;
         })}
-        {aiActionState?.isRunning ? <LoadingIcon /> : null}
+        {aiStateStatus?.isRunning ? <LoadingIcon /> : null}
       </div>
       <Divider />
       <div style={{ position: "relative" }}>
-        <ConversationConfirm
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            right: 0,
-            left: 0,
-            zIndex: 1000,
-          }}
-          message={aiAction?.executionPrompt}
-          onCancel={() => aiAction?.updatePhase(AIActionPhase.prompting)}
-          onConfirm={() => aiAction?.run()}
-          prompts={aiAction?.prompts}
-          visible={aiActionState?.phase === AIActionPhase.described}
-        />
-        <ConversationInput aiAction={aiAction} aiActionState={aiActionState} />
+        {aiState && aiStateStatus ? (
+          <>
+            <ConversationConfirm
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                right: 0,
+                left: 0,
+                zIndex: 1000,
+              }}
+              message={aiAction?.executionPrompt}
+              onCancel={() => aiAction?.updatePhase(AIActionPhase.prompting)}
+              onConfirm={() => aiAction?.run()}
+              prompts={aiAction?.prompts}
+              visible={aiActionState?.phase === AIActionPhase.described}
+            />
+            <ConversationStateEditor
+              aiState={aiState}
+              aiStateStatus={aiStateStatus}
+            />
+          </>
+        ) : null}
+
+        {/* <ConversationInput aiAction={aiAction} aiActionState={aiActionState} /> */}
       </div>
     </Flex>
   );

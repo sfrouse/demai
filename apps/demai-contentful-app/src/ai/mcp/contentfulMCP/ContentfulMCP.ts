@@ -3,7 +3,7 @@ import { ChatCompletionTool } from "openai/resources/index.mjs";
 import { createTransport } from "@smithery/sdk";
 import { IMCPClient } from "../IMCPClient";
 
-export class MCPClient implements IMCPClient {
+export class ContentfulMCP implements IMCPClient {
   private cma: string;
   private spaceId: string;
   private environmentId: string;

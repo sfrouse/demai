@@ -4,6 +4,7 @@ import Divider from "./Divider";
 import tokens from "@contentful/f36-tokens";
 import { Heading, SectionHeading, Text } from "@contentful/f36-components";
 import { AIActionName } from "../locations/page/utils/findAIAction";
+import { AIPromptEngineID } from "../ai/AIState/utils/createAIPromptEngine";
 
 export const NAVIGATION = {
   research: {
@@ -11,32 +12,42 @@ export const NAVIGATION = {
     header: "Prospect Research",
     end: true,
     aiAction: AIActionName.RESEARCH,
+    aiStateEngine: AIPromptEngineID.OPEN,
   },
   content_model: {
     label: "Content Types",
     header: "Space Actions",
     aiAction: AIActionName.CONTENT_MODEL,
+    aiStateEngine: AIPromptEngineID.CONTENT_MODEL,
   },
-  entries: { label: "Entries / Content", aiAction: AIActionName.ENTRIES },
+  entries: {
+    label: "Entries / Content",
+    aiAction: AIActionName.ENTRIES,
+    aiStateEngine: AIPromptEngineID.OPEN,
+  },
   personalization: {
     label: "Personalization",
     end: true,
     aiAction: AIActionName.PERSONALIZATION,
+    aiStateEngine: AIPromptEngineID.OPEN,
   },
   design_tokens: {
     label: "Design Tokens",
     header: "Design System",
     aiAction: AIActionName.DESIGN_TOKENS,
+    aiStateEngine: AIPromptEngineID.OPEN,
   },
   components: {
     label: "Components",
     end: true,
     aiAction: AIActionName.COMPONENTS,
+    aiStateEngine: AIPromptEngineID.OPEN,
   },
   space: {
     label: "Space",
     header: "Configuration",
     aiAction: AIActionName.SPACE,
+    aiStateEngine: AIPromptEngineID.OPEN,
   },
 } as const;
 

@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { MCPClient } from "../../mcp/contentfulMCP/MCPClient";
+import { ContentfulMCP } from "../../mcp/contentfulMCP/ContentfulMCP";
 import getOpeAIClient from "../../openAI/getOpenAIClient";
 import {
   AIModels,
@@ -16,7 +16,7 @@ import { PromptSessionMode, PromptSessionState } from "./PromptSessionContext";
 export class PromptSession {
   private setState: React.Dispatch<React.SetStateAction<PromptSessionState>>;
 
-  private ctfMCP: MCPClient;
+  private ctfMCP: ContentfulMCP;
   private ctfTools: ChatCompletionTool[] | undefined;
   private openAIClient: OpenAI | undefined;
 
@@ -52,7 +52,7 @@ export class PromptSession {
     this.conversationStack = [
       { role: "system", content: promptTemplate.system.content },
     ];
-    this.ctfMCP = new MCPClient(cma, spaceId, environmentId);
+    this.ctfMCP = new ContentfulMCP(cma, spaceId, environmentId);
     this.openAIClient = getOpeAIClient(openAiApiKey);
 
     this.init();
