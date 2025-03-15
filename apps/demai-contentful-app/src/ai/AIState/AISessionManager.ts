@@ -34,6 +34,10 @@ export default class AISessionManager {
     this._setAISession(this._session);
   }
 
+  getSessions() {
+    return this._session;
+  }
+
   getLastState() {
     if (this._session.length === 0) {
       return;

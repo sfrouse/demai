@@ -15,7 +15,7 @@ import ConversationConfirm from "./ConversationConfirm";
 import AIState from "../../ai/AIState/AIState";
 import ConversationState from "./bubbles/ConversationState";
 import ConversationStateEditor from "./ConversationStateEditor";
-import { AIStateStatus } from "../../ai/AIState/AIStateTypes";
+import { AIStatePhase, AIStateStatus } from "../../ai/AIState/AIStateTypes";
 
 interface ConversationPanelProps {
   messageStack: AIMessage[];
@@ -111,11 +111,10 @@ const ConversationPanel = ({
                 left: 0,
                 zIndex: 1000,
               }}
-              message={aiAction?.executionPrompt}
-              onCancel={() => aiAction?.updatePhase(AIActionPhase.prompting)}
-              onConfirm={() => aiAction?.run()}
-              prompts={aiAction?.prompts}
-              visible={aiActionState?.phase === AIActionPhase.described}
+              onCancel={() => console.log("not sure yet...")}
+              onConfirm={() => aiState?.run()}
+              prompts={aiStateStatus?.prompts}
+              visible={aiStateStatus?.phase === AIStatePhase.describing}
             />
             <ConversationStateEditor
               aiState={aiState}
@@ -123,8 +122,6 @@ const ConversationPanel = ({
             />
           </>
         ) : null}
-
-        {/* <ConversationInput aiAction={aiAction} aiActionState={aiActionState} /> */}
       </div>
     </Flex>
   );

@@ -1,10 +1,9 @@
-import { Button, Flex, Paragraph } from "@contentful/f36-components";
+import { Button, Flex } from "@contentful/f36-components";
 import tokens from "@contentful/f36-tokens";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { AIActionPrompts } from "../../ai/AIAction/AIActionTypes";
 
 interface ConversationConfirmProps {
-  message: string | undefined;
   onCancel: () => void;
   onConfirm: () => void;
   prompts?: AIActionPrompts;
@@ -13,7 +12,6 @@ interface ConversationConfirmProps {
 }
 
 const ConversationConfirm: React.FC<ConversationConfirmProps> = ({
-  message,
   onCancel,
   onConfirm,
   prompts,

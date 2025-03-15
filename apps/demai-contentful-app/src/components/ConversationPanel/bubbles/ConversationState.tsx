@@ -20,7 +20,11 @@ const ConversationState = ({ aiState }: { aiState: AIState }) => {
     fontSize: 12,
   };
 
-  const html = `${aiState.role} ${marked(aiState.response)} ${aiState.phase}`;
+  const html = `${marked(aiState.response)}<div style="color: ${
+    tokens.gray400
+  }">role: ${aiState.role}, phase: ${aiState.phase}, running: ${
+    aiState.isRunning ? "yes" : "no"
+  }</div>`;
   switch (aiState.role) {
     case "user": {
       return (

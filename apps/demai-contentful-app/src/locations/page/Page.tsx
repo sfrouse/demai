@@ -156,29 +156,6 @@ const Page = () => {
 
   // Navigation was changed...
   useEffect(() => {
-    // v3
-    // if (aiActionConfig && messageStackManager) {
-    //   const nav = NAVIGATION[navFocus];
-    //   const newMessageStackManager = findMessageStack(
-    //     nav.aiAction,
-    //     setMessageStack,
-    //     setAIAction
-    //   );
-    //   setMessageStackManager(newMessageStackManager);
-    //   newMessageStackManager.initialize();
-    //   const aiActionClass = findAIAction(nav.aiAction);
-    //   const aiAction = new aiActionClass(
-    //     setAIActionState,
-    //     aiActionConfig,
-    //     newMessageStackManager,
-    //     () => setInvalidated((prev) => prev + 1)
-    //   );
-    //   if (newMessageStackManager.isEmpty()) {
-    //     aiAction.initialize();
-    //   }
-    //   newMessageStackManager.setAIAction(aiAction);
-    // }
-
     // v4
     if (aiStateConfig) {
       const nav = NAVIGATION[navFocus];
@@ -188,8 +165,6 @@ const Page = () => {
         setAIState
       );
       setAISessionManager(newAIStackManager);
-      console.log("newAIStackManager", newAIStackManager);
-      // need to establish AIState from previous state or with new one...
       let newFocusedAIState = newAIStackManager.getLastState();
       if (!newFocusedAIState) {
         const newAIState = new AIState(
@@ -197,6 +172,7 @@ const Page = () => {
           aiStateConfig,
           setAIStateStatus,
           nav.aiStateEngine,
+          () => setInvalidated((prev) => prev + 1),
           true
         );
         newAIStackManager.addAndActivateAIState(newAIState);

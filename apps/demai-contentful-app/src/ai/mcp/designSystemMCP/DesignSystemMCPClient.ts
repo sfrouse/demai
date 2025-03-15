@@ -50,7 +50,6 @@ export class DesignSystemMCPClient implements IMCPClient {
   async getToolsForOpenAI(): Promise<ChatCompletionTool[]> {
     await this._initializeSpace();
 
-    console.log("hi ya");
     // const client = await this.connect();
     // const results = await client.listTools();
     // return results.tools.map((tool: any) => ({

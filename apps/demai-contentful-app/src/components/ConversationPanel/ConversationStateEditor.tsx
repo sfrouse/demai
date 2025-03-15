@@ -36,7 +36,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = ({
       {renderContextContent(aiState, aiStateStatus)}
       <Textarea
         value={aiStateStatus.userContent}
-        placeholder={aiState.placeholder}
+        placeholder={aiStateStatus.placeholder}
         rows={4}
         style={{
           marginBottom: tokens.spacingS,

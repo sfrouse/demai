@@ -7,8 +7,8 @@ import {
 } from "../../openAI/openAIConfig";
 import AIState from "../AIState";
 import {
+  AIStateContent,
   AIStateContentPrefix,
-  AIStatePhase,
   AIStatePrompts,
   AIStateSystemPrompt,
 } from "../AIStateTypes";
@@ -20,6 +20,7 @@ import getOpeAIClient from "../../openAI/getOpenAIClient";
 export class AIPromptEngine {
   introMessage: string = "Let's do something";
   contextContent: AIStateContentPrefix = [];
+  content: AIStateContent = (userPrompt: string) => `${userPrompt}`;
   placeholder: string =
     "This is an open ended prompt that uses tools...ask me something about Contentful.";
   prompts: AIStatePrompts = {
@@ -30,7 +31,7 @@ export class AIPromptEngine {
   };
   executionPrompt: string | undefined;
 
-  protected toolType: "DemAIDesignSystem" | "Contentful" = "Contentful";
+  toolType: "DemAIDesignSystem" | "Contentful" | "none" = "none";
   protected model: AIModels = AIModels.gpt4o;
   protected system: AIStateSystemPrompt = {
     role: "system",
@@ -65,6 +66,7 @@ export class AIPromptEngine {
 
     try {
       const tools = await this.getTools();
+      const prevState = aiState.getStateHistory();
       const body: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming =
         {
           model: this.model,
@@ -73,7 +75,7 @@ export class AIPromptEngine {
           temperature: OPEN_AI_TEMPERATURE,
           messages: [
             this.system,
-            // TODO: ...prevConvos,
+            ...prevState,
             {
               role: "user",
               content: aiState.createPrompt(),
@@ -91,14 +93,60 @@ export class AIPromptEngine {
           ? stream.choices[0].message.content
           : "No description";
 
-      // hand off to next action
-      const nextAction = aiState.clone();
-      nextAction.role = "assistant";
-      nextAction.response = `${description}`;
-      nextAction.phase = AIStatePhase.executing;
-      nextAction.aiSessionManager.deref()!.addAndActivateAIState(nextAction);
-      nextAction.updateStatus();
-    } catch {}
+      return description;
+    } catch (err) {
+      console.error(err);
+      return "Error";
+    }
+  }
+
+  async runExe(): Promise<string[] | undefined> {
+    const aiState = this.aiState.deref()!;
+
+    try {
+      const tools = await this.getTools();
+      const body: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming =
+        {
+          model: this.model,
+          max_tokens: OPEN_AI_MAX_TOKENS,
+          top_p: OPEN_AI_TOP_P,
+          temperature: OPEN_AI_TEMPERATURE,
+          messages: [
+            this.system,
+            {
+              role: "assistant",
+              content: aiState.response,
+            },
+          ],
+          tools,
+          tool_choice: "required",
+          // store: true, // not working the way I think...
+        };
+      const { data: toolStream, response } =
+        await this.openAIClient.chat.completions.create(body).withResponse();
+      console.log("execute result:", toolStream);
+      const toolCalls =
+        toolStream.choices && toolStream.choices.length > 0
+          ? toolStream.choices[0].message.tool_calls
+          : undefined;
+
+      if (toolCalls) {
+        for (const toolCall of toolCalls) {
+          console.log("toolCall", toolCall);
+          const exeResult = await this.contentfulMCP?.callFunction(
+            toolCall.function.name,
+            JSON.parse(toolCall.function.arguments)
+          );
+          console.log("mcp execute results:", exeResult);
+          // this.onToolExecuted(exeResult);
+        }
+      }
+
+      return toolCalls?.map((tool) => tool.function.name);
+    } catch (err) {
+      console.error(err);
+      return;
+    }
   }
 
   async getTools() {

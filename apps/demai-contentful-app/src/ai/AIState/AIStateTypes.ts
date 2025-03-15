@@ -9,8 +9,10 @@ export type AIStateConfig = {
 
 export enum AIStatePhase {
   prompting = "prompting",
+  answered = "answered",
   describing = "describing",
   executing = "executing",
+  executed = "executed",
   done = "done",
 }
 
@@ -39,6 +41,8 @@ export type AIStateStatus = {
   userContent: string;
   phase: AIStatePhase;
   ignoreContextContent: boolean;
+  placeholder: string;
+  prompts: AIStatePrompts;
 };
 
 export type AIStateSystemPrompt = {

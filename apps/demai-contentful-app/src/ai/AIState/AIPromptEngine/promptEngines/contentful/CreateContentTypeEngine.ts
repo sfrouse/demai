@@ -1,5 +1,6 @@
 import AIState from "../../../AIState";
 import { AIPromptEngine } from "../../AIPromptEngine";
+import * as icons from "@contentful/f36-icons";
 
 export class CreateContentTypeEngine extends AIPromptEngine {
   constructor(aiState: AIState) {
@@ -20,9 +21,15 @@ export class CreateContentTypeEngine extends AIPromptEngine {
     this.introMessage =
       "Let’s work with Content Types, what would you like to do?";
 
-    this.executionPrompt =
-      "Would you like to proceed with making these new Content Types?";
+    this.executionPrompt = "Creating your Content Types...";
     this.placeholder =
       "Describe the kind of content type you would like. Try to be descriptive...";
+
+    this.prompts = {
+      cancel: "Nope, Let's Rethink",
+      run: "Yes, Let's Create These",
+      cancelIcon: icons.DeleteIcon,
+      runIcon: icons.StarIcon,
+    };
   }
 }
