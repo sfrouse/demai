@@ -1,0 +1,8 @@
+{
+  "$schema": "../../dmo-button.cdef.json",
+  "disabled": false,
+  "emphasis": "bold",
+  "label": "Secondary",
+  "design": "secondary",
+  "url": "https://www.google.com"
+}

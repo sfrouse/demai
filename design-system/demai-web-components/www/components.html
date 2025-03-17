@@ -1,0 +1,110 @@
+<html lang="en">
+    <head>
+        <script>
+          const prevEle = () => document.currentScript.previousElementSibling;
+          document.write(`
+            <script src="./index.js?${Math.random()}" type="module"></${'scr'}ipt>
+            <link rel="stylesheet" href="./tokens/css/variables.css?${Math.random()}" />
+          `);
+        </script>
+        <style>
+          html, body {
+            margin: 0; padding: 0;
+          }
+          body {
+            padding-bottom: 200px;
+          }
+        </style>
+    </head>
+    <body>
+
+      <h3>wc-button</h3>
+      <p>primary</p>
+      <div>
+        <wc-button
+          label="wc-button">
+        </wc-button>
+        <wc-button
+          label="wc-button disabled"
+          disabled>
+        </wc-button>
+        <wc-button
+          label="subtle"
+          emphasis="subtle">
+        </wc-button>
+        <wc-button
+          label="subtle disabled"
+          emphasis="subtle"
+          disabled>
+      </wc-button>
+        <wc-button
+          label="minimal"
+          emphasis="minimal">
+        </wc-button>
+        <wc-button
+          label="minimal disabled"
+          emphasis="minimal"
+          disabled>
+        </wc-button>
+      </div>
+
+      <p>secondary</p>
+      <div>
+        <wc-button
+          label="wc-button"
+          action="secondary">
+        </wc-button>
+        <wc-button
+          label="wc-button disabled"
+          action="secondary"
+          disabled>
+        </wc-button>
+        <wc-button
+          label="subtle"
+          action="secondary"
+          emphasis="subtle">
+        </wc-button>
+        <wc-button
+          label="subtle disabled"
+          action="secondary"
+          emphasis="subtle"
+          disabled>
+        </wc-button>
+        <wc-button
+          label="minimal"
+          action="secondary"
+          emphasis="minimal">
+        </wc-button>
+        <wc-button
+          label="minimal disabled"
+          action="secondary"
+          emphasis="minimal"
+          disabled>
+        </wc-button>
+      </div>
+
+      <h3>wc-promotional-banner</h3>
+      <wc-promotional-banner
+        title="wc-promotional-banner">
+      </wc-promotional-banner>
+
+      <h3>wc-image</h3>
+      <div style="
+        position: relative;
+        width: 90vw; height: 500px;
+        border: 1px solid blue;">
+        <wc-image
+          image="http://via.placeholder.com/700x1200"
+          right="50" bottom="0"
+          height-percent="70">
+        </wc-image>
+        <wc-image
+          image="http://via.placeholder.com/700x1200"
+          width-percent="100"
+          height-percent="100">
+        </wc-image>
+      </div>
+      
+      
+    </body>
+</html>

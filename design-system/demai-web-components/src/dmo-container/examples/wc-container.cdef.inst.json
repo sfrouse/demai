@@ -1,0 +1,5 @@
+{
+    "$schema": "../../../dist/cdef/wc-container.cdef.json",
+    "text": "AN example",
+    "_backgroundColor": "var(--wc-background-minimal)"
+}

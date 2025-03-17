@@ -1,0 +1,89 @@
+{
+  "$id": "dmo-page.cdef.json",
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$comment": "AUTO GENERATED, DO NOT EDIT",
+  "type": "object",
+  "additionalProperties": false,
+  "x-cdef": {
+    "tag": "dmo-page",
+    "className": "DMOPage",
+    "name": "DMO Page",
+    "content": {
+      "contentfulBuiltInStyles": [
+        "cfWidth"
+      ]
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "$identifier": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "body": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Body",
+      "type": "array",
+      "x-cdef": {
+        "input": {
+          "inputType": "array",
+          "label": "Body"
+        },
+        "output": {
+          "content": {
+            "content": true
+          },
+          "webComponent": {
+            "attribute": "body",
+            "slot": true,
+            "defaultSlot": true
+          }
+        }
+      }
+    },
+    "title": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Title",
+      "type": "string",
+      "x-cdef": {
+        "input": {
+          "label": "Title",
+          "inputType": "string",
+          "defaultValue": ""
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "title"
+          }
+        },
+        "content": {
+          "content": true
+        }
+      }
+    },
+    "slug": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Slug",
+      "type": "string",
+      "x-cdef": {
+        "input": {
+          "label": "Slug",
+          "inputType": "string",
+          "defaultValue": ""
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "slug"
+          }
+        },
+        "content": {
+          "content": true
+        }
+      }
+    }
+  }
+}

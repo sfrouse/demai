@@ -1,0 +1,650 @@
+{
+  "$id": "dmo-container.cdef.json",
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$comment": "AUTO GENERATED, DO NOT EDIT",
+  "type": "object",
+  "additionalProperties": false,
+  "x-cdef": {
+    "tag": "dmo-container",
+    "className": "DmoContainer",
+    "examples": [
+      {
+        "name": "Simple",
+        "path": "./examples/dmo-container.cdef.inst.json"
+      }
+    ],
+    "name": "Demo Container",
+    "content": {
+      "contentfulBuiltInStyles": []
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "$identifier": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "_backgroundColor": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Background Color",
+      "description": "Specifies the background color for the component, allowing selection from a predefined set of design tokens.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Background Color",
+          "options": {
+            "Default": "dmai_background_default",
+            "Subdued": "dmai_background_subdued",
+            "Primary Default": "dmai_background_primary_default",
+            "Primary Subdued": "dmai_background_primary_subdued",
+            "Secondary Default": "dmai_background_secondary_default",
+            "Tertiary Default": "dmai_background_tertiary_default",
+            "Neutral Default": "dmai_background_neutral_default",
+            "Minimal": "dmai_background_minimal"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "backgroundColor"
+          },
+          "webComponent": {
+            "cssProperty": "background-color"
+          }
+        }
+      },
+      "enum": [
+        "dmai_background_default",
+        "dmai_background_subdued",
+        "dmai_background_primary_default",
+        "dmai_background_primary_subdued",
+        "dmai_background_secondary_default",
+        "dmai_background_tertiary_default",
+        "dmai_background_neutral_default",
+        "dmai_background_minimal"
+      ]
+    },
+    "_borderColor": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Border Color",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Border Color",
+          "options": {
+            "Default": "dmai_border_default",
+            "Subdued": "dmai_border_subdued",
+            "Inverted": "dmai_border_inverted",
+            "Primary Default": "dmai_border_primary_default",
+            "Secondary Default": "dmai_border_secondary_default",
+            "Tertiary Default": "dmai_border_tertiary_default",
+            "On Surface Default": "dmai_border_on_surface_default",
+            "Warning": "dmai_border_warning",
+            "Danger": "dmai_border_danger"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "borderColor"
+          },
+          "webComponent": {
+            "cssProperty": "border-color"
+          }
+        }
+      },
+      "enum": [
+        "dmai_border_default",
+        "dmai_border_subdued",
+        "dmai_border_inverted",
+        "dmai_border_primary_default",
+        "dmai_border_secondary_default",
+        "dmai_border_tertiary_default",
+        "dmai_border_on_surface_default",
+        "dmai_border_warning",
+        "dmai_border_danger"
+      ]
+    },
+    "_borderWidth": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Border Width",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Border Width",
+          "options": {
+            "None": "dmai_border_width_none",
+            "Sm": "dmai_border_width_sm",
+            "Md": "dmai_border_width_md",
+            "Lg": "dmai_border_width_lg"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "borderWidth"
+          },
+          "webComponent": {
+            "cssProperty": "border-width"
+          }
+        }
+      },
+      "enum": [
+        "dmai_border_width_none",
+        "dmai_border_width_sm",
+        "dmai_border_width_md",
+        "dmai_border_width_lg"
+      ]
+    },
+    "_borderStyle": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Border Style",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Border Style",
+          "defaultValue": "none",
+          "options": {
+            "None": "none",
+            "Solid": "solid",
+            "Dashed": "dashed"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "borderStyle"
+          },
+          "webComponent": {
+            "cssProperty": "border-style"
+          }
+        }
+      },
+      "enum": [
+        "none",
+        "solid",
+        "dashed"
+      ]
+    },
+    "_cornerRadius": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Corner Radius",
+      "description": "Specifies the corner radius of the component, called border-radius in css.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Corner Radius",
+          "options": {
+            "None": "dmai_border_radius_none",
+            "Sm": "dmai_border_radius_sm",
+            "Md": "dmai_border_radius_md",
+            "Lg": "dmai_border_radius_lg",
+            "Full": "dmai_border_radius_full"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "cornerRadius"
+          },
+          "webComponent": {
+            "cssProperty": "border-radius"
+          }
+        }
+      },
+      "enum": [
+        "dmai_border_radius_none",
+        "dmai_border_radius_sm",
+        "dmai_border_radius_md",
+        "dmai_border_radius_lg",
+        "dmai_border_radius_full"
+      ]
+    },
+    "_padding": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Padding",
+      "description": "Specifies the padding of this component, allowing selection from a predefined set of design tokens.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Padding",
+          "options": {
+            "0x": "dmai_padding_0x",
+            "0 5x": "dmai_padding_0_5x",
+            "1x": "dmai_padding_1x",
+            "2x": "dmai_padding_2x",
+            "3x": "dmai_padding_3x",
+            "4x": "dmai_padding_4x",
+            "5x": "dmai_padding_5x",
+            "6x": "dmai_padding_6x",
+            "7x": "dmai_padding_7x",
+            "8x": "dmai_padding_8x",
+            "9x": "dmai_padding_9x",
+            "10x": "dmai_padding_10x"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "padding"
+          },
+          "webComponent": {
+            "cssProperty": "padding"
+          }
+        }
+      },
+      "enum": [
+        "dmai_padding_0x",
+        "dmai_padding_0_5x",
+        "dmai_padding_1x",
+        "dmai_padding_2x",
+        "dmai_padding_3x",
+        "dmai_padding_4x",
+        "dmai_padding_5x",
+        "dmai_padding_6x",
+        "dmai_padding_7x",
+        "dmai_padding_8x",
+        "dmai_padding_9x",
+        "dmai_padding_10x"
+      ]
+    },
+    "_gap": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Gap",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Gap",
+          "options": {
+            "0x": "dmai_gap_0x",
+            "0 5x": "dmai_gap_0_5x",
+            "1x": "dmai_gap_1x",
+            "2x": "dmai_gap_2x",
+            "3x": "dmai_gap_3x",
+            "4x": "dmai_gap_4x",
+            "5x": "dmai_gap_5x",
+            "6x": "dmai_gap_6x",
+            "7x": "dmai_gap_7x",
+            "8x": "dmai_gap_8x",
+            "9x": "dmai_gap_9x",
+            "10x": "dmai_gap_10x"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "gap"
+          },
+          "webComponent": {
+            "cssProperty": "gap"
+          }
+        }
+      },
+      "enum": [
+        "dmai_gap_0x",
+        "dmai_gap_0_5x",
+        "dmai_gap_1x",
+        "dmai_gap_2x",
+        "dmai_gap_3x",
+        "dmai_gap_4x",
+        "dmai_gap_5x",
+        "dmai_gap_6x",
+        "dmai_gap_7x",
+        "dmai_gap_8x",
+        "dmai_gap_9x",
+        "dmai_gap_10x"
+      ]
+    },
+    "_layoutDirection": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Layout Direction",
+      "description": "This component controls how it's children get rendered. This property determines the direction. This is simiar to flex-direction in css.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Layout Direction",
+          "defaultValue": "column",
+          "options": {
+            "Horizontal": "row",
+            "Vertical": "column"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "autoLayoutDirection"
+          },
+          "webComponent": {
+            "cssProperty": "flex-direction"
+          }
+        }
+      },
+      "enum": [
+        "row",
+        "column"
+      ]
+    },
+    "_alignItems": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Align Items",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Align Items",
+          "defaultValue": "start",
+          "options": {
+            "Start": "start",
+            "Center": "center",
+            "End": "end",
+            "Stretch": "stretch"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "counterAxisAlignContent"
+          },
+          "webComponent": {
+            "cssProperty": "align-items"
+          }
+        }
+      },
+      "enum": [
+        "start",
+        "center",
+        "end",
+        "stretch"
+      ]
+    },
+    "_justifyContent": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Justify Content",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Justify Content",
+          "defaultValue": "start",
+          "options": {
+            "Start": "start",
+            "Center": "center",
+            "End": "end",
+            "Space Between": "space-between"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "primaryAxisAlignItems"
+          },
+          "webComponent": {
+            "cssProperty": "justify-content"
+          }
+        }
+      },
+      "enum": [
+        "start",
+        "center",
+        "end",
+        "space-between"
+      ]
+    },
+    "_horizontalResizing": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Horizontal Resizing",
+      "description": "This is shortcut for figuring out how this component should resize horizontally. Fixed means that the width property will be used (width is ignored otherwise), hug means it will hug it's children and take the width of the children combined, and fill is like stretch in that it will try to fill whatever space is available in it's parent.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Horizontal Resizing",
+          "defaultValue": "hug",
+          "options": {
+            "Fixed": "fixed",
+            "Fill": "fill",
+            "Hug": "hug"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "layoutSizingHorizontal"
+          },
+          "webComponent": {
+            "cssProperty": "--horizontal-resizing"
+          }
+        }
+      },
+      "enum": [
+        "fixed",
+        "fill",
+        "hug"
+      ]
+    },
+    "_width": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Width",
+      "description": "The hardcoded width of the component. It only accepts pixels right now. It is only valid with _horizontalResizing set to 'fixed'",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "string",
+          "label": "Width"
+        },
+        "output": {
+          "figma": {
+            "property": "width"
+          },
+          "webComponent": {
+            "cssProperty": "width"
+          }
+        }
+      }
+    },
+    "_horizontalFlexGrow": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Horizontal Flex",
+      "description": "A shortcut for figuring how the component should fill it's space if it's parent is flex-direction row. It is flex in css.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Horizontal Flex",
+          "options": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "10": "10",
+            "11": "11",
+            "12": "12"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "horizontalFlexGrow"
+          },
+          "webComponent": {
+            "cssProperty": "--horizontal-flex-grow"
+          }
+        }
+      },
+      "enum": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    "_verticalResizing": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Vertical Resizing",
+      "description": "This is shortcut for figuring out how this component should resize vertically. Fixed means that the height property will be used (height is ignored otherwise), hug means it will hug it's children and take the height of the children combined, and fill is like stretch in that it will try to fill whatever space is available in it's parent.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Vertical Resizing",
+          "defaultValue": "hug",
+          "options": {
+            "Fixed": "fixed",
+            "Fill": "fill",
+            "Hug": "hug"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "layoutSizingVertical"
+          },
+          "webComponent": {
+            "cssProperty": "--vertical-resizing"
+          }
+        }
+      },
+      "enum": [
+        "fixed",
+        "fill",
+        "hug"
+      ]
+    },
+    "_height": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Height",
+      "description": "The hardcoded height of the component. It only accepts pixels right now. It is only valid with _verticalResizing set to 'fixed'",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "string",
+          "label": "Height"
+        },
+        "output": {
+          "figma": {
+            "property": "height"
+          },
+          "webComponent": {
+            "cssProperty": "height"
+          }
+        }
+      }
+    },
+    "_verticalFlexGrow": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Vertical Flex",
+      "description": "A shortcut for figuring how the component should fill it's space if it's parent is flex-direction column. It is flex in css.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Vertical Flex",
+          "options": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "10": "10",
+            "11": "11",
+            "12": "12"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "verticalFlexGrow"
+          },
+          "webComponent": {
+            "cssProperty": "--vertical-flex-grow"
+          }
+        }
+      },
+      "enum": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    "body": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Body",
+      "type": "array",
+      "x-cdef": {
+        "input": {
+          "inputType": "array",
+          "label": "Body"
+        },
+        "output": {
+          "content": {
+            "content": true
+          },
+          "webComponent": {
+            "attribute": "body",
+            "slot": true,
+            "defaultSlot": true
+          }
+        }
+      }
+    },
+    "internalLabel": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Internal Label",
+      "type": "string",
+      "x-cdef": {
+        "input": {
+          "label": "Internal Label",
+          "inputType": "string"
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "internalLabel"
+          }
+        },
+        "content": {
+          "content": true
+        }
+      }
+    }
+  }
+}

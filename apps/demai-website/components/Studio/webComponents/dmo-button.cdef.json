@@ -1,0 +1,187 @@
+{
+  "$id": "dmo-button.cdef.json",
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$comment": "AUTO GENERATED, DO NOT EDIT",
+  "type": "object",
+  "additionalProperties": false,
+  "x-cdef": {
+    "tag": "dmo-button",
+    "className": "DMOButton",
+    "examples": [
+      {
+        "name": "Simple",
+        "description": "A basic, default button",
+        "$id": "dmo-button/examples/dmo-button.cdef.inst.json"
+      },
+      {
+        "name": "Secondary",
+        "description": "A secondary styled button",
+        "$id": "dmo-button/examples/dmo-button-secondary.cdef.inst.json"
+      }
+    ],
+    "figma": {
+      "component": "https://www.figma.com/file/NnCJZBCicscdASjxwzoQ3J/Component-Definitions?type=design&node-id=7-322&mode=dev"
+    },
+    "name": "DMO Button",
+    "import": "import { DMOButton } from 'web-components/DMOButton'",
+    "content": {
+      "contentfulBuiltInStyles": []
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "$identifier": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "interactive": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "interactive",
+      "type": "string",
+      "x-cdef": {
+        "input": {
+          "inputType": "string",
+          "label": "interactive"
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "interactive"
+          }
+        },
+        "hidden": true
+      }
+    },
+    "emphasis": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Emphasis",
+      "type": "string",
+      "description": "\n      This controls how visually prominate the button will show up.\n      This generally aligns with the importance of the element on the page",
+      "x-cdef": {
+        "input": {
+          "label": "Emphasis",
+          "inputType": "select",
+          "defaultValue": "bold",
+          "options": {
+            "Bold": "bold",
+            "Subtle": "subtle",
+            "Minimal": "minimal"
+          }
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "emphasis"
+          }
+        }
+      },
+      "enum": [
+        "bold",
+        "subtle",
+        "minimal"
+      ]
+    },
+    "design": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Design",
+      "type": "string",
+      "description": "This controls the visual appearance of the button for use in different visual contexts.\n      It does not change the general importance or emphasis of the button.",
+      "x-cdef": {
+        "input": {
+          "label": "Design",
+          "inputType": "select",
+          "defaultValue": "primary",
+          "options": {
+            "Primary": "primary",
+            "Secondary": "secondary"
+          }
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "design"
+          }
+        }
+      },
+      "enum": [
+        "primary",
+        "secondary"
+      ]
+    },
+    "disabled": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Disabled",
+      "type": "boolean",
+      "x-cdef": {
+        "input": {
+          "label": "Disabled",
+          "inputType": "boolean",
+          "defaultValue": false
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "disabled"
+          }
+        }
+      }
+    },
+    "label": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Label",
+      "type": "string",
+      "x-cdef": {
+        "input": {
+          "label": "Label",
+          "inputType": "string",
+          "defaultValue": ""
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "label"
+          }
+        },
+        "content": {
+          "content": true
+        }
+      }
+    },
+    "target": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Target",
+      "type": "string",
+      "x-cdef": {
+        "input": {
+          "label": "Target",
+          "inputType": "string"
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "target"
+          }
+        }
+      }
+    },
+    "url": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "URL",
+      "type": "string",
+      "description": "This is the url used to link to...",
+      "x-cdef": {
+        "input": {
+          "label": "URL",
+          "inputType": "string",
+          "defaultValue": ""
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "url"
+          }
+        },
+        "content": {
+          "content": true
+        }
+      }
+    }
+  }
+}

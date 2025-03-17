@@ -1,0 +1,33 @@
+{
+  "baseFolder": "./",
+  "componentJavascript": "../index.js",
+  "componentCSS": "../tokens/tokens.css",
+  "tokenLookup": "../tokens/tokensLookup.json",
+  "definitions": {
+    "dmo-button": {
+      "id": "dmo-button.cdef.json",
+      "examplesManifest": [
+        {
+          "name": "Secondary",
+          "description": "A secondary styled button",
+          "id": "dmo-button/examples/dmo-button-secondary.cdef.inst.json"
+        },
+        {
+          "name": "Simple",
+          "description": "A basic, default button",
+          "id": "dmo-button/examples/dmo-button.cdef.inst.json"
+        }
+      ]
+    },
+    "dmo-container": {
+      "id": "dmo-container.cdef.json",
+      "examplesManifest": []
+    },
+    "dmo-page": {
+      "id": "dmo-page.cdef.json"
+    },
+    "dmo-text": {
+      "id": "dmo-text.cdef.json"
+    }
+  }
+}

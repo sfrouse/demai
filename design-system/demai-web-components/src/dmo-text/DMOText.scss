@@ -1,0 +1,28 @@
+@use 'tokens' as dmai;
+
+$wc-types: (
+  "display-md": dmai.$dmai-type-display-md,
+  "heading-xl": dmai.$dmai-type-heading-xl,
+  "heading-lg": dmai.$dmai-type-heading-lg,
+  "heading-md": dmai.$dmai-type-heading-md,
+  "heading-sm": dmai.$dmai-type-heading-sm,
+  "heading-xs": dmai.$dmai-type-heading-xs,
+  "body-lg": dmai.$dmai-type-body-lg,
+  "body-md": dmai.$dmai-type-body-md,
+  "body-sm": dmai.$dmai-type-body-sm,
+  "label-lg": dmai.$dmai-type-label-lg,
+  "label-md": dmai.$dmai-type-label-md,
+  "label-sm": dmai.$dmai-type-label-sm,
+  "label-xs": dmai.$dmai-type-label-xs
+);
+
+// Loop through each type and generate corresponding :host selector
+@each $type, $value in $wc-types {
+    :host([type="#{$type}"]) {
+      font: #{$value};
+    }
+}
+
+:host {
+  display: inline-block;
+}

@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "cdef-image.cdef.json",
+    "$comment": "[AUTO GENERATED] Basic cdef image object",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "url": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "contentType": {
+            "type": "string"
+        },
+        "dom": {
+            "type": "object"
+        }
+    }
+}

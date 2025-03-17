@@ -1,0 +1,47 @@
+@use 'tokens' as dmai;
+
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+
+  .root {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: dmai.$dmai-padding-3x;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: dmai.$dmai-padding-5x;
+    background-color: dmai.$dmai-background-primary-default;
+    color: dmai.$dmai-color-white;
+    text-align: center;
+    font: dmai.$dmai-type-body-lg;
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: dmai.$dmai-padding-3x;
+    background-color: dmai.$dmai-background-secondary-default;
+    color: dmai.$dmai-color-white;
+    text-align: center;
+    font: dmai.$dmai-type-body-lg;
+  }
+
+  slot {
+    display: block;
+    margin: 0 dmai.$dmai-margin-3x;
+    max-width: dmai.$dmai-breakpoint-lg;
+    align-self: center;
+    width: 100%;
+  }
+}

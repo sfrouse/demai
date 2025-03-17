@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contentful MCP Client</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        button {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #0070f3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0051bb;
+        }
+
+        .result {
+            margin-top: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            overflow: auto;
+        }
+
+        .error {
+            color: #d32f2f;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Contentful MCP Client</h1>
+
+        <div class="form-group">
+            <label for="managementToken">Management Token:</label>
+            <input type="password" id="managementToken" placeholder="Your Contentful Management Token">
+        </div>
+
+        <div class="form-group">
+            <label for="spaceId">Space ID:</label>
+            <input type="text" id="spaceId" placeholder="Your Contentful Space ID">
+        </div>
+
+        <div class="form-group">
+            <label for="environmentId">Environment ID:</label>
+            <input type="text" id="environmentId" placeholder="master" value="master">
+        </div>
+
+        <div class="form-group">
+            <label for="entryId">Entry ID:</label>
+            <input type="text" id="entryId" placeholder="ID of the entry to fetch">
+        </div>
+
+        <button id="fetchButton">Fetch Entry</button>
+        <div id="loading" class="loading">Loading...</div>
+
+        <div id="error" class="error"></div>
+
+        <div class="result">
+            <h3>Tools Available:</h3>
+            <pre id="tools"></pre>
+        </div>
+
+        <div class="result">
+            <h3>Entry Data:</h3>
+            <pre id="result"></pre>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createTransport } from "https://esm.sh/@smithery/sdk/transport.js";
+        import { Client } from "https://esm.sh/@modelcontextprotocol/sdk/client/index.js";
+
+        // Function to query an entry
+        async function queryEntry() {
+
+            const transport = createTransport("https://server.smithery.ai/@ivotoby/contentful-management-mcp-server", {
+                "managementToken": "Contentful Content Management API token",
+                "host": "Contentful Management API endpoint",
+                "spaceId": "Optional Contentful Space ID",
+                "environmentId": "Optional Contentful Environment ID"
+            })
+
+            const client = new Client({
+                name: "Test client",
+                version: "1.0.0"
+            })
+            await client.connect(transport)
+
+            // Use the server tools with your LLM application
+            const tools = await client.listTools()
+            console.log(`Available tools: ${tools.map(t => t.name).join(", ")}`)
+
+            // Example: Call a tool
+            // const result = await client.callTool("tool_name", { param1: "value1" })
+        }
+
+        // Set up event listener
+        document.getElementById('fetchButton').addEventListener('click', queryEntry);
+    </script>
+</body>
+
+</html>

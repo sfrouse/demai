@@ -1,0 +1,42 @@
+<html lang="en">
+    <head>
+        <script>
+          globalThis.CDEF_ACTIVE = true;
+          document.write(`
+            <script src="./index.js?${Math.random()}" type="module"></${'scr'}ipt>
+            <link rel="stylesheet" href="./tokens/dmo/css/tokens.css?${Math.random()}" />
+          `);
+        </script>
+        <style>
+          html, body {
+            margin: 0; padding: 0;
+          }
+          body {
+            padding-bottom: 200px;
+
+            border-ra: ;
+          }
+        </style>
+    </head>
+    <body>
+
+      <h3>wc-button</h3>
+      <p>primary</p>
+      <div>
+        <wc-button
+          label="wc-button">
+        </wc-button>
+        <wc-layout padding="{&quot;left&quot;: 10, &quot;right&quot;:0, &quot;top&quot;: 0, &quot;bottom&quot;: 0}">
+          <wc-button
+            label="wc-button">
+          </wc-button>
+        </wc-layout>
+
+        <!-- <wc-promotional-banner
+          title="wc-promotional-banner">
+        </wc-promotional-banner> -->
+      </div>
+      
+      
+    </body>
+</html>

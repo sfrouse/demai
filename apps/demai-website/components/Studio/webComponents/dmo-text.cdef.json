@@ -1,0 +1,372 @@
+{
+  "$id": "dmo-text.cdef.json",
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$comment": "AUTO GENERATED, DO NOT EDIT",
+  "type": "object",
+  "additionalProperties": false,
+  "x-cdef": {
+    "tag": "dmo-text",
+    "className": "DmoText",
+    "name": "Demo Text",
+    "content": {
+      "contentfulBuiltInStyles": []
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "$identifier": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "_textColor": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Text Color",
+      "description": "Specifies the text color for the component, allowing selection from a predefined set of design tokens.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Text Color",
+          "options": {
+            "Default": "dmai_text_default",
+            "Subdued": "dmai_text_subdued",
+            "Minimal": "dmai_text_minimal",
+            "Inverted": "dmai_text_inverted",
+            "Warning": "dmai_text_warning",
+            "Danger": "dmai_text_danger",
+            "Primary Default": "dmai_text_primary_default",
+            "Primary Inverted": "dmai_text_primary_inverted",
+            "Secondary Default": "dmai_text_secondary_default",
+            "Tertiary Default": "dmai_text_tertiary_default",
+            "Tertiary Inverted": "dmai_text_tertiary_inverted",
+            "On Surface Default": "dmai_text_on_surface_default",
+            "Secondary Inverted": "dmai_text_secondary_inverted",
+            "On Surface Subdued": "dmai_text_on_surface_subdued",
+            "On Surface Minimal": "dmai_text_on_surface_minimal"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "textColor"
+          },
+          "webComponent": {
+            "cssProperty": "color"
+          }
+        }
+      },
+      "enum": [
+        "dmai_text_default",
+        "dmai_text_subdued",
+        "dmai_text_minimal",
+        "dmai_text_inverted",
+        "dmai_text_warning",
+        "dmai_text_danger",
+        "dmai_text_primary_default",
+        "dmai_text_primary_inverted",
+        "dmai_text_secondary_default",
+        "dmai_text_tertiary_default",
+        "dmai_text_tertiary_inverted",
+        "dmai_text_on_surface_default",
+        "dmai_text_secondary_inverted",
+        "dmai_text_on_surface_subdued",
+        "dmai_text_on_surface_minimal"
+      ]
+    },
+    "_horizontalResizing": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Horizontal Resizing",
+      "description": "This is shortcut for figuring out how this component should resize horizontally. Fixed means that the width property will be used (width is ignored otherwise), hug means it will hug it's children and take the width of the children combined, and fill is like stretch in that it will try to fill whatever space is available in it's parent.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Horizontal Resizing",
+          "defaultValue": "hug",
+          "options": {
+            "Fixed": "fixed",
+            "Fill": "fill",
+            "Hug": "hug"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "layoutSizingHorizontal"
+          },
+          "webComponent": {
+            "cssProperty": "--horizontal-resizing"
+          }
+        }
+      },
+      "enum": [
+        "fixed",
+        "fill",
+        "hug"
+      ]
+    },
+    "_width": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Width",
+      "description": "The hardcoded width of the component. It only accepts pixels right now. It is only valid with _horizontalResizing set to 'fixed'",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "string",
+          "label": "Width"
+        },
+        "output": {
+          "figma": {
+            "property": "width"
+          },
+          "webComponent": {
+            "cssProperty": "width"
+          }
+        }
+      }
+    },
+    "_horizontalFlexGrow": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Horizontal Flex",
+      "description": "A shortcut for figuring how the component should fill it's space if it's parent is flex-direction row. It is flex in css.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Horizontal Flex",
+          "options": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "10": "10",
+            "11": "11",
+            "12": "12"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "horizontalFlexGrow"
+          },
+          "webComponent": {
+            "cssProperty": "--horizontal-flex-grow"
+          }
+        }
+      },
+      "enum": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    "_verticalResizing": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Vertical Resizing",
+      "description": "This is shortcut for figuring out how this component should resize vertically. Fixed means that the height property will be used (height is ignored otherwise), hug means it will hug it's children and take the height of the children combined, and fill is like stretch in that it will try to fill whatever space is available in it's parent.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Vertical Resizing",
+          "defaultValue": "hug",
+          "options": {
+            "Fixed": "fixed",
+            "Fill": "fill",
+            "Hug": "hug"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "layoutSizingVertical"
+          },
+          "webComponent": {
+            "cssProperty": "--vertical-resizing"
+          }
+        }
+      },
+      "enum": [
+        "fixed",
+        "fill",
+        "hug"
+      ]
+    },
+    "_height": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Height",
+      "description": "The hardcoded height of the component. It only accepts pixels right now. It is only valid with _verticalResizing set to 'fixed'",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "string",
+          "label": "Height"
+        },
+        "output": {
+          "figma": {
+            "property": "height"
+          },
+          "webComponent": {
+            "cssProperty": "height"
+          }
+        }
+      }
+    },
+    "_verticalFlexGrow": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Vertical Flex",
+      "description": "A shortcut for figuring how the component should fill it's space if it's parent is flex-direction column. It is flex in css.",
+      "type": "string",
+      "x-cdef": {
+        "design": true,
+        "input": {
+          "inputType": "select",
+          "label": "Vertical Flex",
+          "options": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "10": "10",
+            "11": "11",
+            "12": "12"
+          }
+        },
+        "output": {
+          "figma": {
+            "property": "verticalFlexGrow"
+          },
+          "webComponent": {
+            "cssProperty": "--vertical-flex-grow"
+          }
+        }
+      },
+      "enum": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    "title": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Internal Label",
+      "type": "string",
+      "x-cdef": {
+        "input": {
+          "label": "Internal Label",
+          "inputType": "string"
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "title"
+          }
+        },
+        "content": {
+          "content": true
+        }
+      }
+    },
+    "type": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Typography",
+      "type": "string",
+      "description": "\n            This is a choice of semantic typography clusters.\n            They are font, size, and weight in one targeting where and how they are used.",
+      "x-cdef": {
+        "input": {
+          "label": "Typography",
+          "inputType": "select",
+          "defaultValue": "body-md",
+          "options": {
+            "DisplayMD": "display-md",
+            "HeadingXL": "heading-xl",
+            "HeadingLG": "heading-lg",
+            "HeadingMD": "heading-md",
+            "HeadingSM": "heading-sm",
+            "HeadingXS": "heading-xs",
+            "BodyLG": "body-lg",
+            "BodyMD": "body-md",
+            "BodySM": "body-sm",
+            "LabelLG": "label-lg",
+            "LabelMD": "label-md",
+            "LabelSM": "label-sm",
+            "LabelXS": "label-xs"
+          }
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "type"
+          }
+        }
+      },
+      "enum": [
+        "display-md",
+        "heading-xl",
+        "heading-lg",
+        "heading-md",
+        "heading-sm",
+        "heading-xs",
+        "body-lg",
+        "body-md",
+        "body-sm",
+        "label-lg",
+        "label-md",
+        "label-sm",
+        "label-xs"
+      ]
+    },
+    "text": {
+      "$schema": "https://json-schema.org/draft-07/schema",
+      "title": "Text",
+      "type": "string",
+      "x-cdef": {
+        "input": {
+          "label": "Text",
+          "inputType": "string",
+          "defaultValue": ""
+        },
+        "output": {
+          "webComponent": {
+            "attribute": "text"
+          }
+        },
+        "content": {
+          "content": true
+        }
+      }
+    }
+  }
+}

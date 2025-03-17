@@ -1,0 +1,18 @@
+{
+    "$schema": "./wc-comp.cdef.json",
+    "title": "Example Instance",
+    "image": {
+        "title": "My Image",
+        "url": "https://..."
+    },
+    "images": [
+        {
+            "title": "My First Image",
+            "url": "https://..."
+        },
+        {
+            "title": "My Second Image",
+            "url": "https://..."
+        }
+    ]
+}

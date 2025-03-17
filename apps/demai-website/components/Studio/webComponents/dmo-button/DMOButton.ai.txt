@@ -1,0 +1,1 @@
+{"tag":"dmo-button","properties":{"emphasis":{"type":"string","defaultValue":"bold","possibleValues":["bold","subtle","minimal"]},"design":{"type":"string","defaultValue":"primary","possibleValues":["primary","secondary"]},"disabled":{"type":"boolean"},"label":{"type":"string"},"target":{"type":"string"},"url":{"type":"string"}}}

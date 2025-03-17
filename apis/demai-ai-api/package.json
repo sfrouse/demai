@@ -1,0 +1,28 @@
+{
+  "name": "demai-ai-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build:ts": "tsc",
+    "build": "esbuild src/test.ts --bundle --platform=node --target=esnext --outfile=dist/test.js",
+    "start": "node src/server.mjs",
+    "dev": "nodemon --watch src --ext ts --exec \"npm run build && node src/server.mjs\""
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@ivotoby/contentful-management-mcp-server": "^1.10.0",
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "@smithery/sdk": "^1.0.2",
+    "express": "^5.0.1",
+    "typescript": "^5.8.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.10",
+    "esbuild": "^0.25.1",
+    "nodemon": "^3.1.9"
+  }
+}
