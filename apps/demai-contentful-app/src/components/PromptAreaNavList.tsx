@@ -34,7 +34,7 @@ export const NAVIGATION = {
   components: {
     label: "Components",
     end: true,
-    aiStateEngine: AIPromptEngineID.OPEN,
+    aiStateEngine: AIPromptEngineID.COMPONENTS,
   },
   space: {
     label: "Space",

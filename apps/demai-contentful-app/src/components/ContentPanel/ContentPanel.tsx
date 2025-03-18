@@ -5,6 +5,7 @@ import { PageAppSDK } from "@contentful/app-sdk";
 import ContentTypesContent from "./Content/ContentTypesContent";
 import DSysTokensContent from "./Content/DSysTokensContent";
 import SettingsContent from "./Content/SettingsContent";
+import ComponentsContent from "./Content/ComponentsContent";
 
 interface ContentPanelProps {
   navFocus: PromptAreas;
@@ -40,6 +41,13 @@ const ContentPanel = ({
       ) : null}
       {navFocus === "design_tokens" ? (
         <DSysTokensContent
+          sdk={sdk}
+          invalidated={invalidated}
+          invalidate={invalidate}
+        />
+      ) : null}
+      {navFocus === "components" ? (
+        <ComponentsContent
           sdk={sdk}
           invalidated={invalidated}
           invalidate={invalidate}

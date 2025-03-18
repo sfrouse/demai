@@ -7,7 +7,7 @@ import {
 import {
   DEMAI_COMPONENT_CTYPE_ID,
   DEMAI_COMPONENT_EXPECTED_FIELDS,
-} from "./demaiComponentCType";
+} from "../components/demaiComponentCType";
 
 export default async function validateDemAIContentModel(
   cmaToken: string,

@@ -10,17 +10,21 @@ import {
   AIStateContent,
   AIStateContentPrefix,
   AIStatePrompts,
+  AIStateStatus,
   AIStateSystemPrompt,
 } from "../AIStateTypes";
 import * as icons from "@contentful/f36-icons";
 import { DesignSystemMCPClient } from "../../mcp/designSystemMCP/DesignSystemMCPClient";
 import { ContentfulMCP } from "../../mcp/contentfulMCP/ContentfulMCP";
 import getOpeAIClient from "../../openAI/getOpenAIClient";
+import { ContentState } from "../../../locations/page/ContentStateContext/ContentStateContext";
 
 export class AIPromptEngine {
   introMessage: string = "Let's do something";
-  contextContent: AIStateContentPrefix = [];
-  content: AIStateContent = (userPrompt: string) => `${userPrompt}`;
+  contextContent: (contentState: ContentState) => AIStateContentPrefix =
+    () => [];
+  content: AIStateContent = (aiState: AIState, contentState: ContentState) =>
+    `${aiState.userContent}`;
   placeholder: string =
     "This is an open ended prompt that uses tools...ask me something about Contentful.";
   prompts: AIStatePrompts = {
@@ -58,7 +62,7 @@ export class AIPromptEngine {
     );
   }
 
-  async run() {
+  async run(contentState: ContentState) {
     const aiState = this.aiState.deref()!;
 
     try {
@@ -75,7 +79,7 @@ export class AIPromptEngine {
             ...prevState,
             {
               role: "user",
-              content: aiState.createPrompt(),
+              content: aiState.createPrompt(contentState),
             },
           ],
           tools,
@@ -156,12 +160,11 @@ export class AIPromptEngine {
   }
 
   async getTools() {
-    // cache?
-    console.log("getTools", this);
     if (this.toolType === "DemAIDesignSystem") {
       return await this.designSystemCMPClient!.getToolsForOpenAI();
     } else {
-      return await this.contentfulMCP!.getToolsForOpenAI();
+      const tools = await this.contentfulMCP!.getToolsForOpenAI();
+      return tools;
     }
   }
 }

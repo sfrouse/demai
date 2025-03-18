@@ -9,17 +9,31 @@ export const DEMAI_COMPONENT_EXPECTED_FIELDS = [
     required: true,
   },
   {
+    id: "description",
+    name: "Description",
+    type: "Symbol",
+    localized: false,
+    required: true,
+  },
+  {
     id: "componentDefinition",
     name: "Definition",
     type: "Object",
     localized: false,
-    required: true,
+    required: false,
   },
   {
     id: "javascript",
     name: "Javascript",
     type: "Text",
     localized: false,
-    required: true,
+    required: false,
+  },
+  {
+    id: "binding",
+    name: "Binding",
+    type: "Object",
+    localized: false,
+    required: false,
   },
 ];

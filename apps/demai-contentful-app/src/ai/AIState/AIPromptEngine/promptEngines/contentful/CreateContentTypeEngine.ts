@@ -12,9 +12,13 @@ export class CreateContentTypeEngine extends AIPromptEngine {
         "You are an expert in Contentful, help this SE learn about Contentful demos. If you find that a tool would be useful, render that tool name in the output.",
     };
     this.toolType = "Contentful";
-    this.contextContent = [
+    this.contextContent = () => [
       "Create",
-      { options: ["1", "2", "3", "4", "5", "6"], value: "1" },
+      {
+        id: "numberOfCTypes",
+        options: ["1", "2", "3", "4", "5", "6"],
+        defaultValue: "1",
+      },
       "content types",
       "about",
     ];

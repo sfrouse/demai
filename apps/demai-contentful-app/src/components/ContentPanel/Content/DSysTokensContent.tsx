@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Flex, Text } from "@contentful/f36-components";
+import { Button, Flex, IconButton, Text } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
+import * as icons from "@contentful/f36-icons";
 import { AppInstallationParameters } from "../../../locations/config/ConfigScreen";
 import LoadingIcon from "../../LoadingIcon";
-import getLatestTokens from "../../../ai/mcp/designSystemMCP/utils/getLatestTokens";
 import Divider from "../../Divider";
 import ContentPanelHeader from "../ContentPanelHeader";
 import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/revertDemAITokensSingletonEntry";
+import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/contentTypes/demaiTokensCType";
+import { useContentStateSession } from "../../../locations/page/ContentStateContext/ContentStateContext";
 
 interface ContentTypesProps {
   sdk: PageAppSDK;
@@ -34,29 +36,24 @@ const DSysTokensContent: React.FC<ContentTypesProps> = ({
   invalidated,
   invalidate,
 }) => {
-  const [tokens, setTokens] = useState<any>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { contentState, loadProperty, loadingState } = useContentStateSession();
+  const [localInvalidated, setLocalInvalidated] = useState<number>(invalidated);
 
   useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-      const params = sdk.parameters.installation as AppInstallationParameters;
-      const tokens = await getLatestTokens(
-        params.cma,
-        sdk.ids.space,
-        sdk.ids.environment,
-        "jsonNested"
-      );
-      setTokens(tokens);
-      setIsLoading(false);
-    })();
+    const forceReload = localInvalidated !== invalidated;
+    if (!contentState.tokens || forceReload) {
+      if (!forceReload) setLocalInvalidated(invalidated);
+      loadProperty("tokens", forceReload);
+    }
   }, [invalidated]);
 
+  const isLoading = loadingState.tokens === true;
   return (
     <>
       <ContentPanelHeader title="Design Tokens" invalidate={invalidate}>
         <Button
           variant="transparent"
+          size="small"
           onClick={async () => {
             const userInput = await sdk.dialogs.openConfirm({
               title: "Confirm Revert",
@@ -66,7 +63,6 @@ const DSysTokensContent: React.FC<ContentTypesProps> = ({
             });
 
             if (userInput !== null) {
-              setIsLoading(true);
               const params = sdk.parameters
                 .installation as AppInstallationParameters;
               await revertDemAITokensSingletonEntry(
@@ -80,12 +76,25 @@ const DSysTokensContent: React.FC<ContentTypesProps> = ({
         >
           Revert
         </Button>
+        <IconButton
+          variant="transparent"
+          aria-label="Open"
+          size="small"
+          onClick={async () => {
+            await sdk.navigator.openEntry(DEMAI_TOKENS_SINGLETON_ENTRY_ID, {
+              slideIn: true,
+            });
+          }}
+          icon={<icons.EditIcon />}
+        />
       </ContentPanelHeader>
       <Flex flexDirection="column" style={{ overflowY: "auto" }}>
         {isLoading ? (
           <LoadingIcon />
         ) : (
-          <Flex flexDirection="column">{renderTokens(tokens)}</Flex>
+          <Flex flexDirection="column">
+            {renderTokens(contentState.tokens)}
+          </Flex>
         )}
       </Flex>
     </>

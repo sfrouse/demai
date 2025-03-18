@@ -8,6 +8,7 @@ import Sidebar from "./locations/other/Sidebar";
 import Home from "./locations/other/Home";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import Page from "./locations/page/Page";
+import { ContentStateProvider } from "./locations/page/ContentStateContext/ContentStateContext";
 
 const ComponentLocationSettings = {
   [locations.LOCATION_APP_CONFIG]: ConfigScreen,
@@ -32,7 +33,11 @@ const App = () => {
     }
   }, [sdk.location]);
 
-  return Component ? <Component /> : null;
+  return Component ? (
+    <ContentStateProvider>
+      <Component />
+    </ContentStateProvider>
+  ) : null;
 };
 
 export default App;

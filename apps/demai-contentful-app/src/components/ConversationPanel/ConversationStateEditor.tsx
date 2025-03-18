@@ -10,10 +10,14 @@ import {
 import * as icons from "@contentful/f36-icons";
 import {
   AIStateContentPrefix,
-  AIStatePhase,
   AIStateStatus,
 } from "../../ai/AIState/AIStateTypes";
 import AIState from "../../ai/AIState/AIState";
+import {
+  ContentState,
+  useContentStateSession,
+} from "../../locations/page/ContentStateContext/ContentStateContext";
+import LoadingIcon from "../LoadingIcon";
 
 interface ConversationStateEditorProps {
   aiState: AIState;
@@ -24,6 +28,9 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = ({
   aiStateStatus,
   aiState,
 }) => {
+  const { contentState, loadProperty, loadingState } = useContentStateSession();
+
+  const isLoading = Object.values(loadingState).includes(true);
   return (
     <Flex
       flexDirection="column"
@@ -34,67 +41,58 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = ({
         paddingBottom: tokens.spacingM,
       }}
     >
-      {renderContextContent(aiState, aiStateStatus)}
-      <Textarea
-        value={aiStateStatus.userContent}
-        placeholder={aiStateStatus.placeholder}
-        rows={4}
-        style={{
-          marginBottom: tokens.spacingS,
-        }}
-        onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
-          aiState.updateStatus({ userContent: event.target.value });
-        }}
-      />
-      <Flex justifyContent="flex-end" gap={tokens.spacing2Xs}>
-        <div style={{ flex: 1 }}></div>
-        <Button
-          startIcon={<icons.DeleteIcon />}
-          onClick={() => {
-            // not sure what this is now...
-            // aiState.revert();
-            aiState.updateStatus({
-              userContent: "",
-              contextContent: JSON.parse(
-                JSON.stringify(aiState.promptEngine.contextContent)
-              ),
-            });
-          }}
-          variant="transparent"
-        >
-          Clear
-        </Button>
-        <Button
-          startIcon={<icons.StarIcon />}
-          onClick={() => aiState?.run()}
-          variant="primary"
-        >
-          Ask
-        </Button>
-      </Flex>
+      {isLoading ? (
+        <LoadingIcon />
+      ) : (
+        <>
+          {renderContextContent(aiState, aiStateStatus, contentState)}
+          <Textarea
+            value={aiStateStatus.userContent}
+            placeholder={aiStateStatus.placeholder}
+            rows={4}
+            style={{
+              marginBottom: tokens.spacingS,
+            }}
+            onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
+              aiState.updateStatus({ userContent: event.target.value });
+            }}
+          />
+          <Flex justifyContent="flex-end" gap={tokens.spacing2Xs}>
+            <div style={{ flex: 1 }}></div>
+            <Button
+              startIcon={<icons.DeleteIcon />}
+              onClick={() => {
+                aiState.updateStatus({
+                  userContent: "",
+                  contextContentSelections: {},
+                });
+              }}
+              variant="transparent"
+            >
+              Clear
+            </Button>
+            <Button
+              startIcon={<icons.StarIcon />}
+              onClick={() => aiState?.run(contentState)}
+              variant="primary"
+            >
+              Ask
+            </Button>
+          </Flex>
+        </>
+      )}
     </Flex>
   );
 };
 
-// const getActionWord = (aiState: AIState, aiStateStatus: AIStateStatus) => {
-//   if (aiState.promptEngine.toolType !== "none") {
-//     if (aiStateStatus.phase === AIStatePhase.prompting) {
-//       return "Describe";
-//     } else if (aiStateStatus.phase === AIStatePhase.describing) {
-//       return "Execute";
-//     }
-//   }
-//   return "Ask";
-// };
-
 const renderContextContent = (
   aiState: AIState,
-  aiStateStatus: AIStateStatus
+  aiStateStatus: AIStateStatus,
+  contentState: ContentState
 ) => {
-  if (
-    !aiStateStatus.contextContent ||
-    aiStateStatus.contextContent.length === 0
-  ) {
+  const contextContent = aiState.promptEngine.contextContent(contentState);
+
+  if (contextContent.length === 0) {
     return (
       <div
         key={`sentence-${aiState.key}`}
@@ -119,7 +117,7 @@ const renderContextContent = (
             marginBottom: tokens.spacingS,
           }}
         >
-          {renderContextContentRow(aiState, aiStateStatus.contextContent)}
+          {renderContextContentRow(aiState, contextContent)}
         </Flex>
       </div>
       <IconButton
@@ -168,7 +166,10 @@ const renderContextContentRow = (
       return;
     }
 
-    const val = item.value || (item.options[0] as any);
+    const val =
+      aiState.contextContentSelections[item.id] ||
+      item.defaultValue ||
+      (item.options[0] as any);
     let path, pathIndex;
     if (item.paths) {
       pathIndex = item.options.indexOf(val);
@@ -182,14 +183,12 @@ const renderContextContentRow = (
         key={key}
         value={val}
         onChange={(e) => {
-          const select = contextContent[index];
-          if (typeof select !== "string") {
-            select.value = e.target.value;
-          }
-          console.log("pathIndexes", pathIndexes, contextContent);
-
+          const val = e.target.value;
           aiState.updateStatus({
-            contextContent: [...aiState.contextContent],
+            contextContentSelections: {
+              ...aiState.contextContentSelections,
+              [item.id]: val,
+            },
           });
         }}
       >

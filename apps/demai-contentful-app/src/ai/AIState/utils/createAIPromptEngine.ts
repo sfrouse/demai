@@ -1,6 +1,7 @@
 import { AIPromptEngine } from "../AIPromptEngine/AIPromptEngine";
 import { CreateContentTypeEngine } from "../AIPromptEngine/promptEngines/contentful/CreateContentTypeEngine";
 import { ChangeTokenColorSetEngine } from "../AIPromptEngine/promptEngines/designSystem/ChangeTokenColorSetEngine";
+import { CreateComponentDefinitionEngine } from "../AIPromptEngine/promptEngines/designSystem/CreateComponentDefinitionEngine";
 import AIState from "../AIState";
 
 export enum AIPromptEngineID {
@@ -26,6 +27,9 @@ export default function createAIPromptEngine(
     }
     case AIPromptEngineID.DESIGN_TOKENS: {
       return new ChangeTokenColorSetEngine(aiState);
+    }
+    case AIPromptEngineID.COMPONENTS: {
+      return new CreateComponentDefinitionEngine(aiState);
     }
     default: {
       return new AIPromptEngine(aiState); // OpenEndedAIAction;

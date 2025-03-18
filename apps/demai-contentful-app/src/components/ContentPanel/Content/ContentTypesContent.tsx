@@ -4,19 +4,16 @@ import {
   Flex,
   Text,
   Caption,
+  IconButton,
 } from "@contentful/f36-components";
-import {
-  Collection,
-  ContentType,
-  ContentTypeProps,
-  createClient,
-} from "contentful-management";
+import { ContentType } from "contentful-management";
+import * as icons from "@contentful/f36-icons";
 import { PageAppSDK } from "@contentful/app-sdk";
-import { AppInstallationParameters } from "../../../locations/config/ConfigScreen";
 import tokens from "@contentful/f36-tokens";
 import Divider from "../../Divider";
 import LoadingIcon from "../../LoadingIcon";
 import ContentPanelHeader from "../ContentPanelHeader";
+import { useContentStateSession } from "../../../locations/page/ContentStateContext/ContentStateContext";
 
 interface ContentTypesProps {
   sdk: PageAppSDK;
@@ -29,28 +26,18 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
   invalidated,
   invalidate,
 }) => {
-  const [contentTypes, setContentTypes] =
-    useState<Collection<ContentType, ContentTypeProps>>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { contentState, loadProperty, loadingState } = useContentStateSession();
+  const [localInvalidated, setLocalInvalidated] = useState<number>(invalidated);
 
   useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-      const params = sdk.parameters.installation as AppInstallationParameters;
-      const client = createClient({
-        accessToken: params.cma,
-      });
-
-      const space = await client.getSpace(sdk.ids.space);
-      const environment = await space.getEnvironment(sdk.ids.environment);
-      const contentTypes = await environment.getContentTypes();
-
-      setContentTypes(contentTypes);
-
-      setIsLoading(false);
-    })();
+    const forceReload = localInvalidated !== invalidated;
+    if (!contentState.contentTypes || forceReload) {
+      if (!forceReload) setLocalInvalidated(invalidated);
+      loadProperty("contentTypes", forceReload);
+    }
   }, [invalidated]);
 
+  const isLoading = loadingState.contentTypes === true;
   return (
     <>
       <ContentPanelHeader title="Content Types" invalidate={invalidate} />
@@ -59,7 +46,7 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
           <LoadingIcon />
         ) : (
           <>
-            {contentTypes?.items
+            {contentState.contentTypes?.items
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((contentType: ContentType) => (
                 <Flex
@@ -69,18 +56,40 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
                     padding: `${tokens.spacingS} ${tokens.spacingXs}`,
                   }}
                 >
-                  <Text
-                    fontSize="fontSizeXl"
-                    style={{
-                      color: tokens.gray800,
-                      marginBottom: tokens.spacing2Xs,
-                    }}
-                  >
-                    {contentType.name}{" "}
-                    {contentType.sys.publishedCounter === 0 ? (
-                      <EntityStatusBadge entityStatus="draft" />
-                    ) : null}
-                  </Text>
+                  <Flex flexDirection="row" alignItems="center">
+                    <Text
+                      fontSize="fontSizeL"
+                      style={{
+                        color: tokens.gray800,
+                      }}
+                    >
+                      {contentType.name}{" "}
+                      <span
+                        style={{
+                          fontSize: 11,
+                          color: tokens.gray600,
+                        }}
+                      >
+                        {contentType.sys.id}
+                      </span>{" "}
+                      {contentType.sys.publishedCounter === 0 ? (
+                        <EntityStatusBadge entityStatus="draft" />
+                      ) : null}
+                    </Text>
+                    <div style={{ flex: 1 }}></div>
+                    <IconButton
+                      variant="transparent"
+                      aria-label="Open"
+                      size="small"
+                      onClick={async () => {
+                        window.open(
+                          `https://app.contentful.com/spaces/${sdk.ids.space}/environments/${sdk.ids.environment}/content_types/${contentType.sys.id}/fields`,
+                          "_blank"
+                        );
+                      }}
+                      icon={<icons.EditIcon />}
+                    />
+                  </Flex>
                   <Caption
                     style={{
                       color: tokens.gray600,
@@ -89,7 +98,7 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
                     {contentType.sys.id}
                   </Caption>
                   <Text
-                    fontSize="fontSizeM"
+                    fontSize="fontSizeS"
                     style={{
                       color: tokens.gray700,
                     }}

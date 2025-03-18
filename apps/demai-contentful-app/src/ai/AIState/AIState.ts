@@ -1,16 +1,12 @@
 import AISessionManager from "./AISessionManager";
-import {
-  AIStateConfig,
-  AIStateContentPrefix,
-  AIStatePhase,
-  AIStateStatus,
-} from "./AIStateTypes";
+import { AIStateConfig, AIStatePhase, AIStateStatus } from "./AIStateTypes";
 import createAIPromptEngine, {
   AIPromptEngineID,
 } from "./utils/createAIPromptEngine";
 import { nanoid } from "nanoid";
 import { AIPromptEngine } from "./AIPromptEngine/AIPromptEngine";
 import createPrompt from "./utils/createPrompt";
+import { ContentState } from "../../locations/page/ContentStateContext/ContentStateContext";
 
 export default class AIState {
   key: string; // Unique key for React lists
@@ -28,7 +24,8 @@ export default class AIState {
 
   // Content
   userContent: string = "";
-  contextContent: AIStateContentPrefix = [];
+  // contextContent: AIStateContentPrefix = [];
+  contextContentSelections: { [key: string]: string } = {};
   ignoreContextContent: boolean = false; // toggles context content
 
   // Engine
@@ -39,6 +36,7 @@ export default class AIState {
   isRunning: boolean = false;
   phase: AIStatePhase = AIStatePhase.prompting;
 
+  // ==== CONSTRUCTOR ====
   constructor(
     aiStateManager: AISessionManager,
     config: AIStateConfig,
@@ -59,41 +57,49 @@ export default class AIState {
 
     // Prompt Engine
     this.promptEngine = createAIPromptEngine(this.promptEngineId, this);
-    this.contextContent = this.promptEngine.contextContent;
+    // create default contextContentSelections...
 
     if (isIntroState) {
       this.response = this.promptEngine.introMessage;
     }
   }
 
-  clone() {
-    return new AIState(
+  clone(deep: boolean = true) {
+    const clone = new AIState(
       this.aiSessionManager.deref()!,
       this.config,
       this._setAIStateStatus,
       this.promptEngineId,
       this.contentChangeEvent
     );
+    if (deep) {
+      // clone.contextContent = JSON.parse(JSON.stringify(this.contextContent));
+      clone.contextContentSelections = JSON.parse(
+        JSON.stringify(this.contextContentSelections)
+      );
+      clone.userContent = this.userContent;
+    }
+    return clone;
   }
 
-  async run() {
+  async run(contentState: ContentState) {
     this.isRunning = true;
     this.refreshState();
 
     if (this.phase === AIStatePhase.describing) {
       await this.runExecute();
     } else {
-      await this.runAnswerOrDescribe();
+      await this.runAnswerOrDescribe(contentState);
     }
 
     this.isRunning = false;
   }
 
-  async runAnswerOrDescribe() {
+  protected async runAnswerOrDescribe(contentState: ContentState) {
     const sessionManager = this.aiSessionManager.deref();
     if (!sessionManager) return;
     // Add an Orphaned User Prompt State...
-    const prompt = this.createPrompt();
+    const prompt = this.createPrompt(contentState);
     const userState = this.clone();
     userState.role = "user";
     userState.response = prompt;
@@ -102,14 +108,14 @@ export default class AIState {
     sessionManager.addAIState(userState);
 
     // run prompt...
-    const description = await this.promptEngine.run();
+    const description = await userState.promptEngine.run(contentState);
+
+    userState.isRunning = false;
 
     // hand off to next action
     const nextAction = this.clone();
     nextAction.role = "assistant";
     nextAction.response = `${description}`;
-    nextAction.contextContent = JSON.parse(JSON.stringify(this.contextContent));
-    nextAction.userContent = this.userContent;
     nextAction.phase =
       this.promptEngine.toolType === "none"
         ? AIStatePhase.answered
@@ -118,16 +124,13 @@ export default class AIState {
     nextAction.updateStatus();
   }
 
-  async runExecute() {
+  protected async runExecute() {
     const sessionManager = this.aiSessionManager.deref();
     if (!sessionManager) return;
     // Add an Orphaned Assistant Prompt State...
     const assistantState = this.clone();
     assistantState.role = "assistant";
     assistantState.response = `${this.promptEngine.executionPrompt}`;
-    assistantState.contextContent = JSON.parse(
-      JSON.stringify(this.contextContent)
-    );
     assistantState.phase = AIStatePhase.executing;
     assistantState.isRunning = true;
     sessionManager.addAIState(assistantState);
@@ -136,7 +139,7 @@ export default class AIState {
     const toolCalls = await this.promptEngine.runExe();
 
     // hand off to next action
-    const nextAction = this.clone();
+    const nextAction = this.clone(false);
     nextAction.role = "assistant";
     nextAction.response = toolCalls
       ? `Executed ${toolCalls.join(", ")}`
@@ -147,8 +150,8 @@ export default class AIState {
     this.contentChangeEvent && this.contentChangeEvent();
   }
 
-  createPrompt(): string {
-    return createPrompt(this);
+  createPrompt(contentState: ContentState): string {
+    return createPrompt(this, contentState);
   }
 
   updateStatus(updates?: Partial<AIStateStatus>) {
@@ -172,7 +175,7 @@ export default class AIState {
   refreshState() {
     this._setAIStateStatus({
       isRunning: this.isRunning,
-      contextContent: this.contextContent,
+      contextContentSelections: this.contextContentSelections,
       userContent: this.userContent,
       phase: this.phase,
       ignoreContextContent: this.ignoreContextContent,

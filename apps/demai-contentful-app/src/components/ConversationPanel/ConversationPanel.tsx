@@ -8,6 +8,7 @@ import AIState from "../../ai/AIState/AIState";
 import ConversationState from "./ConversationState";
 import ConversationStateEditor from "./ConversationStateEditor";
 import { AIStatePhase, AIStateStatus } from "../../ai/AIState/AIStateTypes";
+import { useContentStateSession } from "../../locations/page/ContentStateContext/ContentStateContext";
 
 interface ConversationPanelProps {
   aiSession: AIState[];
@@ -22,13 +23,11 @@ const ConversationPanel = ({
   aiStateStatus,
   spaceIsValid,
 }: ConversationPanelProps) => {
-  const chatRef = useRef<HTMLDivElement>(null);
+  const { contentState, loadProperty, loadingState } = useContentStateSession();
+  const chatLastBubbleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (chatRef.current) {
-      const lastChild = chatRef.current.lastElementChild as HTMLElement;
-      lastChild?.scrollIntoView({ behavior: "smooth" });
-    }
+    chatLastBubbleRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [aiSession, aiStateStatus?.isRunning]);
 
   return (
@@ -54,16 +53,13 @@ const ConversationPanel = ({
         ></div>
       ) : null}
       <div
-        ref={chatRef}
         style={{
           flex: 1,
           paddingTop: tokens.spacingL,
           paddingLeft: tokens.spacingL,
           paddingRight: tokens.spacingL,
-          // paddingBottom: 100,
           display: "flex",
           flexDirection: "column",
-          // justifyContent: "flex-end",
           overflowY: "scroll",
         }}
       >
@@ -71,6 +67,7 @@ const ConversationPanel = ({
           return <ConversationState key={aiState.key} aiState={aiState} />;
         })}
         {aiStateStatus?.isRunning ? <LoadingIcon /> : null}
+        <div ref={chatLastBubbleRef}></div>
       </div>
       <Divider />
       {spaceIsValid ? (
@@ -93,7 +90,7 @@ const ConversationPanel = ({
                   });
                 }}
                 onConfirm={() => {
-                  aiState?.run();
+                  aiState?.run(contentState);
                 }}
                 prompts={aiStateStatus?.prompts}
                 visible={aiStateStatus?.phase === AIStatePhase.describing}

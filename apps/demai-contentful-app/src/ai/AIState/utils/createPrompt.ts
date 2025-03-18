@@ -1,29 +1,40 @@
+import { ContentState } from "../../../locations/page/ContentStateContext/ContentStateContext";
 import AIState from "../AIState";
-import { AIStateContentPrefix } from "../AIStateTypes";
+import { AIStateContentPrefix, AIStateStatus } from "../AIStateTypes";
 
-export default function createPrompt(aiState: AIState): string {
+export default function createPrompt(
+  aiState: AIState,
+  contentState: ContentState
+): string {
   if (aiState.ignoreContextContent) {
     return aiState.promptEngine.content
-      ? aiState.promptEngine.content(aiState.userContent)
+      ? aiState.promptEngine.content(aiState, contentState)
       : "";
   }
   return [
-    ..._processContextContent(aiState.contextContent),
+    ..._processContextContent(
+      aiState.promptEngine.contextContent(contentState),
+      aiState.contextContentSelections
+    ),
     aiState.promptEngine.content
-      ? aiState.promptEngine.content(aiState.userContent)
+      ? aiState.promptEngine.content(aiState, contentState)
       : "",
   ].join(" ");
 }
 
 function _processContextContent(
   contextContent: AIStateContentPrefix,
+  contextContentSelections: { [key: string]: string },
   output: string[] = []
 ): string[] {
   contextContent?.map((item) => {
     if (typeof item === "string") {
       output.push(item);
     } else {
-      const val = item.value || (item.options[0] as any);
+      const val =
+        contextContentSelections[item.id] ||
+        item.defaultValue ||
+        (item.options[0] as any);
       output.push(val);
       if (item.paths) {
         let path, pathIndex;
@@ -33,7 +44,7 @@ function _processContextContent(
           path = item.paths[pathIndex];
         }
         if (path) {
-          _processContextContent(path, output);
+          _processContextContent(path, contextContentSelections, output);
         }
       }
     }

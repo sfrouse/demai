@@ -8,12 +8,12 @@ import {
   checkContentType,
   checkExpectedFields,
 } from "./validateDemAIContentModel";
+import ensureDemAITokensSingletonEntry from "./tokenSingleton/ensureDemAITokensSingletonEntry";
 import {
   DEMAI_COMPONENT_CTYPE_ID,
   DEMAI_COMPONENT_DISPLAY_FIELD,
   DEMAI_COMPONENT_EXPECTED_FIELDS,
-} from "./demaiComponentCType";
-import ensureDemAITokensSingletonEntry from "./tokenSingleton/ensureDemAITokensSingletonEntry";
+} from "../components/demaiComponentCType";
 
 export default async function updateDemAIContentModel(
   cmaToken: string,

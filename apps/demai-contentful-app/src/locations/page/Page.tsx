@@ -18,7 +18,7 @@ import validateDemAIContentModel from "../../ai/mcp/designSystemMCP/contentTypes
 
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
-  const [navFocus, setNavFocus] = useState<PromptAreas>("settings");
+  const [navFocus, setNavFocus] = useState<PromptAreas>("components");
   const [invalidated, setInvalidated] = useState<number>(0);
   const [spaceIsValid, setSpaceIsValid] = useState<boolean>(true);
 
@@ -31,6 +31,7 @@ const Page = () => {
 
   useEffect(() => {
     (async () => {
+      // Save Config
       const params = sdk.parameters.installation as AppInstallationParameters;
       const newAIConfig: AIStateConfig = {
         cma: params.cma,
@@ -40,6 +41,7 @@ const Page = () => {
       };
       setAIStateConfig(newAIConfig);
 
+      // Make sure Space is set up correctly
       const isValid = await validateDemAIContentModel(
         params.cma,
         sdk.ids.space,
@@ -49,8 +51,6 @@ const Page = () => {
       if (isValid.valid === false) {
         setNavFocus("settings");
       }
-
-      setInvalidated((prev) => prev + 1);
     })();
   }, []);
 

@@ -1,0 +1,19 @@
+@import "@contentful/f36-tokens/dist/css/index.css";
+
+.buttonXs {
+    display: inline-flex;
+    border: none;
+    background-color: rgba(0,0,0,0);
+    font-size: 11px; /* var( --font-size-s ); */
+    font: var( --font-stack-primary) ;
+    color: var( --gray-700 );
+    padding: 2px 6px;
+    border-radius: var( --border-radius-medium );
+    transition: background 0.2s ease-in-out;
+}
+
+.buttonXs:hover {
+    /* background-color: var(--blue-200); */
+    background: rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}

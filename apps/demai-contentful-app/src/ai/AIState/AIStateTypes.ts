@@ -1,4 +1,6 @@
 import { IconComponent, IconProps } from "@contentful/f36-components";
+import { ContentState } from "../../locations/page/ContentStateContext/ContentStateContext";
+import AIState from "./AIState";
 
 export type AIStateConfig = {
   cma: string;
@@ -16,10 +18,14 @@ export enum AIStatePhase {
   done = "done",
 }
 
-export type AIStateContent = (userPrompt: string) => string;
+export type AIStateContent = (
+  aiState: AIState,
+  contentState: ContentState
+) => string;
 export type AIStateContentPrefixSelect = {
+  id: string;
   options: (string | { label: string; value: string })[];
-  value: string;
+  defaultValue: string;
   paths?: AIStateContentPrefix[];
 };
 export type AIStateContentPrefix = (string | AIStateContentPrefixSelect)[];
@@ -38,7 +44,8 @@ export type AIStatePrompts = {
 
 export type AIStateStatus = {
   isRunning: boolean;
-  contextContent: AIStateContentPrefix;
+  // contextContent: AIStateContentPrefix;
+  contextContentSelections: { [key: string]: string };
   userContent: string;
   phase: AIStatePhase;
   ignoreContextContent: boolean;
