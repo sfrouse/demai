@@ -7,7 +7,7 @@ export default async function getContentfulPage(
 ): Promise<Entry<any> | null> {
   try {
     const pageResults = await client.getEntries<any>({
-      content_type: "dmoPageView", // "pageView", //
+      content_type: "demAiPageView",
       "fields.slug": slug,
       limit: 1,
       include: 10,
@@ -22,7 +22,7 @@ export default async function getContentfulPage(
   } catch (error) {
     console.log(
       `getContentfulPage.ts - Error fetching PAGEVIEW for slug "${slug}":`
-      //error
+      // error
     );
     return null;
   }

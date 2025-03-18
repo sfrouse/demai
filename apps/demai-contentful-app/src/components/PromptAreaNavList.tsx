@@ -41,6 +41,11 @@ export const NAVIGATION = {
     header: "Configuration",
     aiStateEngine: AIPromptEngineID.OPEN,
   },
+  settings: {
+    label: "Settings",
+    header: "Settings",
+    aiStateEngine: AIPromptEngineID.OPEN,
+  },
 } as const;
 
 export type PromptAreas = keyof typeof NAVIGATION;
@@ -48,9 +53,11 @@ export type PromptAreas = keyof typeof NAVIGATION;
 const PromptAreaNavList = ({
   navFocus,
   setNavFocus,
+  spaceIsValid,
 }: {
   navFocus: PromptAreas;
   setNavFocus: (area: PromptAreas) => void;
+  spaceIsValid: boolean;
 }) => {
   const navEntries = Object.entries(NAVIGATION) as [
     PromptAreas,
@@ -77,22 +84,33 @@ const PromptAreaNavList = ({
         DemAI
       </Heading>
       <Divider />
-      {navEntries.map(([key, { label, end, header }], index) => (
-        <React.Fragment key={key}>
-          {header && (
-            <SectionHeading style={{ marginBottom: tokens.spacingXs }}>
-              {header}
-            </SectionHeading>
-          )}
-          <NavList.Item
-            onClick={() => setNavFocus(key)}
-            isActive={navFocus === key}
-          >
-            {label}
-          </NavList.Item>
-          {end && <Divider />}
-        </React.Fragment>
-      ))}
+      {navEntries.map(([key, { label, end, header }], index) => {
+        if (key === "settings") return;
+        return (
+          <React.Fragment key={key}>
+            {header && (
+              <SectionHeading style={{ marginBottom: tokens.spacingXs }}>
+                {header}
+              </SectionHeading>
+            )}
+            <NavList.Item
+              onClick={() => setNavFocus(key)}
+              isActive={navFocus === key}
+              isDisabled={!spaceIsValid}
+            >
+              {label}
+            </NavList.Item>
+            {end && <Divider />}
+          </React.Fragment>
+        );
+      })}
+      <div style={{ flex: 1 }}></div>
+      <NavList.Item
+        onClick={() => setNavFocus("settings")}
+        isActive={navFocus === "settings"}
+      >
+        Settings
+      </NavList.Item>
     </NavList>
   );
 };

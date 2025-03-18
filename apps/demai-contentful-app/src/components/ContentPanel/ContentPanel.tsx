@@ -4,12 +4,14 @@ import { Flex } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
 import ContentTypesContent from "./Content/ContentTypesContent";
 import DSysTokensContent from "./Content/DSysTokensContent";
+import SettingsContent from "./Content/SettingsContent";
 
 interface ContentPanelProps {
   navFocus: PromptAreas;
   sdk: PageAppSDK;
   invalidated: number; // increments after CTF content update
   invalidate: () => void;
+  setSpaceIsValid: (val: boolean) => void;
 }
 
 const ContentPanel = ({
@@ -17,6 +19,7 @@ const ContentPanel = ({
   sdk,
   invalidated,
   invalidate,
+  setSpaceIsValid,
 }: ContentPanelProps) => {
   return (
     <Flex
@@ -40,6 +43,14 @@ const ContentPanel = ({
           sdk={sdk}
           invalidated={invalidated}
           invalidate={invalidate}
+        />
+      ) : null}
+      {navFocus === "settings" ? (
+        <SettingsContent
+          sdk={sdk}
+          invalidated={invalidated}
+          invalidate={invalidate}
+          setSpaceIsValid={setSpaceIsValid}
         />
       ) : null}
     </Flex>

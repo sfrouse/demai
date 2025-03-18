@@ -14,12 +14,8 @@ export default async function getContentfulLocale(
     environment
   );
   if (contentfulClient) {
-    const spaceData = await contentfulClient.getSpace();
-    const locales = (spaceData.locales || []) as any as {
-      code: string;
-      default: boolean;
-    }[];
-    const targetLocal = locales.find(
+    const locales = await contentfulClient.getLocales();
+    const targetLocal = locales.items.find(
       (sourceLocale) => sourceLocale.code === locale
     );
     if (targetLocal) {
@@ -28,7 +24,7 @@ export default async function getContentfulLocale(
         code: targetLocal.code,
       };
     } else {
-      const defaultLocal = locales.find(
+      const defaultLocal = locales.items.find(
         (sourceLocale) => sourceLocale.default === true
       );
       if (defaultLocal) {

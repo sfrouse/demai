@@ -6,7 +6,7 @@ import Divider from "../Divider";
 
 interface ContentPanelHeaderProps {
   title: string;
-  invalidate: () => void;
+  invalidate?: () => void;
   children?: ReactNode;
 }
 
@@ -29,12 +29,14 @@ const ContentPanelHeader = ({
           {title || "Unknown"}
         </Heading>
         <Flex flexDirection="row">{children}</Flex>
-        <IconButton
-          variant="transparent"
-          aria-label="Select the date"
-          icon={<icons.CycleIcon />}
-          onClick={invalidate}
-        />
+        {invalidate ? (
+          <IconButton
+            variant="transparent"
+            aria-label="Select the date"
+            icon={<icons.CycleIcon />}
+            onClick={invalidate}
+          />
+        ) : null}
       </Flex>
       <Divider />
     </>

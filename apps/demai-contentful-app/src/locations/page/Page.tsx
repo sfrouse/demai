@@ -14,12 +14,13 @@ import AIState from "../../ai/AIState/AIState";
 import { AIStateConfig, AIStateStatus } from "../../ai/AIState/AIStateTypes";
 import AISessionManager from "../../ai/AIState/AISessionManager";
 import findAISessionManager from "./utils/findAISessionManager";
-import { DesignSystemMCPClient } from "../../ai/mcp/designSystemMCP/DesignSystemMCPClient";
+import validateDemAIContentModel from "../../ai/mcp/designSystemMCP/contentTypes/validateDemAIContentModel";
 
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
-  const [navFocus, setNavFocus] = useState<PromptAreas>("design_tokens");
+  const [navFocus, setNavFocus] = useState<PromptAreas>("settings");
   const [invalidated, setInvalidated] = useState<number>(0);
+  const [spaceIsValid, setSpaceIsValid] = useState<boolean>(true);
 
   // v4
   const [aiStateConfig, setAIStateConfig] = useState<AIStateConfig>();
@@ -39,12 +40,15 @@ const Page = () => {
       };
       setAIStateConfig(newAIConfig);
 
-      // make sure everything is created...
-      await DesignSystemMCPClient.initializeSpace(
+      const isValid = await validateDemAIContentModel(
         params.cma,
         sdk.ids.space,
         sdk.ids.environment
       );
+      setSpaceIsValid(isValid.valid);
+      if (isValid.valid === false) {
+        setNavFocus("settings");
+      }
 
       setInvalidated((prev) => prev + 1);
     })();
@@ -106,17 +110,23 @@ const Page = () => {
           marginRight: tokens.spacingL,
         }}
       >
-        <PromptAreaNavList navFocus={navFocus} setNavFocus={setNavFocus} />
+        <PromptAreaNavList
+          navFocus={navFocus}
+          setNavFocus={setNavFocus}
+          spaceIsValid={spaceIsValid}
+        />
         <ContentPanel
           navFocus={navFocus}
           sdk={sdk}
           invalidated={invalidated}
           invalidate={() => setInvalidated((prev) => prev + 1)}
+          setSpaceIsValid={setSpaceIsValid}
         />
         <ConversationPanel
           aiSession={aiSession}
           aiState={aiState}
           aiStateStatus={aiStateStatus}
+          spaceIsValid={spaceIsValid}
         />
       </Flex>
     </Flex>

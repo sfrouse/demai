@@ -5,7 +5,7 @@ import setBindings from "./utils/setBindings";
 
 const bindings: { [key: string]: ModelBindings } = {
   dmoButtonView: dmoButtonViewBindings,
-  dmoPageView: dmoPageViewBindings,
+  demAiPageView: dmoPageViewBindings,
 };
 
 setBindings(bindings);

@@ -14,7 +14,7 @@ import { StudioServer } from "@/components/Studio/StudioServer";
 import ComponentRenderer from "@/components/ComponentRenderer/ComponentRenderer";
 import { LivePreviewComponentRenderer } from "@/components/ComponentRenderer/LivePreviewComponentRenderer";
 import getContentfulEntryById from "@/lib/getContentfulEntryById";
-import bindingInjection from "@/controllers/webComponents/bindings/utils/bindingInjection";
+// import bindingInjection from "@/controllers/webComponents/bindings/utils/bindingInjection";
 
 export const fetchCache = "force-no-store"; // Prevents caching
 
@@ -83,15 +83,15 @@ export default async function RootPage({
   // only have Web Comp Page right now...
   // but you can put React comps within
   const page = await getContentfulPage(client, params.locale, params.slug);
-  const website = (await getContentfulEntryById(
+  const demaiTokens = (await getContentfulEntryById(
     client,
-    WEBSITE_ID,
+    "demai-tokens-entry",
     params.locale
   )) as any;
-  const bindingStr = bindingInjection(
-    website?.fields?.bindings?.bindings,
-    website?.fields?.webComponents?.javascript
-  );
+  // const bindingStr = bindingInjection(
+  //   website?.fields?.bindings?.bindings,
+  //   website?.fields?.webComponents?.javascript
+  // );
 
   return (
     <Providers
@@ -99,8 +99,9 @@ export default async function RootPage({
       spaceId={params.spaceId}
       env="master"
     >
-      <style>{website?.fields?.globalStyles?.css}</style>
-      <script type="module">{bindingStr}</script>
+      <style>{demaiTokens.fields.css}</style>
+      {/* <style>{website?.fields?.globalStyles?.css}</style>
+      <script type="module">{bindingStr}</script> */}
       <TrackPage />
       {page ? (
         params.preview ? (

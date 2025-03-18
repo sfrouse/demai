@@ -43,7 +43,7 @@ export default async function getContentfulSpaceName(
     }
   }
 
-  // otherwise send the default
+  // Otherwise DEFAULT
   const spaceId = process.env[`CONTENTFUL_SPACE_ID`] || "";
   const cda = process.env[`CONTENTFUL_DELIVERY_ACCESS_TOKEN`] || "";
   const cpa = process.env[`CONTENTFUL_PREVIEW_ACCESS_TOKEN`] || "";

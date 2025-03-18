@@ -1,14 +1,13 @@
 import { ChatCompletionTool } from "openai/resources/index.mjs";
 import { IMCPClient } from "../IMCPClient";
-import ensureDemAITokensContentType from "./utils/ensureDemAITokensContentType";
-import ensureDemAIComponentsContentType from "./utils/ensureDemAIComponentContentType";
-import ensureDemAITokensSingletonEntry from "./utils/ensureDemAITokensSingletonEntry";
+// import ensureDemAITokensContentType from "./utils/ensureDemAITokensContentType";
+// import ensureDemAIComponentsContentType from "./utils/ensureDemAIComponentContentType";
+// import ensureDemAITokensSingletonEntry from "./utils/ensureDemAITokensSingletonEntry";
 import transformTokens from "demai-design-system-core/src/tokens/scripts/transformTokens";
-import { updateDemAITokensEntry } from "./utils/updateDemAITokensEntry";
 import updateColorSetInTokens from "./utils/tokens/updateColorSetInTokens";
 import getLatestTokens from "./utils/getLatestTokens";
-
-export const DEMAI_TOKENS_SINGLETON_ENTRY_ID = "demai-tokens-entry";
+import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "./contentTypes/demaiTokensCType";
+import { updateDemAITokensEntry } from "./contentTypes/tokenSingleton/updateDemAITokensEntry";
 
 export class DesignSystemMCPClient implements IMCPClient {
   private cma: string;
@@ -19,16 +18,6 @@ export class DesignSystemMCPClient implements IMCPClient {
     this.cma = cma;
     this.spaceId = spaceId;
     this.environmentId = environmentId;
-  }
-
-  static async initializeSpace(
-    cma: string,
-    spaceId: string,
-    environmentId: string
-  ) {
-    await ensureDemAITokensContentType(cma, spaceId, environmentId);
-    await ensureDemAIComponentsContentType(cma, spaceId, environmentId);
-    await ensureDemAITokensSingletonEntry(cma, spaceId, environmentId);
   }
 
   async getToolsForOpenAI(): Promise<ChatCompletionTool[]> {

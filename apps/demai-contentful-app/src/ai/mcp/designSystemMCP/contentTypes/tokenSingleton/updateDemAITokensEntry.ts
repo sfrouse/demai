@@ -22,13 +22,10 @@ export async function updateDemAITokensEntry(
   try {
     const space = await client.getSpace(spaceId);
     const environment = await space.getEnvironment(environmentId);
-
-    // Fetch the singleton entry
     const entry = await environment.getEntry(entryId);
 
     let needsUpdate = false;
 
-    // Update fields if provided
     for (const key of Object.keys(
       updatedData
     ) as (keyof DemAITokensUpdateData)[]) {

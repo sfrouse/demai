@@ -13,12 +13,14 @@ interface ConversationPanelProps {
   aiSession: AIState[];
   aiState: AIState | undefined;
   aiStateStatus: AIStateStatus | undefined;
+  spaceIsValid: boolean;
 }
 
 const ConversationPanel = ({
   aiSession,
   aiState,
   aiStateStatus,
+  spaceIsValid,
 }: ConversationPanelProps) => {
   const chatRef = useRef<HTMLDivElement>(null);
 
@@ -35,8 +37,22 @@ const ConversationPanel = ({
       flexDirection="column"
       style={{
         flex: 1.5,
+        position: "relative",
       }}
     >
+      {!spaceIsValid ? (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 300,
+            backgroundColor: "rgba(255,255,255, 0.5)",
+          }}
+        ></div>
+      ) : null}
       <div
         ref={chatRef}
         style={{
@@ -57,37 +73,39 @@ const ConversationPanel = ({
         {aiStateStatus?.isRunning ? <LoadingIcon /> : null}
       </div>
       <Divider />
-      <div style={{ position: "relative" }}>
-        {aiState && aiStateStatus ? (
-          <>
-            <ConversationConfirm
-              style={{
-                position: "absolute",
-                top: 0,
-                bottom: 0,
-                right: 0,
-                left: 0,
-                zIndex: 1000,
-              }}
-              onCancel={() => {
-                aiState?.updateStatus({
-                  phase: AIStatePhase.answered,
-                  userContent: aiState.userContent,
-                });
-              }}
-              onConfirm={() => {
-                aiState?.run();
-              }}
-              prompts={aiStateStatus?.prompts}
-              visible={aiStateStatus?.phase === AIStatePhase.describing}
-            />
-            <ConversationStateEditor
-              aiState={aiState}
-              aiStateStatus={aiStateStatus}
-            />
-          </>
-        ) : null}
-      </div>
+      {spaceIsValid ? (
+        <div style={{ position: "relative" }}>
+          {aiState && aiStateStatus ? (
+            <>
+              <ConversationConfirm
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  bottom: 0,
+                  right: 0,
+                  left: 0,
+                  zIndex: 1000,
+                }}
+                onCancel={() => {
+                  aiState?.updateStatus({
+                    phase: AIStatePhase.answered,
+                    userContent: aiState.userContent,
+                  });
+                }}
+                onConfirm={() => {
+                  aiState?.run();
+                }}
+                prompts={aiStateStatus?.prompts}
+                visible={aiStateStatus?.phase === AIStatePhase.describing}
+              />
+              <ConversationStateEditor
+                aiState={aiState}
+                aiStateStatus={aiStateStatus}
+              />
+            </>
+          ) : null}
+        </div>
+      ) : null}
     </Flex>
   );
 };

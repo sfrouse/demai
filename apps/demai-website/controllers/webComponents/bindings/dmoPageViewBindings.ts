@@ -2,7 +2,7 @@ import createLinkFromSlug from "../utils/createLinkFromSlug";
 import { ModelBindings } from "./types";
 
 const dmoPageViewBindings: ModelBindings = {
-  modelId: "dmoPageView",
+  modelId: "demAiPageView",
   views: [
     {
       id: "dmo-page",

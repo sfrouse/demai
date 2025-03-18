@@ -1,11 +1,15 @@
 import { createClient } from "contentful-management";
-import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../DesignSystemMCPClient";
 import ensureDemAITokensSingletonEntry from "./ensureDemAITokensSingletonEntry";
+import {
+  DEMAI_TOKENS_CTYPE_ID,
+  DEMAI_TOKENS_SINGLETON_ENTRY_ID,
+} from "../demaiTokensCType";
 
 export default async function revertDemAITokensSingletonEntry(
   cmaToken: string,
   spaceId: string,
-  environmentId: string
+  environmentId: string,
+  errors: string[] = []
 ) {
   const client = createClient({ accessToken: cmaToken });
 
@@ -15,10 +19,13 @@ export default async function revertDemAITokensSingletonEntry(
 
     // Check if content type exists
     try {
-      await environment.getContentType("demai-tokens");
+      await environment.getContentType(DEMAI_TOKENS_CTYPE_ID);
     } catch (error: any) {
       console.error(
-        `Content type "demai-tokens" does not exist. Run the content type script first.`
+        `Content type ${DEMAI_TOKENS_CTYPE_ID} does not exist. Run the content type script first.`
+      );
+      errors.push(
+        `Content type ${DEMAI_TOKENS_CTYPE_ID} does not exist. Run the content type script first.`
       );
       return;
     }
@@ -30,9 +37,6 @@ export default async function revertDemAITokensSingletonEntry(
       await tokensEntry.unpublish();
       await tokensEntry.delete();
     } catch (error: any) {
-      if (error.name !== "NotFound") {
-        throw error;
-      }
       console.log(
         `No entry found with ID "${DEMAI_TOKENS_SINGLETON_ENTRY_ID}", creating one...`
       );
@@ -41,5 +45,6 @@ export default async function revertDemAITokensSingletonEntry(
     return ensureDemAITokensSingletonEntry(cmaToken, spaceId, environmentId);
   } catch (error) {
     console.error("Error ensuring singleton entry:", error);
+    errors.push("Error ensuring singleton entry:");
   }
 }

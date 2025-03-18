@@ -8,7 +8,7 @@ export default async function getPageParams(
   slug: string[] | string = [],
   searchParams: Record<string, string>
 ): Promise<SpaceParams | undefined> {
-  const { preview, space } = await searchParams;
+  const { preview, space, env } = await searchParams;
   const spaceName = space;
 
   const finalPreview =
@@ -16,7 +16,8 @@ export default async function getPageParams(
   let slugArray = Array.isArray(slug) ? slug : [];
   slugArray = slugArray.map(decodeURIComponent);
 
-  let spaceInfo = await getContentfulSpaceName([spaceName]);
+  const fullSpaceName = env ? `${spaceName}_${env}` : spaceName;
+  let spaceInfo = await getContentfulSpaceName([fullSpaceName]);
   if (!spaceInfo) return;
 
   const locale = await getContentfulLocale(

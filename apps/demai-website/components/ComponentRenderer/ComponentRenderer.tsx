@@ -11,9 +11,7 @@ import { WebComponent } from "../WebComponent/WebComponent";
 import { Experience as NinetailedExperience } from "@ninetailed/experience.js-react";
 import { createElement } from "@lit-labs/ssr-react";
 import { parseExperiences } from "../Ninetailed/utils/parseExperiences";
-import findBindings, {
-  findViewBindings,
-} from "@/controllers/webComponents/bindings/utils/findBindings";
+import findBindings from "@/controllers/webComponents/bindings/utils/findBindings";
 
 export default function ComponentRenderer({
   params,

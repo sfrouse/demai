@@ -6,7 +6,7 @@ import LoadingIcon from "../../LoadingIcon";
 import getLatestTokens from "../../../ai/mcp/designSystemMCP/utils/getLatestTokens";
 import Divider from "../../Divider";
 import ContentPanelHeader from "../ContentPanelHeader";
-import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/utils/revertDemAITokensSingletonEntry";
+import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/revertDemAITokensSingletonEntry";
 
 interface ContentTypesProps {
   sdk: PageAppSDK;
