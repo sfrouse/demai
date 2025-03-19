@@ -15,8 +15,11 @@ const ConversationState = ({ aiState }: { aiState: AIState }) => {
 
   const baseCSS: CSSProperties = {
     maxWidth: "85%",
-    // whiteSpace: "pre-wrap",
-    // wordBreak: "break-word",
+
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+    overflowWrap: "break-word",
+
     margin: 0,
     marginBottom: tokens.spacingS,
     // fontFamily: "monospace",

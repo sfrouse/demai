@@ -17,8 +17,8 @@ import validateDemAIContentModel, {
 
 // Define the shape of your session data
 export interface ContentState {
-  // spaceStatus?: DEMAI_VALID;
   contentTypes?: Collection<ContentType, ContentTypeProps>;
+  contentType?: ContentType;
   tokens?: any;
   css?: string;
   components?: Entry[];
@@ -51,6 +51,7 @@ const ContentStateContext = createContext<
       loadingState: { [key in keyof ContentState]?: boolean };
       spaceStatus: DEMAI_VALID | undefined;
       validateSpace: () => Promise<void>;
+      setContentType: (ctypeId: string | undefined) => Promise<void>;
     }
   | undefined
 >(undefined);
@@ -77,6 +78,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
+    let payload: any;
     const params = sdk.parameters.installation as AppInstallationParameters;
     setLoadingState((prev) => ({ ...prev, [key]: true })); // Mark as loading
 
@@ -88,7 +90,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         const space = await client.getSpace(sdk.ids.space);
         const environment = await space.getEnvironment(sdk.ids.environment);
         const contentTypes = await environment.getContentTypes();
-        dispatch({ type: "SET_PROPERTY", key, payload: contentTypes });
+        payload = contentTypes;
         break;
       }
       case "tokens": {
@@ -98,17 +100,17 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
           sdk.ids.environment,
           "jsonNested"
         );
-        dispatch({ type: "SET_PROPERTY", key, payload: tokens });
+        payload = tokens;
         break;
       }
       case "css": {
-        const tokens = await getLatestTokens(
+        const css = await getLatestTokens(
           params.cma,
           sdk.ids.space,
           sdk.ids.environment,
           "css"
         );
-        dispatch({ type: "SET_PROPERTY", key, payload: tokens });
+        payload = css;
         break;
       }
       case "components": {
@@ -117,7 +119,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
           sdk.ids.space,
           sdk.ids.environment
         );
-        dispatch({ type: "SET_PROPERTY", key, payload: components });
+        payload = components;
         break;
       }
       default:
@@ -125,7 +127,31 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
     }
 
-    setLoadingState((prev) => ({ ...prev, [key]: false })); // Mark as not loading
+    dispatch({ type: "SET_PROPERTY", key, payload });
+    setLoadingState((prev) => ({ ...prev, [key]: false }));
+    return payload;
+  };
+
+  const setContentType = async (contentTypeId: string | undefined) => {
+    if (!contentTypeId) {
+      dispatch({
+        type: "SET_PROPERTY",
+        key: "contentType",
+        payload: undefined,
+      });
+    }
+    let contentTypes = contentState.contentTypes;
+    if (!contentTypes) {
+      contentTypes = await loadProperty("contentTypes");
+    }
+    const contentType = contentTypes?.items.find(
+      (ctype) => ctype.sys.id === contentTypeId
+    );
+    dispatch({
+      type: "SET_PROPERTY",
+      key: "contentType",
+      payload: contentType,
+    });
   };
 
   // Separate function to validate space model
@@ -152,6 +178,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         loadingState,
         spaceStatus,
         validateSpace,
+        setContentType,
       }}
     >
       {children}

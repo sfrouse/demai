@@ -8,8 +8,8 @@ export class CreateContentTypeEngine extends AIPromptEngine {
 
     this.system = {
       role: "system",
-      content:
-        "You are an expert in Contentful, help this SE learn about Contentful demos. If you find that a tool would be useful, render that tool name in the output.",
+      content: `You are an expert in Contentful, help this SE learn about Contentful demos.
+        If you find that a tool would be useful, render that tool name in the output.`,
     };
     this.toolType = "Contentful";
     this.contextContent = () => [

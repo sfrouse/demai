@@ -3,21 +3,33 @@ import { Flex, Heading, IconButton } from "@contentful/f36-components";
 import * as icons from "@contentful/f36-icons";
 import { ReactNode } from "react";
 import Divider from "../Divider";
+import { useAIState } from "../../contexts/AIStateContext/AIStateContext";
 
 interface ContentPanelHeaderProps {
   title: string;
-  invalidate?: () => void;
+  invalidate?: boolean;
+  goBack?: () => void;
   children?: ReactNode;
 }
 
 const ContentPanelHeader = ({
   title,
-  invalidate,
+  invalidate = false,
   children,
+  goBack,
 }: ContentPanelHeaderProps) => {
+  const { setInvalidated } = useAIState();
   return (
     <>
-      <Flex flexDirection="row">
+      <Flex flexDirection="row" alignItems="center">
+        {goBack ? (
+          <IconButton
+            variant="transparent"
+            aria-label="Select the date"
+            icon={<icons.ArrowBackwardIcon />}
+            onClick={() => goBack()}
+          />
+        ) : null}
         <Heading
           style={{
             paddingLeft: tokens.spacingXs,
@@ -29,12 +41,12 @@ const ContentPanelHeader = ({
           {title || "Unknown"}
         </Heading>
         <Flex flexDirection="row">{children}</Flex>
-        {invalidate ? (
+        {invalidate === true ? (
           <IconButton
             variant="transparent"
             aria-label="Select the date"
             icon={<icons.CycleIcon />}
-            onClick={invalidate}
+            onClick={() => setInvalidated((p) => p + 1)}
           />
         ) : null}
       </Flex>

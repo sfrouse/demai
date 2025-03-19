@@ -13,19 +13,13 @@ import ContentPanelHeader from "../ContentPanelHeader";
 import tokens from "@contentful/f36-tokens";
 import Divider from "../../Divider";
 import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
+import { useSDK } from "@contentful/react-apps-toolkit";
+import { useAIState } from "../../../contexts/AIStateContext/AIStateContext";
 
-interface ComponentsContentProps {
-  sdk: PageAppSDK;
-  invalidated: number; // increments after CTF content update
-  invalidate: () => void;
-}
-
-const ComponentsContent: React.FC<ComponentsContentProps> = ({
-  sdk,
-  invalidated,
-  invalidate,
-}) => {
+const ComponentsContent = () => {
+  const sdk = useSDK<PageAppSDK>();
   const { contentState, loadProperty, loadingState } = useContentStateSession();
+  const { invalidated } = useAIState();
   const [localInvalidated, setLocalInvalidated] = useState<number>(invalidated);
 
   useEffect(() => {
@@ -44,7 +38,7 @@ const ComponentsContent: React.FC<ComponentsContentProps> = ({
 
   return (
     <>
-      <ContentPanelHeader title="Components" invalidate={invalidate} />
+      <ContentPanelHeader title="Components" invalidate />
       <Flex flexDirection="column" style={{ overflowY: "auto" }}>
         {isLoading ? (
           <LoadingIcon />

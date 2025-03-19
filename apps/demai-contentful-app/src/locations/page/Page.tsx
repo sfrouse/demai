@@ -10,25 +10,16 @@ import PromptAreaNavList, {
 } from "../../components/PromptAreaNavList";
 import ConversationPanel from "../../components/ConversationPanel/ConversationPanel";
 import ContentPanel from "../../components/ContentPanel/ContentPanel";
-import AIState from "../../ai/AIState/AIState";
 import { AIStateConfig } from "../../ai/AIState/AIStateTypes";
-import findAISessionManager from "./utils/findAISessionManager";
 import { useAIState } from "../../contexts/AIStateContext/AIStateContext";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
 
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
   const { spaceStatus, validateSpace } = useContentStateSession();
-  const {
-    aiStateConfig,
-    setAIStateConfig,
-    setAIState,
-    setAIStateStatus,
-    setAISession,
-    setAISessionManager,
-  } = useAIState();
-  const [navFocus, setNavFocus] = useState<PromptAreas>("components");
-  const [invalidated, setInvalidated] = useState<number>(0);
+  const { aiStateConfig, setAIStateConfig, findAndSetAISessionManager } =
+    useAIState();
+  const [navFocus, setNavFocus] = useState<PromptAreas>("content_model");
 
   useEffect(() => {
     // Save Config
@@ -40,8 +31,6 @@ const Page = () => {
       environmentId: sdk.ids.environment,
     };
     setAIStateConfig(newAIConfig);
-
-    // Make sure Space is set up correctly
     validateSpace();
   }, []);
 
@@ -55,28 +44,7 @@ const Page = () => {
   useEffect(() => {
     if (aiStateConfig) {
       const nav = NAVIGATION[navFocus];
-      const newAIStackManager = findAISessionManager(
-        nav.aiStateEngine,
-        setAISession,
-        setAIState
-      );
-      setAISessionManager(newAIStackManager);
-      let newFocusedAIState = newAIStackManager.getLastState();
-      if (!newFocusedAIState) {
-        const newAIState = new AIState(
-          newAIStackManager,
-          aiStateConfig,
-          setAIStateStatus,
-          nav.aiStateEngine,
-          () => setInvalidated((prev) => prev + 1),
-          true
-        );
-        newAIStackManager.addAndActivateAIState(newAIState);
-      } else {
-        newAIStackManager.refreshState();
-        setAIState(newFocusedAIState);
-        newFocusedAIState.refreshState();
-      }
+      findAndSetAISessionManager(nav.aiStateEngine);
     }
   }, [navFocus, aiStateConfig]);
 
@@ -108,12 +76,7 @@ const Page = () => {
         }}
       >
         <PromptAreaNavList navFocus={navFocus} setNavFocus={setNavFocus} />
-        <ContentPanel
-          navFocus={navFocus}
-          sdk={sdk}
-          invalidated={invalidated}
-          invalidate={() => setInvalidated((prev) => prev + 1)}
-        />
+        <ContentPanel navFocus={navFocus} sdk={sdk} />
         <ConversationPanel />
       </Flex>
     </Flex>

@@ -13,10 +13,10 @@ export default class AIState {
 
   aiSessionManager: WeakRef<AISessionManager>; // avoid circular ref issues...
   config: AIStateConfig;
-  private _setAIStateStatus: React.Dispatch<
+  setAIStateStatus: React.Dispatch<
     React.SetStateAction<AIStateStatus | undefined>
   >;
-  private contentChangeEvent?: () => void;
+  contentChangeEvent?: () => void;
 
   // Prompt State
   role: "user" | "assistant" = "assistant";
@@ -52,7 +52,7 @@ export default class AIState {
     this.aiSessionManager = new WeakRef(aiStateManager);
     this.config = config;
     this.promptEngineId = promptEngineId;
-    this._setAIStateStatus = setAIStateStatus;
+    this.setAIStateStatus = setAIStateStatus;
     this.contentChangeEvent = contentChangeEvent;
 
     // Prompt Engine
@@ -68,12 +68,11 @@ export default class AIState {
     const clone = new AIState(
       this.aiSessionManager.deref()!,
       this.config,
-      this._setAIStateStatus,
+      this.setAIStateStatus,
       this.promptEngineId,
       this.contentChangeEvent
     );
     if (deep) {
-      // clone.contextContent = JSON.parse(JSON.stringify(this.contextContent));
       clone.contextContentSelections = JSON.parse(
         JSON.stringify(this.contextContentSelections)
       );
@@ -173,7 +172,7 @@ export default class AIState {
   }
 
   refreshState() {
-    this._setAIStateStatus({
+    this.setAIStateStatus({
       isRunning: this.isRunning,
       contextContentSelections: this.contextContentSelections,
       userContent: this.userContent,

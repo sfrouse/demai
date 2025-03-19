@@ -44,7 +44,6 @@ export const NAVIGATION = {
   },
   settings: {
     label: "Settings",
-    header: "Settings",
     aiStateEngine: AIPromptEngineID.OPEN,
   },
 } as const;
@@ -58,7 +57,7 @@ const PromptAreaNavList = ({
   navFocus: PromptAreas;
   setNavFocus: (area: PromptAreas) => void;
 }) => {
-  const { contentState } = useContentStateSession();
+  const { spaceStatus } = useContentStateSession();
   const navEntries = Object.entries(NAVIGATION) as [
     PromptAreas,
     { label: string; header?: string; end?: boolean }
@@ -96,7 +95,7 @@ const PromptAreaNavList = ({
             <NavList.Item
               onClick={() => setNavFocus(key)}
               isActive={navFocus === key}
-              isDisabled={contentState.spaceStatus?.valid === false}
+              isDisabled={spaceStatus?.valid === false}
             >
               {label}
             </NavList.Item>

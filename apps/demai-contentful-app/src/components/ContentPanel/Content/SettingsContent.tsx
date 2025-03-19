@@ -8,12 +8,8 @@ import updateDemAIContentModel from "../../../ai/mcp/designSystemMCP/contentType
 import tokens from "@contentful/f36-tokens";
 import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/revertDemAITokensSingletonEntry";
 import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
-
-interface SettingsContentProps {
-  sdk: PageAppSDK;
-  invalidated: number; // increments after CTF content update
-  invalidate: () => void;
-}
+import { useSDK } from "@contentful/react-apps-toolkit";
+import { useAIState } from "../../../contexts/AIStateContext/AIStateContext";
 
 function generateErrorMessage(
   validationResult: Record<string, any>
@@ -34,12 +30,10 @@ function generateErrorMessage(
   return issues.length > 0 ? issues : ["No errors found."];
 }
 
-const SettingsContent: React.FC<SettingsContentProps> = ({
-  sdk,
-  invalidated,
-  invalidate,
-}) => {
+const SettingsContent = () => {
+  const sdk = useSDK<PageAppSDK>();
   const { validateSpace, spaceStatus } = useContentStateSession();
+  const { invalidated, setInvalidated } = useAIState();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<(string | null)[]>([]);
 
@@ -112,7 +106,7 @@ const SettingsContent: React.FC<SettingsContentProps> = ({
                   sdk.ids.space,
                   sdk.ids.environment
                 );
-                invalidate();
+                setInvalidated((p) => p + 1);
               }
             }}
           >

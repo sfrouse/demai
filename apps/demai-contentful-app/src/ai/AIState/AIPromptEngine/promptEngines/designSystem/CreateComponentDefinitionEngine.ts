@@ -93,7 +93,6 @@ export class CreateComponentDefinitionEngine extends AIPromptEngine {
       }
 
       // now add tokens...
-      console.log("contentState", contentState);
       extraPrompt = `${extraPrompt}. Use only these css properties ( for example: "color: var( --dami-color-text);" ). Avoid using any property that is not a css variable. ${contentState.css}`;
 
       return `${aiState.userContent}. ${extraPrompt}`;

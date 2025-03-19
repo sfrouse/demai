@@ -10,7 +10,6 @@ import {
   AIStateContent,
   AIStateContentPrefix,
   AIStatePrompts,
-  AIStateStatus,
   AIStateSystemPrompt,
 } from "../AIStateTypes";
 import * as icons from "@contentful/f36-icons";
@@ -36,6 +35,7 @@ export class AIPromptEngine {
   executionPrompt: string | undefined;
 
   toolType: "DemAIDesignSystem" | "Contentful" | "none" = "none";
+  toolFilters: string[] = [];
   protected model: AIModels = AIModels.gpt4o;
   protected system: AIStateSystemPrompt = {
     role: "system",
@@ -66,7 +66,12 @@ export class AIPromptEngine {
     const aiState = this.aiState.deref()!;
 
     try {
-      const tools = await this.getTools();
+      let tools = await this.getTools();
+      if (this.toolFilters && this.toolFilters.length > 0) {
+        tools = tools.filter((tool) =>
+          this.toolFilters.includes(tool.function.name) ? true : false
+        );
+      }
       const prevState = aiState.getStateHistory();
       const body: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming =
         {
@@ -105,7 +110,12 @@ export class AIPromptEngine {
     const aiState = this.aiState.deref()!;
 
     try {
-      const tools = await this.getTools();
+      let tools = await this.getTools();
+      if (this.toolFilters && this.toolFilters.length > 0) {
+        tools = tools.filter((tool) =>
+          this.toolFilters.includes(tool.function.name) ? true : false
+        );
+      }
       const body: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming =
         {
           model: this.model,

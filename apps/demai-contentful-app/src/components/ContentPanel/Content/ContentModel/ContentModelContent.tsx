@@ -10,23 +10,20 @@ import { ContentType } from "contentful-management";
 import * as icons from "@contentful/f36-icons";
 import { PageAppSDK } from "@contentful/app-sdk";
 import tokens from "@contentful/f36-tokens";
-import Divider from "../../Divider";
-import LoadingIcon from "../../LoadingIcon";
-import ContentPanelHeader from "../ContentPanelHeader";
-import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
+import Divider from "../../../Divider";
+import LoadingIcon from "../../../LoadingIcon";
+import ContentPanelHeader from "../../ContentPanelHeader";
+import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import { useAIState } from "../../../../contexts/AIStateContext/AIStateContext";
+import { useSDK } from "@contentful/react-apps-toolkit";
+import ContentTypeContent from "./ContentTypeContent";
+import { AIPromptEngineID } from "../../../../ai/AIState/utils/createAIPromptEngine";
 
-interface ContentTypesProps {
-  sdk: PageAppSDK;
-  invalidated: number; // increments after CTF content update
-  invalidate: () => void;
-}
-
-const ContentTypesContent: React.FC<ContentTypesProps> = ({
-  sdk,
-  invalidated,
-  invalidate,
-}) => {
-  const { contentState, loadProperty, loadingState } = useContentStateSession();
+const ContentModelContent = () => {
+  const sdk = useSDK<PageAppSDK>();
+  const { contentState, loadProperty, loadingState, setContentType } =
+    useContentStateSession();
+  const { invalidated, findAndSetAISessionManager } = useAIState();
   const [localInvalidated, setLocalInvalidated] = useState<number>(invalidated);
 
   useEffect(() => {
@@ -37,10 +34,24 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
     }
   }, [invalidated]);
 
+  useEffect(() => {
+    if (contentState.contentType) {
+      findAndSetAISessionManager(
+        AIPromptEngineID.EDIT_CONTENT_TYPE,
+        contentState.contentType.sys.id
+      );
+    }
+  }, [contentState.contentType]);
+
   const isLoading = loadingState.contentTypes === true;
+
+  if (contentState.contentType) {
+    return <ContentTypeContent />;
+  }
+
   return (
     <>
-      <ContentPanelHeader title="Content Types" invalidate={invalidate} />
+      <ContentPanelHeader title="Content Types" invalidate />
       <Flex flexDirection="column" style={{ overflowY: "auto" }}>
         {isLoading ? (
           <LoadingIcon />
@@ -54,6 +65,7 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
                   flexDirection="column"
                   style={{
                     padding: `${tokens.spacingS} ${tokens.spacingXs}`,
+                    cursor: "hand",
                   }}
                 >
                   <Flex flexDirection="row" alignItems="center">
@@ -79,13 +91,23 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
                     <div style={{ flex: 1 }}></div>
                     <IconButton
                       variant="transparent"
-                      aria-label="Open"
+                      aria-label="Open in Contentful"
                       size="small"
                       onClick={async () => {
                         window.open(
                           `https://app.contentful.com/spaces/${sdk.ids.space}/environments/${sdk.ids.environment}/content_types/${contentType.sys.id}/fields`,
                           "_blank"
                         );
+                      }}
+                      icon={<icons.EntryIcon />}
+                    />
+                    <IconButton
+                      variant="transparent"
+                      aria-label="Edit in DemAI"
+                      isDisabled={contentType.name.indexOf("demai-") === 0}
+                      size="small"
+                      onClick={async () => {
+                        await setContentType(contentType.sys.id);
                       }}
                       icon={<icons.EditIcon />}
                     />
@@ -115,4 +137,4 @@ const ContentTypesContent: React.FC<ContentTypesProps> = ({
   );
 };
 
-export default ContentTypesContent;
+export default ContentModelContent;

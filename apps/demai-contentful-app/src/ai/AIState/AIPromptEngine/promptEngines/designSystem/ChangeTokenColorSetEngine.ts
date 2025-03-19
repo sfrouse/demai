@@ -30,9 +30,9 @@ export class ChangeTokenColorSetEngine extends AIPromptEngine {
               options: COLOR_SET_ALLOW_LIST,
               defaultValue: "primary",
             },
-            "color with the color...",
+            "color.",
           ],
-          ["primary, secondary, and tertiary colors inspired by..."],
+          ["primary, secondary, and tertiary colors."],
           [
             {
               id: "colorPatterns",
@@ -46,7 +46,7 @@ export class ChangeTokenColorSetEngine extends AIPromptEngine {
               ],
               defaultValue: "split compliment",
             },
-            "for primary, secondary, and tertiary colors around the color...",
+            "for primary, secondary, and tertiary colors.",
           ],
         ],
       },

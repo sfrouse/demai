@@ -1,5 +1,6 @@
 import { AIPromptEngine } from "../AIPromptEngine/AIPromptEngine";
 import { CreateContentTypeEngine } from "../AIPromptEngine/promptEngines/contentful/CreateContentTypeEngine";
+import { EditContentTypeEngine } from "../AIPromptEngine/promptEngines/contentful/EditContentTypeEngine";
 import { ChangeTokenColorSetEngine } from "../AIPromptEngine/promptEngines/designSystem/ChangeTokenColorSetEngine";
 import { CreateComponentDefinitionEngine } from "../AIPromptEngine/promptEngines/designSystem/CreateComponentDefinitionEngine";
 import AIState from "../AIState";
@@ -7,6 +8,7 @@ import AIState from "../AIState";
 export enum AIPromptEngineID {
   RESEARCH = "research",
   CONTENT_MODEL = "content_model",
+  EDIT_CONTENT_TYPE = "edit_content_type",
   PUBLISH_CONTENT_MODEL = "publish_content_model",
   ENTRIES = "entries",
   PERSONALIZATION = "personalization",
@@ -30,6 +32,9 @@ export default function createAIPromptEngine(
     }
     case AIPromptEngineID.COMPONENTS: {
       return new CreateComponentDefinitionEngine(aiState);
+    }
+    case AIPromptEngineID.EDIT_CONTENT_TYPE: {
+      return new EditContentTypeEngine(aiState);
     }
     default: {
       return new AIPromptEngine(aiState); // OpenEndedAIAction;
