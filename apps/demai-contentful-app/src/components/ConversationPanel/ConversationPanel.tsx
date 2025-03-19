@@ -1,5 +1,5 @@
 import tokens from "@contentful/f36-tokens";
-import { Flex } from "@contentful/f36-components";
+import { Flex, Tabs } from "@contentful/f36-components";
 import Divider from "../Divider";
 import { useEffect, useRef } from "react";
 import LoadingIcon from "../LoadingIcon";
@@ -10,15 +10,35 @@ import ConversationStateEditor from "./ConversationStateEditor";
 import { AIStatePhase } from "../../ai/AIState/AIStateTypes";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
 import { useAIState } from "../../contexts/AIStateContext/AIStateContext";
+import scrollBarStyles from "../utils/ScrollBarMinimal.module.css";
+import classNames from "../utils/classNames";
 
 const ConversationPanel = () => {
   const { contentState, spaceStatus } = useContentStateSession();
-  const { aiState, aiSession, aiStateStatus } = useAIState();
+  const {
+    aiState,
+    aiSession,
+    aiStateStatus,
+    route,
+    setRoute,
+    findAndSetAISessionManager,
+  } = useAIState();
   const chatLastBubbleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     chatLastBubbleRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [aiSession, aiStateStatus?.isRunning]);
+
+  useEffect(() => {
+    if (route && route.aiStateEngines.length > 0) {
+      findAndSetAISessionManager(
+        route.aiStateEngines[route.aiStateEngineFocus || 0],
+        JSON.stringify(route)
+      );
+    }
+  }, [route]);
+
+  const useNav = route && route.aiStateEngines?.length > 1;
 
   return (
     <Flex
@@ -43,6 +63,7 @@ const ConversationPanel = () => {
         ></div>
       ) : null}
       <div
+        className={classNames(scrollBarStyles["scrollbar-minimal"])}
         style={{
           flex: 1,
           paddingTop: tokens.spacingL,
@@ -59,7 +80,29 @@ const ConversationPanel = () => {
         {aiStateStatus?.isRunning ? <LoadingIcon /> : null}
         <div ref={chatLastBubbleRef}></div>
       </div>
-      <Divider />
+      <Divider style={{ marginTop: 0 }} />
+      {useNav ? (
+        <Flex>
+          <Tabs
+            currentTab={`${route?.aiStateEngineFocus}`}
+            onTabChange={(tab: string) => {
+              const index = parseInt(tab);
+              setRoute({
+                ...route,
+                aiStateEngineFocus: index,
+              });
+            }}
+          >
+            <Tabs.List>
+              {route?.aiStateEngines.map((engine, index) => (
+                <Tabs.Tab panelId={`${index}`} key={`${index}`}>
+                  {engineIDToSentence(engine)}
+                </Tabs.Tab>
+              ))}
+            </Tabs.List>
+          </Tabs>
+        </Flex>
+      ) : null}
       <div style={{ position: "relative" }}>
         {aiState && aiStateStatus ? (
           <>
@@ -91,5 +134,12 @@ const ConversationPanel = () => {
     </Flex>
   );
 };
+
+function engineIDToSentence(kebab: string): string {
+  return kebab
+    .replace(/-/g, " ") // Replace hyphens with spaces
+    .replace(/_/g, " ") // Replace hyphens with spaces
+    .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
+}
 
 export default ConversationPanel;

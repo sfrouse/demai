@@ -21,6 +21,7 @@ export interface ContentState {
   contentType?: ContentType;
   tokens?: any;
   css?: string;
+  ai?: string;
   components?: Entry[];
 }
 
@@ -109,6 +110,17 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
           sdk.ids.space,
           sdk.ids.environment,
           "css"
+        );
+        payload = css;
+        break;
+      }
+
+      case "ai": {
+        const css = await getLatestTokens(
+          params.cma,
+          sdk.ids.space,
+          sdk.ids.environment,
+          "ai"
         );
         payload = css;
         break;

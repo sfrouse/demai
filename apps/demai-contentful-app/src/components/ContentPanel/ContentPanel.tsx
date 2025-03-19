@@ -1,18 +1,14 @@
 import tokens from "@contentful/f36-tokens";
-import { PromptAreas } from "../PromptAreaNavList";
 import { Flex } from "@contentful/f36-components";
-import { PageAppSDK } from "@contentful/app-sdk";
 import DSysTokensContent from "./Content/DSysTokensContent";
-import SettingsContent from "./Content/SettingsContent";
 import ComponentsContent from "./Content/ComponentsContent";
 import ContentModelContent from "./Content/ContentModel/ContentModelContent";
+import { useAIState } from "../../contexts/AIStateContext/AIStateContext";
+import ContentTypeContent from "./Content/ContentModel/ContentTypeContent";
+import SpaceContent from "./Content/SpaceContent";
 
-interface ContentPanelProps {
-  navFocus: PromptAreas;
-  sdk: PageAppSDK;
-}
-
-const ContentPanel = ({ navFocus, sdk }: ContentPanelProps) => {
+const ContentPanel = () => {
+  const { route } = useAIState();
   return (
     <Flex
       aria-label="Content Panel"
@@ -23,10 +19,16 @@ const ContentPanel = ({ navFocus, sdk }: ContentPanelProps) => {
         borderRight: `1px solid ${tokens.gray200}`,
       }}
     >
-      {navFocus === "content_model" ? <ContentModelContent /> : null}
-      {navFocus === "design_tokens" ? <DSysTokensContent /> : null}
-      {navFocus === "components" ? <ComponentsContent /> : null}
-      {navFocus === "settings" ? <SettingsContent /> : null}
+      {route?.navigation === "content_model" ? (
+        route?.contentTypeId ? (
+          <ContentTypeContent />
+        ) : (
+          <ContentModelContent />
+        )
+      ) : null}
+      {route?.navigation === "design_tokens" ? <DSysTokensContent /> : null}
+      {route?.navigation === "components" ? <ComponentsContent /> : null}
+      {route?.navigation === "space" ? <SpaceContent /> : null}
     </Flex>
   );
 };

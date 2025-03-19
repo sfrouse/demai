@@ -5,59 +5,61 @@ import tokens from "@contentful/f36-tokens";
 import { Heading, SectionHeading } from "@contentful/f36-components";
 import { AIPromptEngineID } from "../ai/AIState/utils/createAIPromptEngine";
 import { useContentStateSession } from "../contexts/ContentStateContext/ContentStateContext";
+import { useAIState } from "../contexts/AIStateContext/AIStateContext";
 
-export const NAVIGATION = {
+type NAVIGATION_ENTRY = {
+  label: string;
+  header?: string;
+  end?: boolean;
+  aiStateEngines: AIPromptEngineID[];
+};
+
+export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
   research: {
     label: "Research",
     header: "Prospect Research",
     end: true,
-    aiStateEngine: AIPromptEngineID.OPEN,
+    aiStateEngines: [AIPromptEngineID.OPEN, AIPromptEngineID.CONTENT_MODEL],
   },
   content_model: {
     label: "Content Types",
     header: "Space Actions",
-    aiStateEngine: AIPromptEngineID.CONTENT_MODEL,
+    aiStateEngines: [AIPromptEngineID.CONTENT_MODEL],
   },
   entries: {
     label: "Entries / Content",
-    aiStateEngine: AIPromptEngineID.OPEN,
+    aiStateEngines: [AIPromptEngineID.OPEN],
   },
   personalization: {
     label: "Personalization",
     end: true,
-    aiStateEngine: AIPromptEngineID.OPEN,
+    aiStateEngines: [AIPromptEngineID.OPEN],
   },
   design_tokens: {
     label: "Design Tokens",
     header: "Design System",
-    aiStateEngine: AIPromptEngineID.DESIGN_TOKENS,
+    aiStateEngines: [AIPromptEngineID.DESIGN_TOKENS, AIPromptEngineID.OPEN],
   },
   components: {
     label: "Components",
     end: true,
-    aiStateEngine: AIPromptEngineID.COMPONENTS,
+    aiStateEngines: [
+      AIPromptEngineID.COMPONENT_DEFINITIONS,
+      AIPromptEngineID.WEB_COMPONENTS,
+    ],
   },
   space: {
     label: "Space",
     header: "Configuration",
-    aiStateEngine: AIPromptEngineID.OPEN,
-  },
-  settings: {
-    label: "Settings",
-    aiStateEngine: AIPromptEngineID.OPEN,
+    aiStateEngines: [AIPromptEngineID.OPEN],
   },
 } as const;
 
 export type PromptAreas = keyof typeof NAVIGATION;
 
-const PromptAreaNavList = ({
-  navFocus,
-  setNavFocus,
-}: {
-  navFocus: PromptAreas;
-  setNavFocus: (area: PromptAreas) => void;
-}) => {
+const PromptAreaNavList = () => {
   const { spaceStatus } = useContentStateSession();
+  const { route, setRoute } = useAIState();
   const navEntries = Object.entries(NAVIGATION) as [
     PromptAreas,
     { label: string; header?: string; end?: boolean }
@@ -93,8 +95,15 @@ const PromptAreaNavList = ({
               </SectionHeading>
             )}
             <NavList.Item
-              onClick={() => setNavFocus(key)}
-              isActive={navFocus === key}
+              onClick={() => {
+                setRoute({
+                  navigation: key,
+                  aiStateEngines: NAVIGATION[key]
+                    .aiStateEngines as unknown as AIPromptEngineID[],
+                  aiStateEngineFocus: 0,
+                });
+              }}
+              isActive={route?.navigation === key}
               isDisabled={spaceStatus?.valid === false}
             >
               {label}
@@ -104,12 +113,6 @@ const PromptAreaNavList = ({
         );
       })}
       <div style={{ flex: 1 }}></div>
-      <NavList.Item
-        onClick={() => setNavFocus("settings")}
-        isActive={navFocus === "settings"}
-      >
-        Settings
-      </NavList.Item>
     </NavList>
   );
 };

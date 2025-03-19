@@ -2,16 +2,16 @@ import { IMCPTool } from "../../IMCPClient";
 import ensureDemAIComponentEntry from "../components/ensureDemAIComponentEntry";
 import { DesignSystemMCPClient } from "../DesignSystemMCPClient";
 
-const toolName = "create_web_component";
+export const CREATE_WEB_COMPONENT_TOOL_NAME = "create_web_component";
 
 const createWebComponent: IMCPTool = {
-  toolName,
+  toolName: CREATE_WEB_COMPONENT_TOOL_NAME,
   tool: {
     type: "function",
     function: {
-      name: toolName,
+      name: CREATE_WEB_COMPONENT_TOOL_NAME,
       description:
-        "Creates an HTML5 self contained web component using lit elements.",
+        "Creates an HTML5 self contained web component using lit elements. This will include everything in JavaScript.",
       parameters: {
         type: "object",
         properties: {
@@ -23,7 +23,7 @@ const createWebComponent: IMCPTool = {
           code: {
             type: "string",
             description:
-              "The actual JavaScript that can execute on it's own. It should have the customElements.define statement at the end using the name.",
+              "The actual JavaScript that can execute on it's own. It should only be JavaScript. It should have the customElements.define statement at the end using the name.",
           },
         },
         required: ["name", "code"],

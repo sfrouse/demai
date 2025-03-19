@@ -1,6 +1,6 @@
 import { COLOR_SET_ALLOW_LIST } from "../../../../../components/ContentPanel/Content/DSysTokensContent";
+import { SAVE_COLOR_SET_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/saveColorSet";
 import AIState from "../../../AIState";
-import { AIStateStatus } from "../../../AIStateTypes";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import * as icons from "@contentful/f36-icons";
 
@@ -17,6 +17,8 @@ export class ChangeTokenColorSetEngine extends AIPromptEngine {
         Use the user's prompeted color name each time.`,
     };
     this.toolType = "DemAIDesignSystem";
+    this.toolFilters = [SAVE_COLOR_SET_TOOL_NAME];
+
     this.contextContent = () => [
       "Update",
       {

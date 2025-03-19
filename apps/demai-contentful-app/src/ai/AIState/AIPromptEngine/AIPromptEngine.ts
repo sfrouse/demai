@@ -19,6 +19,7 @@ import getOpeAIClient from "../../openAI/getOpenAIClient";
 import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
 
 export class AIPromptEngine {
+  label: string = "Open Ended";
   introMessage: string = "Let's do something";
   contextContent: (contentState: ContentState) => AIStateContentPrefix =
     () => [];
@@ -64,7 +65,6 @@ export class AIPromptEngine {
 
   async run(contentState: ContentState) {
     const aiState = this.aiState.deref()!;
-
     try {
       let tools = await this.getTools();
       if (this.toolFilters && this.toolFilters.length > 0) {

@@ -1,17 +1,19 @@
 import tokens from "@contentful/f36-tokens";
 import { CSSProperties } from "react";
-import { marked } from "marked";
 import AIState from "../../ai/AIState/AIState";
 import { AIStatePhase } from "../../ai/AIState/AIStateTypes";
-import addHTMLColorChips from "./util/addHTMLColorChips";
 import { Flex } from "@contentful/f36-components";
 import ButtonXs from "../ButtonXs/ButtonXs";
 import Divider from "../Divider";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
+import styles from "./ConversationState.module.css";
+import scrollBarStyles from "../utils/ScrollBarMinimal.module.css";
+import classNames from "../utils/classNames";
+import convertMarkdown from "./util/convertMarkdown";
 
 const ConversationState = ({ aiState }: { aiState: AIState }) => {
   if (!aiState) return null;
-  const { contentState, loadProperty, loadingState } = useContentStateSession();
+  const { contentState } = useContentStateSession();
 
   const baseCSS: CSSProperties = {
     maxWidth: "85%",
@@ -29,7 +31,8 @@ const ConversationState = ({ aiState }: { aiState: AIState }) => {
     fontSize: 12,
   };
 
-  const html = `${marked(addHTMLColorChips(aiState.response))}`;
+  const html = convertMarkdown(aiState.response, styles);
+
   const stats = (
     <Flex
       style={{ color: tokens.gray400, font: tokens.fontStackPrimary }}
@@ -45,6 +48,10 @@ const ConversationState = ({ aiState }: { aiState: AIState }) => {
     case "user": {
       return (
         <div
+          className={classNames(
+            styles["conversation-state"],
+            scrollBarStyles["scrollbar-minimal"]
+          )}
           style={{
             alignSelf: "flex-end",
             backgroundColor: tokens.blue100,
@@ -70,76 +77,84 @@ const ConversationState = ({ aiState }: { aiState: AIState }) => {
     case "assistant": {
       if (aiState.phase === AIStatePhase.executing) {
         return (
-          <>
-            <div
-              style={{
-                alignSelf: "flex-start",
-                backgroundColor: tokens.green100,
-                ...baseCSS,
-              }}
-            >
-              <span dangerouslySetInnerHTML={{ __html: html }}></span>
-              <Divider />
-              {stats}
-            </div>
-          </>
+          <div
+            className={classNames(
+              styles["conversation-state"],
+              scrollBarStyles["scrollbar-minimal"]
+            )}
+            style={{
+              alignSelf: "flex-start",
+              backgroundColor: tokens.green100,
+              ...baseCSS,
+            }}
+          >
+            <span dangerouslySetInnerHTML={{ __html: html }}></span>
+            <Divider />
+            {stats}
+          </div>
         );
       } else if (aiState.phase === AIStatePhase.executed) {
         return (
-          <>
-            <div
-              style={{
-                alignSelf: "flex-start",
-                backgroundColor: tokens.gray100,
-                ...baseCSS,
-              }}
-            >
-              <span dangerouslySetInnerHTML={{ __html: html }}></span>
-              <Divider />
-              {stats}
-            </div>
-          </>
+          <div
+            className={classNames(
+              styles["conversation-state"],
+              scrollBarStyles["scrollbar-minimal"]
+            )}
+            style={{
+              alignSelf: "flex-start",
+              backgroundColor: tokens.gray100,
+              ...baseCSS,
+            }}
+          >
+            <span dangerouslySetInnerHTML={{ __html: html }}></span>
+            <Divider />
+            {stats}
+          </div>
         );
       } else if (aiState.phase === AIStatePhase.describing) {
         return (
-          <>
-            <div
-              style={{
-                alignSelf: "flex-start",
-                backgroundColor: tokens.gray100,
-                ...baseCSS,
-              }}
-            >
-              <span dangerouslySetInnerHTML={{ __html: html }}></span>
-              <Divider />
-              <Flex flexDirection="row" alignContent="center">
-                {stats}
-                <div style={{ flex: 1, minWidth: 30 }}></div>
-                <ButtonXs
-                  onClick={async () => {
-                    await aiState.run(contentState);
-                  }}
-                >
-                  Execute
-                </ButtonXs>
-              </Flex>
-            </div>
-          </>
+          <div
+            className={classNames(
+              styles["conversation-state"],
+              scrollBarStyles["scrollbar-minimal"]
+            )}
+            style={{
+              alignSelf: "flex-start",
+              backgroundColor: tokens.gray100,
+              ...baseCSS,
+            }}
+          >
+            <span dangerouslySetInnerHTML={{ __html: html }}></span>
+            <Divider />
+            <Flex flexDirection="row" alignContent="center">
+              {stats}
+              <div style={{ flex: 1, minWidth: 30 }}></div>
+              <ButtonXs
+                onClick={async () => {
+                  await aiState.run(contentState);
+                }}
+              >
+                Execute
+              </ButtonXs>
+            </Flex>
+          </div>
         );
       } else {
         return (
-          <>
-            <div
-              style={{
-                alignSelf: "flex-start",
-                backgroundColor: tokens.gray100,
-                ...baseCSS,
-              }}
-            >
-              <span dangerouslySetInnerHTML={{ __html: html }}></span>
-              {stats}
-            </div>
-          </>
+          <div
+            className={classNames(
+              styles["conversation-state"],
+              scrollBarStyles["scrollbar-minimal"]
+            )}
+            style={{
+              alignSelf: "flex-start",
+              backgroundColor: tokens.gray100,
+              ...baseCSS,
+            }}
+          >
+            <span dangerouslySetInnerHTML={{ __html: html }}></span>
+            {stats}
+          </div>
         );
       }
     }

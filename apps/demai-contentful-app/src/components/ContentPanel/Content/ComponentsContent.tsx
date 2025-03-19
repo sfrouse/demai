@@ -28,9 +28,9 @@ const ComponentsContent = () => {
       if (!forceReload) setLocalInvalidated(invalidated);
       loadProperty("components", forceReload);
     }
-    if (!contentState.tokens || forceReload) {
+    if (!contentState.ai || forceReload) {
       if (!forceReload) setLocalInvalidated(invalidated);
-      loadProperty("css", forceReload);
+      loadProperty("ai", forceReload);
     }
   }, [invalidated]);
 

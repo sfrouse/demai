@@ -3,6 +3,7 @@ import { CreateContentTypeEngine } from "../AIPromptEngine/promptEngines/content
 import { EditContentTypeEngine } from "../AIPromptEngine/promptEngines/contentful/EditContentTypeEngine";
 import { ChangeTokenColorSetEngine } from "../AIPromptEngine/promptEngines/designSystem/ChangeTokenColorSetEngine";
 import { CreateComponentDefinitionEngine } from "../AIPromptEngine/promptEngines/designSystem/CreateComponentDefinitionEngine";
+import { CreateWebComponentEngine } from "../AIPromptEngine/promptEngines/designSystem/CreateWebComponentEngine";
 import AIState from "../AIState";
 
 export enum AIPromptEngineID {
@@ -13,7 +14,8 @@ export enum AIPromptEngineID {
   ENTRIES = "entries",
   PERSONALIZATION = "personalization",
   DESIGN_TOKENS = "design_tokens",
-  COMPONENTS = "components",
+  COMPONENT_DEFINITIONS = "component_definitions",
+  WEB_COMPONENTS = "web_components",
   SPACE = "space",
   OPEN = "open",
   OPEN_TOOL = "open_tool",
@@ -30,8 +32,11 @@ export default function createAIPromptEngine(
     case AIPromptEngineID.DESIGN_TOKENS: {
       return new ChangeTokenColorSetEngine(aiState);
     }
-    case AIPromptEngineID.COMPONENTS: {
+    case AIPromptEngineID.COMPONENT_DEFINITIONS: {
       return new CreateComponentDefinitionEngine(aiState);
+    }
+    case AIPromptEngineID.WEB_COMPONENTS: {
+      return new CreateWebComponentEngine(aiState);
     }
     case AIPromptEngineID.EDIT_CONTENT_TYPE: {
       return new EditContentTypeEngine(aiState);

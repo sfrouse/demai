@@ -74,6 +74,10 @@ export default async function ensureDemAITokensSingletonEntry(
           jsonNested: {
             "en-US": jsonNestedTokens,
           },
+          ai: {
+            "en-US": tokenCode?.find((code: any) => code.name === "ai")
+              ?.content,
+          },
           css: {
             "en-US": tokenCode?.find((code: any) => code.name === "css")
               ?.content,

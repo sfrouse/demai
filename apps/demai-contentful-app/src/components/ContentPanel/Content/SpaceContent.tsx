@@ -30,7 +30,7 @@ function generateErrorMessage(
   return issues.length > 0 ? issues : ["No errors found."];
 }
 
-const SettingsContent = () => {
+const SpaceContent = () => {
   const sdk = useSDK<PageAppSDK>();
   const { validateSpace, spaceStatus } = useContentStateSession();
   const { invalidated, setInvalidated } = useAIState();
@@ -128,4 +128,4 @@ const SettingsContent = () => {
   );
 };
 
-export default SettingsContent;
+export default SpaceContent;

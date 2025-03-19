@@ -4,14 +4,13 @@ import LoadingIcon from "../../../LoadingIcon";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { useAIState } from "../../../../contexts/AIStateContext/AIStateContext";
-import { AIPromptEngineID } from "../../../../ai/AIState/utils/createAIPromptEngine";
 import tokens from "@contentful/f36-tokens";
 import Divider from "../../../Divider";
+import { NAVIGATION } from "../../../PromptAreaNavList";
 
 const ContentTypeContent = () => {
-  const { contentState, loadProperty, loadingState, setContentType } =
-    useContentStateSession();
-  const { invalidated, findAndSetAISessionManager } = useAIState();
+  const { contentState, loadProperty, loadingState } = useContentStateSession();
+  const { invalidated, route, setRoute } = useAIState();
   const [localInvalidated, setLocalInvalidated] = useState<number>(invalidated);
 
   useEffect(() => {
@@ -22,7 +21,9 @@ const ContentTypeContent = () => {
     }
   }, [invalidated]);
 
-  const contentType = contentState.contentType;
+  const contentType = contentState.contentTypes?.items.find(
+    (ctype) => ctype.sys.id === route?.contentTypeId
+  );
   const isLoading = loadingState.contentTypes === true || !contentType;
 
   return (
@@ -31,8 +32,10 @@ const ContentTypeContent = () => {
         title={contentType?.name || "Loading"}
         invalidate
         goBack={() => {
-          setContentType(undefined);
-          findAndSetAISessionManager(AIPromptEngineID.CONTENT_MODEL);
+          setRoute({
+            navigation: "content_model",
+            aiStateEngines: NAVIGATION["content_model"].aiStateEngines,
+          });
         }}
       />
       <Flex flexDirection="column" style={{ overflowY: "auto" }}>

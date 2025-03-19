@@ -1,21 +1,20 @@
 import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
-import { CREATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/createComponentDefinition";
+import { CREATE_WEB_COMPONENT_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/createWebComponent";
 import AIState from "../../../AIState";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import * as icons from "@contentful/f36-icons";
 
-export class CreateComponentDefinitionEngine extends AIPromptEngine {
+export class CreateWebComponentEngine extends AIPromptEngine {
   constructor(aiState: AIState) {
     super(aiState);
 
     this.system = {
       role: "system",
-      content: `You are an expert in Design Systems and are helping guide a Solutions Engineer navigate creating a component definition.
-      This will be used as a base for creating all other kinds of UI components such as web components and Figma components.
-      Make sure to tell the SE what name and id you are going to use, but summarize the properties.`,
+      content: `You are an expert in Design Systems and are helping guide a Solutions Engineer navigate creating a web component based on a component definition.
+      The web compontent should be entirely self contained and contain only JavaScript code.`,
     };
     this.toolType = "DemAIDesignSystem";
-    this.toolFilters = [CREATE_COMPONENT_DEFINITION_TOOL_NAME];
+    this.toolFilters = [CREATE_WEB_COMPONENT_TOOL_NAME];
 
     this.contextContent = (contentState: ContentState) => {
       let defaultComponentValue = "",
@@ -28,7 +27,7 @@ export class CreateComponentDefinitionEngine extends AIPromptEngine {
           ) || [];
       }
       return [
-        "Create a Component Definition based on the ",
+        "Create a Web Component based on the",
         {
           id: "componentId",
           options: componentOptions,
@@ -38,6 +37,7 @@ export class CreateComponentDefinitionEngine extends AIPromptEngine {
       ];
     };
     this.content = (aiState: AIState, contentState: ContentState) => {
+      let extraPrompt = "";
       const compDefEntry = contentState.components?.find(
         (comp) =>
           comp.sys.id === aiState.contextContentSelections["componentId"]
@@ -55,17 +55,28 @@ export class CreateComponentDefinitionEngine extends AIPromptEngine {
             enum: propObj.enum,
           });
         });
+        const compDefSimple = {
+          tag: compDef["x-cdef"]?.tag,
+          attributes,
+        };
+        extraPrompt = `Do not create another component definition, create ONLY a web component using this component definition: ${JSON.stringify(
+          compDefSimple
+        )}`;
       }
 
-      return `${aiState.userContent}. If you do something design oriented, try to follow the patterns in these css variables from the design system
-      
+      // now add tokens...
+      extraPrompt = `${extraPrompt}. Use 'dmai' as the prefix. Use only these css properties ( for example: \`color: var( --dami-text-default );\` ).
+      Avoid using any property that is not a css variable, these are all the variable names:
+
 \`\`\`
 ${contentState.ai}
 \`\`\``;
+
+      return `${aiState.userContent}. ${extraPrompt}`;
     };
 
     this.introMessage =
-      "Let's create a component definition, what would you like to create?";
+      "Let's create a web component, what would you like to create?";
 
     this.executionPrompt = "Creating a component definition...";
     this.placeholder = "Describe what you want this component to do...";

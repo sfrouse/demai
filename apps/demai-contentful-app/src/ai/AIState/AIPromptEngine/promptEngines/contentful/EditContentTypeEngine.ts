@@ -27,9 +27,11 @@ export class EditContentTypeEngine extends AIPromptEngine {
     this.content = (aiState: AIState, contentState: ContentState) =>
       `${aiState.userContent}.
       Please show what you are going to do to the content type.
-      Could you skip loading the content type and just use this information ${JSON.stringify(
-        contentState.contentType
-      )}`;
+      Could you skip loading the content type and just use this information 
+      
+\`\`\`
+${JSON.stringify(contentState.contentType)}
+\`\`\``;
 
     this.prompts = {
       cancel: "Nope, Let's Rethink",

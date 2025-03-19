@@ -60,7 +60,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
           />
           <Flex justifyContent="flex-end" gap={tokens.spacing2Xs}>
             <div style={{ flex: 1 }}></div>
-            <Button
+            {/* <Button
               startIcon={<icons.DeleteIcon />}
               onClick={() => {
                 aiState.updateStatus({
@@ -71,7 +71,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
               variant="transparent"
             >
               Clear
-            </Button>
+            </Button> */}
             <Button
               startIcon={<icons.StarIcon />}
               onClick={() => aiState?.run(contentState)}

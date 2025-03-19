@@ -4,6 +4,7 @@ import AISessionManager from "../../ai/AIState/AISessionManager";
 import { AIStateConfig, AIStateStatus } from "../../ai/AIState/AIStateTypes";
 import findAISessionManager from "../../locations/page/utils/findAISessionManager";
 import { AIPromptEngineID } from "../../ai/AIState/utils/createAIPromptEngine";
+import { AIStateRoute } from "./AIStateRouting";
 
 // Define the shape of the context
 interface AIStateContextType {
@@ -34,6 +35,9 @@ interface AIStateContextType {
     aiStateEngineId: AIPromptEngineID,
     context?: string
   ) => Promise<AISessionManager | void>;
+
+  route?: AIStateRoute;
+  setRoute: React.Dispatch<React.SetStateAction<AIStateRoute | undefined>>;
 }
 
 // Create the context
@@ -48,6 +52,7 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [, setAISessionManager] = useState<AISessionManager>(); // No need to store, just setter
   const [aiSession, setAISession] = useState<AIState[]>([]);
   const [invalidated, setInvalidated] = useState<number>(0);
+  const [route, setRoute] = useState<AIStateRoute>();
 
   const findAndSetAISessionManager = async (
     aiStateEngineId: AIPromptEngineID,
@@ -102,6 +107,8 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
         invalidated,
         setInvalidated,
         findAndSetAISessionManager,
+        route,
+        setRoute,
       }}
     >
       {children}

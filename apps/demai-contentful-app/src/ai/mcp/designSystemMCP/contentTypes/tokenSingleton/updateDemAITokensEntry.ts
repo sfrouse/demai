@@ -6,6 +6,7 @@ type DemAITokensUpdateData = {
   json?: Record<string, any>;
   jsonNested?: Record<string, any>;
   css?: string;
+  ai?: string;
   scss?: string;
   contentfulTokens?: string;
 };

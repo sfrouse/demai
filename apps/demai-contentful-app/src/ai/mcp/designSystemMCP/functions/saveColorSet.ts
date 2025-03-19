@@ -6,15 +6,15 @@ import { DesignSystemMCPClient } from "../DesignSystemMCPClient";
 import updateColorSetInTokens from "../utils/tokens/updateColorSetInTokens";
 import transformTokens from "demai-design-system-core/src/tokens/scripts/transformTokens";
 
-const toolName = "save_color_set";
+export const SAVE_COLOR_SET_TOOL_NAME = "save_color_set";
 
 const saveColorSet: IMCPTool = {
-  toolName,
+  toolName: SAVE_COLOR_SET_TOOL_NAME,
   // TODO: auto generate...
   tool: {
     type: "function",
     function: {
-      name: toolName,
+      name: SAVE_COLOR_SET_TOOL_NAME,
       description:
         "Stores a structured color set with semantic naming (e.g., ‘primary’) and progressive shades from darkest (100) to lightest (975) for consistent theming. Make sure to describe all the colors when asked.",
       parameters: {
@@ -124,6 +124,7 @@ const saveColorSet: IMCPTool = {
         json: jsonTokens,
         jsonNested: jsonNestedTokens,
         css: tokenCode?.find((code: any) => code.name === "css")?.content,
+        ai: tokenCode?.find((code: any) => code.name === "ai")?.content,
         scss: tokenCode?.find((code: any) => code.name === "scss")?.content,
         contentfulTokens: tokenCode?.find(
           (code: any) => code.name === "contentful"

@@ -31,6 +31,13 @@ export const DEMAI_TOKENS_EXPECTED_FIELDS = [
     localized: false,
   },
   {
+    id: "ai",
+    name: "AI",
+    type: "Text",
+    required: false,
+    localized: false,
+  },
+  {
     id: "css",
     name: "CSS",
     type: "Text",

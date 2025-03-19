@@ -16,14 +16,13 @@ import ContentPanelHeader from "../../ContentPanelHeader";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { useAIState } from "../../../../contexts/AIStateContext/AIStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import ContentTypeContent from "./ContentTypeContent";
 import { AIPromptEngineID } from "../../../../ai/AIState/utils/createAIPromptEngine";
 
 const ContentModelContent = () => {
   const sdk = useSDK<PageAppSDK>();
   const { contentState, loadProperty, loadingState, setContentType } =
     useContentStateSession();
-  const { invalidated, findAndSetAISessionManager } = useAIState();
+  const { invalidated, setRoute } = useAIState();
   const [localInvalidated, setLocalInvalidated] = useState<number>(invalidated);
 
   useEffect(() => {
@@ -34,20 +33,7 @@ const ContentModelContent = () => {
     }
   }, [invalidated]);
 
-  useEffect(() => {
-    if (contentState.contentType) {
-      findAndSetAISessionManager(
-        AIPromptEngineID.EDIT_CONTENT_TYPE,
-        contentState.contentType.sys.id
-      );
-    }
-  }, [contentState.contentType]);
-
   const isLoading = loadingState.contentTypes === true;
-
-  if (contentState.contentType) {
-    return <ContentTypeContent />;
-  }
 
   return (
     <>
@@ -108,6 +94,11 @@ const ContentModelContent = () => {
                       size="small"
                       onClick={async () => {
                         await setContentType(contentType.sys.id);
+                        setRoute({
+                          navigation: "content_model",
+                          contentTypeId: contentType.sys.id,
+                          aiStateEngines: [AIPromptEngineID.EDIT_CONTENT_TYPE],
+                        });
                       }}
                       icon={<icons.EditIcon />}
                     />

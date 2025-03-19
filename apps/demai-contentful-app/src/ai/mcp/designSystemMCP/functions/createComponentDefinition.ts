@@ -2,14 +2,15 @@ import { IMCPTool } from "../../IMCPClient";
 import ensureDemAIComponentEntry from "../components/ensureDemAIComponentEntry";
 import { DesignSystemMCPClient } from "../DesignSystemMCPClient";
 
-const toolName = "create_component_definition";
+export const CREATE_COMPONENT_DEFINITION_TOOL_NAME =
+  "create_component_definition";
 
 const createComponentDefinition: IMCPTool = {
-  toolName,
+  toolName: CREATE_COMPONENT_DEFINITION_TOOL_NAME,
   tool: {
     type: "function",
     function: {
-      name: toolName,
+      name: CREATE_COMPONENT_DEFINITION_TOOL_NAME,
       description:
         "Creates a component definition that describes the interface for any kind of UI component such as a web component or Figma component.",
       parameters: {
@@ -87,8 +88,6 @@ const createComponentDefinition: IMCPTool = {
     },
   },
   functionCall: async (mcp: DesignSystemMCPClient, params: any) => {
-    console.log("createCDef", mcp, params);
-
     // TODO: type CDefDefinition
     const cDef: any = {
       $id: `${params.id}.cdef.json`,

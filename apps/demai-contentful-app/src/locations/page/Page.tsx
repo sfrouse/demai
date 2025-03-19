@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Flex } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
@@ -6,7 +6,6 @@ import { AppInstallationParameters } from "../config/ConfigScreen";
 import tokens from "@contentful/f36-tokens";
 import PromptAreaNavList, {
   NAVIGATION,
-  PromptAreas,
 } from "../../components/PromptAreaNavList";
 import ConversationPanel from "../../components/ConversationPanel/ConversationPanel";
 import ContentPanel from "../../components/ContentPanel/ContentPanel";
@@ -17,9 +16,7 @@ import { useContentStateSession } from "../../contexts/ContentStateContext/Conte
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
   const { spaceStatus, validateSpace } = useContentStateSession();
-  const { aiStateConfig, setAIStateConfig, findAndSetAISessionManager } =
-    useAIState();
-  const [navFocus, setNavFocus] = useState<PromptAreas>("content_model");
+  const { setAIStateConfig, setRoute } = useAIState();
 
   useEffect(() => {
     // Save Config
@@ -32,21 +29,21 @@ const Page = () => {
     };
     setAIStateConfig(newAIConfig);
     validateSpace();
+    setRoute({
+      navigation: "components",
+      aiStateEngines: NAVIGATION["components"].aiStateEngines,
+      aiStateEngineFocus: 0,
+    });
   }, []);
 
   useEffect(() => {
     if (spaceStatus?.valid === false) {
-      setNavFocus("settings");
+      setRoute({
+        navigation: "space",
+        aiStateEngines: NAVIGATION["space"].aiStateEngines,
+      });
     }
   }, [spaceStatus]);
-
-  // Navigation was changed...
-  useEffect(() => {
-    if (aiStateConfig) {
-      const nav = NAVIGATION[navFocus];
-      findAndSetAISessionManager(nav.aiStateEngine);
-    }
-  }, [navFocus, aiStateConfig]);
 
   return (
     <Flex
@@ -75,8 +72,8 @@ const Page = () => {
           marginRight: tokens.spacingL,
         }}
       >
-        <PromptAreaNavList navFocus={navFocus} setNavFocus={setNavFocus} />
-        <ContentPanel navFocus={navFocus} sdk={sdk} />
+        <PromptAreaNavList />
+        <ContentPanel />
         <ConversationPanel />
       </Flex>
     </Flex>
