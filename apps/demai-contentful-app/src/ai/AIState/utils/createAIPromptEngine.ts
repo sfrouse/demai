@@ -2,6 +2,7 @@ import { AIPromptEngine } from "../AIPromptEngine/AIPromptEngine";
 import { CreateContentTypeEngine } from "../AIPromptEngine/promptEngines/contentful/CreateContentTypeEngine";
 import { EditContentTypeEngine } from "../AIPromptEngine/promptEngines/contentful/EditContentTypeEngine";
 import { ChangeTokenColorSetEngine } from "../AIPromptEngine/promptEngines/designSystem/ChangeTokenColorSetEngine";
+import { CreateComponentBindingEngine } from "../AIPromptEngine/promptEngines/designSystem/CreateComponentBindingEngine";
 import { CreateComponentDefinitionEngine } from "../AIPromptEngine/promptEngines/designSystem/CreateComponentDefinitionEngine";
 import { CreateWebComponentEngine } from "../AIPromptEngine/promptEngines/designSystem/CreateWebComponentEngine";
 import AIState from "../AIState";
@@ -16,6 +17,7 @@ export enum AIPromptEngineID {
   DESIGN_TOKENS = "design_tokens",
   COMPONENT_DEFINITIONS = "component_definitions",
   WEB_COMPONENTS = "web_components",
+  COMPONENT_BINDING = "component_binding",
   SPACE = "space",
   OPEN = "open",
   OPEN_TOOL = "open_tool",
@@ -40,6 +42,9 @@ export default function createAIPromptEngine(
     }
     case AIPromptEngineID.EDIT_CONTENT_TYPE: {
       return new EditContentTypeEngine(aiState);
+    }
+    case AIPromptEngineID.COMPONENT_BINDING: {
+      return new CreateComponentBindingEngine(aiState);
     }
     default: {
       return new AIPromptEngine(aiState); // OpenEndedAIAction;

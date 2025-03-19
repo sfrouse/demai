@@ -39,7 +39,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
         paddingRight: tokens.spacingL,
         paddingTop: 0,
         paddingBottom: tokens.spacingM,
-        minHeight: isLoading ? 234 : 0,
+        minHeight: isLoading ? 200 : 0,
       }}
     >
       {isLoading ? (
@@ -50,7 +50,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
           <Textarea
             value={aiStateStatus.userContent}
             placeholder={aiStateStatus.placeholder}
-            rows={4}
+            rows={3}
             style={{
               marginBottom: tokens.spacingS,
             }}

@@ -19,7 +19,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
     label: "Research",
     header: "Prospect Research",
     end: true,
-    aiStateEngines: [AIPromptEngineID.OPEN, AIPromptEngineID.CONTENT_MODEL],
+    aiStateEngines: [AIPromptEngineID.OPEN],
   },
   content_model: {
     label: "Content Types",
@@ -46,6 +46,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
     aiStateEngines: [
       AIPromptEngineID.COMPONENT_DEFINITIONS,
       AIPromptEngineID.WEB_COMPONENTS,
+      AIPromptEngineID.COMPONENT_BINDING,
     ],
   },
   space: {
