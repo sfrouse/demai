@@ -12,7 +12,6 @@ interface ContentPanelProps {
   sdk: PageAppSDK;
   invalidated: number; // increments after CTF content update
   invalidate: () => void;
-  setSpaceIsValid: (val: boolean) => void;
 }
 
 const ContentPanel = ({
@@ -20,7 +19,6 @@ const ContentPanel = ({
   sdk,
   invalidated,
   invalidate,
-  setSpaceIsValid,
 }: ContentPanelProps) => {
   return (
     <Flex
@@ -58,7 +56,6 @@ const ContentPanel = ({
           sdk={sdk}
           invalidated={invalidated}
           invalidate={invalidate}
-          setSpaceIsValid={setSpaceIsValid}
         />
       ) : null}
     </Flex>

@@ -8,13 +8,16 @@ import {
   Entry,
 } from "contentful-management";
 import React, { createContext, useContext, useReducer, useState } from "react";
-import { AppInstallationParameters } from "../../config/ConfigScreen";
 import getLatestTokens from "./services/getLatestTokens";
 import getComponents from "./services/getComponents";
+import { AppInstallationParameters } from "../../locations/config/ConfigScreen";
+import validateDemAIContentModel, {
+  DEMAI_VALID,
+} from "../../ai/mcp/designSystemMCP/contentTypes/validateDemAIContentModel";
 
 // Define the shape of your session data
 export interface ContentState {
-  test: string;
+  // spaceStatus?: DEMAI_VALID;
   contentTypes?: Collection<ContentType, ContentTypeProps>;
   tokens?: any;
   css?: string;
@@ -25,7 +28,7 @@ export interface ContentState {
 type Action = { type: "SET_PROPERTY"; key: keyof ContentState; payload: any };
 
 // Initial session contentState
-const initialState: ContentState = { test: "dddd" };
+const initialState: ContentState = {};
 
 // Reducer to update only the property that is requested
 const sessionReducer = (
@@ -46,6 +49,8 @@ const ContentStateContext = createContext<
       contentState: ContentState;
       loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void;
       loadingState: { [key in keyof ContentState]?: boolean };
+      spaceStatus: DEMAI_VALID | undefined;
+      validateSpace: () => Promise<void>;
     }
   | undefined
 >(undefined);
@@ -55,6 +60,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const sdk = useSDK<PageAppSDK>();
   const [contentState, dispatch] = useReducer(sessionReducer, initialState);
+  const [spaceStatus, setSpaceStatus] = useState<DEMAI_VALID | undefined>(); // Separate state for validation
   const [loadingState, setLoadingState] = useState<{
     [key in keyof ContentState]?: boolean;
   }>({});
@@ -71,8 +77,9 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
-    setLoadingState((prev) => ({ ...prev, [key]: true })); // Mark as loading
     const params = sdk.parameters.installation as AppInstallationParameters;
+    setLoadingState((prev) => ({ ...prev, [key]: true })); // Mark as loading
+
     switch (key) {
       case "contentTypes": {
         const client = createClient({
@@ -121,9 +128,31 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoadingState((prev) => ({ ...prev, [key]: false })); // Mark as not loading
   };
 
+  // Separate function to validate space model
+  const validateSpace = async () => {
+    try {
+      const params = sdk.parameters.installation as AppInstallationParameters;
+      const validationResult = await validateDemAIContentModel(
+        params.cma,
+        sdk.ids.space,
+        sdk.ids.environment
+      );
+      setSpaceStatus(validationResult);
+    } catch (error) {
+      console.error("Error validating space:", error);
+      setSpaceStatus(undefined);
+    }
+  };
+
   return (
     <ContentStateContext.Provider
-      value={{ contentState, loadProperty, loadingState }}
+      value={{
+        contentState,
+        loadProperty,
+        loadingState,
+        spaceStatus,
+        validateSpace,
+      }}
     >
       {children}
     </ContentStateContext.Provider>

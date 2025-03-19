@@ -1,4 +1,4 @@
-import { ContentState } from "../../../locations/page/ContentStateContext/ContentStateContext";
+import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
 import AIState from "../AIState";
 import { AIStateContentPrefix, AIStateStatus } from "../AIStateTypes";
 

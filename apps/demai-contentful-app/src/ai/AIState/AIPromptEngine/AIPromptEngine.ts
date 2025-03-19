@@ -17,7 +17,7 @@ import * as icons from "@contentful/f36-icons";
 import { DesignSystemMCPClient } from "../../mcp/designSystemMCP/DesignSystemMCPClient";
 import { ContentfulMCP } from "../../mcp/contentfulMCP/ContentfulMCP";
 import getOpeAIClient from "../../openAI/getOpenAIClient";
-import { ContentState } from "../../../locations/page/ContentStateContext/ContentStateContext";
+import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
 
 export class AIPromptEngine {
   introMessage: string = "Let's do something";

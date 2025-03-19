@@ -19,8 +19,13 @@ export class CreateContentTypeEngine extends AIPromptEngine {
         options: ["1", "2", "3", "4", "5", "6"],
         defaultValue: "1",
       },
-      "content types",
-      "about",
+      "content types. Account for",
+      {
+        id: "context",
+        options: ["no other content types", "all content types"],
+        defaultValue: "no other content types",
+      },
+      ".",
     ];
     this.introMessage =
       "Let’s work with Content Types, what would you like to do?";

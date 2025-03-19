@@ -4,16 +4,15 @@ import { PageAppSDK } from "@contentful/app-sdk";
 import { AppInstallationParameters } from "../../../locations/config/ConfigScreen";
 import LoadingIcon from "../../LoadingIcon";
 import ContentPanelHeader from "../ContentPanelHeader";
-import validateDemAIContentModel from "../../../ai/mcp/designSystemMCP/contentTypes/validateDemAIContentModel";
 import updateDemAIContentModel from "../../../ai/mcp/designSystemMCP/contentTypes/updateDemAIContentModel";
 import tokens from "@contentful/f36-tokens";
 import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/revertDemAITokensSingletonEntry";
+import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
 
 interface SettingsContentProps {
   sdk: PageAppSDK;
   invalidated: number; // increments after CTF content update
   invalidate: () => void;
-  setSpaceIsValid: (val: boolean) => void;
 }
 
 function generateErrorMessage(
@@ -39,31 +38,26 @@ const SettingsContent: React.FC<SettingsContentProps> = ({
   sdk,
   invalidated,
   invalidate,
-  setSpaceIsValid,
 }) => {
+  const { validateSpace, spaceStatus } = useContentStateSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<(string | null)[]>([]);
 
-  const validateSpace = async () => {
+  const localValidateSpace = async () => {
     setIsLoading(true);
     setErrors([]);
-    const params = sdk.parameters.installation as AppInstallationParameters;
-    const isValid = await validateDemAIContentModel(
-      params.cma,
-      sdk.ids.space,
-      sdk.ids.environment
-    );
-    if (isValid.valid === false) {
-      setErrors(generateErrorMessage(isValid));
-    }
+    await validateSpace();
     setIsLoading(false);
-    setSpaceIsValid(isValid.valid);
   };
 
   useEffect(() => {
-    (async () => {
-      await validateSpace();
-    })();
+    if (spaceStatus?.valid === false) {
+      setErrors(generateErrorMessage(spaceStatus));
+    }
+  }, [spaceStatus]);
+
+  useEffect(() => {
+    localValidateSpace();
   }, [invalidated]);
 
   return (
@@ -77,7 +71,7 @@ const SettingsContent: React.FC<SettingsContentProps> = ({
         <Flex flexDirection="column" gap={tokens.spacingM}>
           <Button
             onClick={async () => {
-              await validateSpace();
+              await localValidateSpace();
             }}
           >
             Validate Content Model
@@ -96,7 +90,7 @@ const SettingsContent: React.FC<SettingsContentProps> = ({
               setIsLoading(false);
               setErrors(errors);
               if (errors.length === 0) {
-                await validateSpace();
+                await localValidateSpace();
               }
             }}
           >

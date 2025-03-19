@@ -1,4 +1,4 @@
-import getLatestTokens from "../../../../locations/page/ContentStateContext/services/getLatestTokens";
+import getLatestTokens from "../../../../contexts/ContentStateContext/services/getLatestTokens";
 import { IMCPTool } from "../../IMCPClient";
 import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../contentTypes/demaiTokensCType";
 import { updateDemAITokensEntry } from "../contentTypes/tokenSingleton/updateDemAITokensEntry";

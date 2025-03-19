@@ -4,6 +4,7 @@ import Divider from "./Divider";
 import tokens from "@contentful/f36-tokens";
 import { Heading, SectionHeading } from "@contentful/f36-components";
 import { AIPromptEngineID } from "../ai/AIState/utils/createAIPromptEngine";
+import { useContentStateSession } from "../contexts/ContentStateContext/ContentStateContext";
 
 export const NAVIGATION = {
   research: {
@@ -53,12 +54,11 @@ export type PromptAreas = keyof typeof NAVIGATION;
 const PromptAreaNavList = ({
   navFocus,
   setNavFocus,
-  spaceIsValid,
 }: {
   navFocus: PromptAreas;
   setNavFocus: (area: PromptAreas) => void;
-  spaceIsValid: boolean;
 }) => {
+  const { contentState } = useContentStateSession();
   const navEntries = Object.entries(NAVIGATION) as [
     PromptAreas,
     { label: string; header?: string; end?: boolean }
@@ -96,7 +96,7 @@ const PromptAreaNavList = ({
             <NavList.Item
               onClick={() => setNavFocus(key)}
               isActive={navFocus === key}
-              isDisabled={!spaceIsValid}
+              isDisabled={contentState.spaceStatus?.valid === false}
             >
               {label}
             </NavList.Item>

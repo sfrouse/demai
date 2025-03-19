@@ -7,7 +7,7 @@ import addHTMLColorChips from "./util/addHTMLColorChips";
 import { Flex } from "@contentful/f36-components";
 import ButtonXs from "../ButtonXs/ButtonXs";
 import Divider from "../Divider";
-import { useContentStateSession } from "../../locations/page/ContentStateContext/ContentStateContext";
+import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
 
 const ConversationState = ({ aiState }: { aiState: AIState }) => {
   if (!aiState) return null;

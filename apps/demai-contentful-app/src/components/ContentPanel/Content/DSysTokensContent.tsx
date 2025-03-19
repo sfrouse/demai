@@ -8,7 +8,7 @@ import Divider from "../../Divider";
 import ContentPanelHeader from "../ContentPanelHeader";
 import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/revertDemAITokensSingletonEntry";
 import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/contentTypes/demaiTokensCType";
-import { useContentStateSession } from "../../../locations/page/ContentStateContext/ContentStateContext";
+import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
 
 interface ContentTypesProps {
   sdk: PageAppSDK;

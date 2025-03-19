@@ -16,21 +16,21 @@ import AIState from "../../ai/AIState/AIState";
 import {
   ContentState,
   useContentStateSession,
-} from "../../locations/page/ContentStateContext/ContentStateContext";
+} from "../../contexts/ContentStateContext/ContentStateContext";
 import LoadingIcon from "../LoadingIcon";
+import { useAIState } from "../../contexts/AIStateContext/AIStateContext";
 
-interface ConversationStateEditorProps {
-  aiState: AIState;
-  aiStateStatus: AIStateStatus;
-}
+interface ConversationStateEditorProps {}
 
-const ConversationStateEditor: React.FC<ConversationStateEditorProps> = ({
-  aiStateStatus,
-  aiState,
-}) => {
-  const { contentState, loadProperty, loadingState } = useContentStateSession();
+const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
+  const { contentState, loadingState, spaceStatus } = useContentStateSession();
+  const { aiState, aiStateStatus } = useAIState();
 
-  const isLoading = Object.values(loadingState).includes(true);
+  const isLoading =
+    Object.values(loadingState).includes(true) ||
+    !aiState ||
+    !aiStateStatus ||
+    !spaceStatus?.valid;
   return (
     <Flex
       flexDirection="column"
@@ -39,6 +39,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = ({
         paddingRight: tokens.spacingL,
         paddingTop: 0,
         paddingBottom: tokens.spacingM,
+        minHeight: isLoading ? 234 : 0,
       }}
     >
       {isLoading ? (

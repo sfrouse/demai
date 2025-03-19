@@ -12,7 +12,7 @@ import LoadingIcon from "../../LoadingIcon";
 import ContentPanelHeader from "../ContentPanelHeader";
 import tokens from "@contentful/f36-tokens";
 import Divider from "../../Divider";
-import { useContentStateSession } from "../../../locations/page/ContentStateContext/ContentStateContext";
+import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
 
 interface ComponentsContentProps {
   sdk: PageAppSDK;

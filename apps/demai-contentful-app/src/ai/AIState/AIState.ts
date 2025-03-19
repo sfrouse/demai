@@ -6,7 +6,7 @@ import createAIPromptEngine, {
 import { nanoid } from "nanoid";
 import { AIPromptEngine } from "./AIPromptEngine/AIPromptEngine";
 import createPrompt from "./utils/createPrompt";
-import { ContentState } from "../../locations/page/ContentStateContext/ContentStateContext";
+import { ContentState } from "../../contexts/ContentStateContext/ContentStateContext";
 
 export default class AIState {
   key: string; // Unique key for React lists

@@ -11,48 +11,45 @@ import PromptAreaNavList, {
 import ConversationPanel from "../../components/ConversationPanel/ConversationPanel";
 import ContentPanel from "../../components/ContentPanel/ContentPanel";
 import AIState from "../../ai/AIState/AIState";
-import { AIStateConfig, AIStateStatus } from "../../ai/AIState/AIStateTypes";
-import AISessionManager from "../../ai/AIState/AISessionManager";
+import { AIStateConfig } from "../../ai/AIState/AIStateTypes";
 import findAISessionManager from "./utils/findAISessionManager";
-import validateDemAIContentModel from "../../ai/mcp/designSystemMCP/contentTypes/validateDemAIContentModel";
+import { useAIState } from "../../contexts/AIStateContext/AIStateContext";
+import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
 
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
+  const { spaceStatus, validateSpace } = useContentStateSession();
+  const {
+    aiStateConfig,
+    setAIStateConfig,
+    setAIState,
+    setAIStateStatus,
+    setAISession,
+    setAISessionManager,
+  } = useAIState();
   const [navFocus, setNavFocus] = useState<PromptAreas>("components");
   const [invalidated, setInvalidated] = useState<number>(0);
-  const [spaceIsValid, setSpaceIsValid] = useState<boolean>(true);
-
-  // v4
-  const [aiStateConfig, setAIStateConfig] = useState<AIStateConfig>();
-  const [aiState, setAIState] = useState<AIState>();
-  const [aiStateStatus, setAIStateStatus] = useState<AIStateStatus>();
-  const [, setAISessionManager] = useState<AISessionManager>();
-  const [aiSession, setAISession] = useState<AIState[]>([]);
 
   useEffect(() => {
-    (async () => {
-      // Save Config
-      const params = sdk.parameters.installation as AppInstallationParameters;
-      const newAIConfig: AIStateConfig = {
-        cma: params.cma,
-        openAiApiKey: params.openai,
-        spaceId: sdk.ids.space,
-        environmentId: sdk.ids.environment,
-      };
-      setAIStateConfig(newAIConfig);
+    // Save Config
+    const params = sdk.parameters.installation as AppInstallationParameters;
+    const newAIConfig: AIStateConfig = {
+      cma: params.cma,
+      openAiApiKey: params.openai,
+      spaceId: sdk.ids.space,
+      environmentId: sdk.ids.environment,
+    };
+    setAIStateConfig(newAIConfig);
 
-      // Make sure Space is set up correctly
-      const isValid = await validateDemAIContentModel(
-        params.cma,
-        sdk.ids.space,
-        sdk.ids.environment
-      );
-      setSpaceIsValid(isValid.valid);
-      if (isValid.valid === false) {
-        setNavFocus("settings");
-      }
-    })();
+    // Make sure Space is set up correctly
+    validateSpace();
   }, []);
+
+  useEffect(() => {
+    if (spaceStatus?.valid === false) {
+      setNavFocus("settings");
+    }
+  }, [spaceStatus]);
 
   // Navigation was changed...
   useEffect(() => {
@@ -110,24 +107,14 @@ const Page = () => {
           marginRight: tokens.spacingL,
         }}
       >
-        <PromptAreaNavList
-          navFocus={navFocus}
-          setNavFocus={setNavFocus}
-          spaceIsValid={spaceIsValid}
-        />
+        <PromptAreaNavList navFocus={navFocus} setNavFocus={setNavFocus} />
         <ContentPanel
           navFocus={navFocus}
           sdk={sdk}
           invalidated={invalidated}
           invalidate={() => setInvalidated((prev) => prev + 1)}
-          setSpaceIsValid={setSpaceIsValid}
         />
-        <ConversationPanel
-          aiSession={aiSession}
-          aiState={aiState}
-          aiStateStatus={aiStateStatus}
-          spaceIsValid={spaceIsValid}
-        />
+        <ConversationPanel />
       </Flex>
     </Flex>
   );

@@ -9,11 +9,24 @@ import {
   DEMAI_COMPONENT_EXPECTED_FIELDS,
 } from "../components/demaiComponentCType";
 
+export type DEMAI_VALID_ENTRY = {
+  exists: boolean;
+  fieldsValid: boolean;
+  valid: boolean;
+};
+
+export type DEMAI_VALID = {
+  valid: boolean;
+  componentContentType: DEMAI_VALID_ENTRY;
+  tokensContentType: DEMAI_VALID_ENTRY;
+  tokensSingleton: DEMAI_VALID_ENTRY;
+};
+
 export default async function validateDemAIContentModel(
   cmaToken: string,
   spaceId: string,
   environmentId: string
-) {
+): Promise<DEMAI_VALID> {
   const client = createClient({ accessToken: cmaToken });
   const space = await client.getSpace(spaceId);
   const environment = await space.getEnvironment(environmentId);
@@ -44,7 +57,11 @@ export default async function validateDemAIContentModel(
   return {
     componentContentType,
     tokensContentType,
-    tokensSingleton: { exists: tokensSingleton },
+    tokensSingleton: {
+      exists: tokensSingleton,
+      fieldsValid: true,
+      valid: tokensSingleton,
+    },
     valid:
       tokensContentType.valid && componentContentType.valid && tokensSingleton,
   };

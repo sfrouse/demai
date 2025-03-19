@@ -13,7 +13,7 @@ import tokens from "@contentful/f36-tokens";
 import Divider from "../../Divider";
 import LoadingIcon from "../../LoadingIcon";
 import ContentPanelHeader from "../ContentPanelHeader";
-import { useContentStateSession } from "../../../locations/page/ContentStateContext/ContentStateContext";
+import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
 
 interface ContentTypesProps {
   sdk: PageAppSDK;

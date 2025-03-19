@@ -1,4 +1,4 @@
-import { ContentState } from "../../../../../locations/page/ContentStateContext/ContentStateContext";
+import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import AIState from "../../../AIState";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import * as icons from "@contentful/f36-icons";
