@@ -43,84 +43,82 @@ const ContentModelContent = () => {
           <LoadingIcon />
         ) : (
           <>
-            {contentState.contentTypes?.items
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((contentType: ContentType) => (
-                <Flex
-                  key={contentType.sys.id}
-                  flexDirection="column"
-                  style={{
-                    padding: `${tokens.spacingS} ${tokens.spacingXs}`,
-                    cursor: "hand",
-                  }}
-                >
-                  <Flex flexDirection="row" alignItems="center">
-                    <Text
-                      fontSize="fontSizeL"
+            {contentState.contentTypes?.map((contentType: ContentType) => (
+              <Flex
+                key={contentType.sys.id}
+                flexDirection="column"
+                style={{
+                  padding: `${tokens.spacingS} ${tokens.spacingXs}`,
+                  cursor: "hand",
+                }}
+              >
+                <Flex flexDirection="row" alignItems="center">
+                  <Text
+                    fontSize="fontSizeL"
+                    style={{
+                      color: tokens.gray800,
+                    }}
+                  >
+                    {contentType.name}{" "}
+                    <span
                       style={{
-                        color: tokens.gray800,
+                        fontSize: 11,
+                        color: tokens.gray600,
                       }}
                     >
-                      {contentType.name}{" "}
-                      <span
-                        style={{
-                          fontSize: 11,
-                          color: tokens.gray600,
-                        }}
-                      >
-                        {contentType.sys.id}
-                      </span>{" "}
-                      {contentType.sys.publishedCounter === 0 ? (
-                        <EntityStatusBadge entityStatus="draft" />
-                      ) : null}
-                    </Text>
-                    <div style={{ flex: 1 }}></div>
-                    <IconButton
-                      variant="transparent"
-                      aria-label="Open in Contentful"
-                      size="small"
-                      onClick={async () => {
-                        window.open(
-                          `https://app.contentful.com/spaces/${sdk.ids.space}/environments/${sdk.ids.environment}/content_types/${contentType.sys.id}/fields`,
-                          "_blank"
-                        );
-                      }}
-                      icon={<icons.EntryIcon />}
-                    />
-                    <IconButton
-                      variant="transparent"
-                      aria-label="Edit in DemAI"
-                      isDisabled={contentType.name.indexOf("demai-") === 0}
-                      size="small"
-                      onClick={async () => {
-                        await setContentType(contentType.sys.id);
-                        setRoute({
-                          navigation: "content_model",
-                          contentTypeId: contentType.sys.id,
-                          aiStateEngines: [AIPromptEngineID.EDIT_CONTENT_TYPE],
-                        });
-                      }}
-                      icon={<icons.EditIcon />}
-                    />
-                  </Flex>
-                  <Caption
-                    style={{
-                      color: tokens.gray600,
-                    }}
-                  >
-                    {contentType.sys.id}
-                  </Caption>
-                  <Text
-                    fontSize="fontSizeS"
-                    style={{
-                      color: tokens.gray700,
-                    }}
-                  >
-                    {contentType.description}
+                      {contentType.sys.id}
+                    </span>{" "}
+                    {contentType.sys.publishedCounter === 0 ? (
+                      <EntityStatusBadge entityStatus="draft" />
+                    ) : null}
                   </Text>
-                  <Divider style={{ marginBottom: 0 }} />
+                  <div style={{ flex: 1 }}></div>
+                  <IconButton
+                    variant="transparent"
+                    aria-label="Open in Contentful"
+                    size="small"
+                    onClick={async () => {
+                      window.open(
+                        `https://app.contentful.com/spaces/${sdk.ids.space}/environments/${sdk.ids.environment}/content_types/${contentType.sys.id}/fields`,
+                        "_blank"
+                      );
+                    }}
+                    icon={<icons.EntryIcon />}
+                  />
+                  <IconButton
+                    variant="transparent"
+                    aria-label="Edit in DemAI"
+                    isDisabled={contentType.name.indexOf("demai-") === 0}
+                    size="small"
+                    onClick={async () => {
+                      await setContentType(contentType.sys.id);
+                      setRoute({
+                        navigation: "content_model",
+                        contentTypeId: contentType.sys.id,
+                        aiStateEngines: [AIPromptEngineID.EDIT_CONTENT_TYPE],
+                      });
+                    }}
+                    icon={<icons.EditIcon />}
+                  />
                 </Flex>
-              ))}
+                <Caption
+                  style={{
+                    color: tokens.gray600,
+                  }}
+                >
+                  {contentType.sys.id}
+                </Caption>
+                <Text
+                  fontSize="fontSizeS"
+                  style={{
+                    color: tokens.gray700,
+                  }}
+                >
+                  {contentType.description}
+                </Text>
+                <Divider style={{ marginBottom: 0 }} />
+              </Flex>
+            ))}
           </>
         )}
       </Flex>

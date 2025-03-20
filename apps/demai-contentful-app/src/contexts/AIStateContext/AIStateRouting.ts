@@ -1,5 +1,5 @@
 import { AIPromptEngineID } from "../../ai/AIState/utils/createAIPromptEngine";
-import { PromptAreas } from "../../components/PromptAreaNavList";
+import { PromptAreas } from "../../components/MainNav";
 
 export type AIStateRoute = {
   navigation: PromptAreas;

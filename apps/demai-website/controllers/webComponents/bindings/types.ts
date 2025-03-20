@@ -1,8 +1,7 @@
-export type Binding =
-  | { model: string; view: string }
-  | { model: string; view: [string, (prop: string, context: any) => string] }
-  | { model: string; view: { replace: boolean } }
-  | { model: string; view: { slot: string } };
+export type ModelBindings = {
+  modelId: string;
+  views: BindingView[];
+};
 
 export type BindingView = {
   id: string;
@@ -10,7 +9,8 @@ export type BindingView = {
   bindings: Binding[];
 };
 
-export type ModelBindings = {
-  modelId: string;
-  views: BindingView[];
-};
+export type Binding =
+  | { model: string; view: string }
+  | { model: string; view: [string, (prop: string, context: any) => string] }
+  | { model: string; view: { replace: boolean } }
+  | { model: string; view: { slot: string } };

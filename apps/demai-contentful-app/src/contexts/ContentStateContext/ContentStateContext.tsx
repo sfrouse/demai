@@ -17,7 +17,7 @@ import validateDemAIContentModel, {
 
 // Define the shape of your session data
 export interface ContentState {
-  contentTypes?: Collection<ContentType, ContentTypeProps>;
+  contentTypes?: ContentType[]; // Collection<ContentType, ContentTypeProps>;
   contentType?: ContentType;
   tokens?: any;
   css?: string;
@@ -91,7 +91,9 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         const space = await client.getSpace(sdk.ids.space);
         const environment = await space.getEnvironment(sdk.ids.environment);
         const contentTypes = await environment.getContentTypes();
-        payload = contentTypes;
+        payload = contentTypes.items.sort((a, b) =>
+          a.sys.id.localeCompare(b.sys.id)
+        );
         break;
       }
       case "tokens": {
@@ -114,7 +116,6 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         payload = css;
         break;
       }
-
       case "ai": {
         const css = await getLatestTokens(
           params.cma,
@@ -156,7 +157,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!contentTypes) {
       contentTypes = await loadProperty("contentTypes");
     }
-    const contentType = contentTypes?.items.find(
+    const contentType = contentTypes?.find(
       (ctype) => ctype.sys.id === contentTypeId
     );
     dispatch({

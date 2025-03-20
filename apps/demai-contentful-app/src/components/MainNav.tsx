@@ -9,7 +9,7 @@ import { useAIState } from "../contexts/AIStateContext/AIStateContext";
 
 type NAVIGATION_ENTRY = {
   label: string;
-  header?: string;
+  section_header?: string;
   end?: boolean;
   aiStateEngines: AIPromptEngineID[];
 };
@@ -17,14 +17,14 @@ type NAVIGATION_ENTRY = {
 export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
   research: {
     label: "Research",
-    header: "Prospect Research",
+    section_header: "Prospect Research",
     end: true,
     aiStateEngines: [AIPromptEngineID.OPEN],
   },
   content_model: {
     label: "Content Types",
-    header: "Space Actions",
-    aiStateEngines: [AIPromptEngineID.CONTENT_MODEL],
+    section_header: "Space Actions",
+    aiStateEngines: [AIPromptEngineID.CONTENT_MODEL, AIPromptEngineID.OPEN],
   },
   entries: {
     label: "Entries / Content",
@@ -37,7 +37,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
   },
   design_tokens: {
     label: "Design Tokens",
-    header: "Design System",
+    section_header: "Design System",
     aiStateEngines: [AIPromptEngineID.DESIGN_TOKENS, AIPromptEngineID.OPEN],
   },
   components: {
@@ -46,24 +46,31 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
     aiStateEngines: [
       AIPromptEngineID.COMPONENT_DEFINITIONS,
       AIPromptEngineID.WEB_COMPONENTS,
-      AIPromptEngineID.COMPONENT_BINDING,
+      AIPromptEngineID.BINDING,
+      AIPromptEngineID.OPEN,
     ],
+  },
+  pages: {
+    label: "Pages",
+    section_header: "Website",
+    end: true,
+    aiStateEngines: [AIPromptEngineID.OPEN],
   },
   space: {
     label: "Space",
-    header: "Configuration",
+    section_header: "Configuration",
     aiStateEngines: [AIPromptEngineID.OPEN],
   },
 } as const;
 
 export type PromptAreas = keyof typeof NAVIGATION;
 
-const PromptAreaNavList = () => {
+const MainNav = () => {
   const { spaceStatus } = useContentStateSession();
   const { route, setRoute } = useAIState();
   const navEntries = Object.entries(NAVIGATION) as [
     PromptAreas,
-    { label: string; header?: string; end?: boolean }
+    { label: string; section_header?: string; end?: boolean }
   ][];
 
   return (
@@ -86,13 +93,13 @@ const PromptAreaNavList = () => {
         DemAI
       </Heading>
       <Divider />
-      {navEntries.map(([key, { label, end, header }], index) => {
+      {navEntries.map(([key, { label, end, section_header }], index) => {
         if (key === "settings") return;
         return (
           <React.Fragment key={key}>
-            {header && (
+            {section_header && (
               <SectionHeading style={{ marginBottom: tokens.spacingXs }}>
-                {header}
+                {section_header}
               </SectionHeading>
             )}
             <NavList.Item
@@ -118,4 +125,4 @@ const PromptAreaNavList = () => {
   );
 };
 
-export default PromptAreaNavList;
+export default MainNav;

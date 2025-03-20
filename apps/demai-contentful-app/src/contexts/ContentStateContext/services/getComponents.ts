@@ -19,7 +19,7 @@ export default async function getComponents(
     const entry = await environment.getEntries({
       content_type: DEMAI_COMPONENT_CTYPE_ID,
     });
-    return entry.items || [];
+    return entry.items.sort((a, b) => a.sys.id.localeCompare(b.sys.id)) || [];
   } catch (error: any) {
     if (error.name === "NotFound") {
       console.error(

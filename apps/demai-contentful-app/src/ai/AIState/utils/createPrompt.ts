@@ -1,6 +1,7 @@
 import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
 import AIState from "../AIState";
 import { AIStateContentPrefix, AIStateStatus } from "../AIStateTypes";
+import createContextContentSelectionsDefaults from "./createContextContentSelectionsDefaults";
 
 export default function createPrompt(
   aiState: AIState,
@@ -11,15 +12,16 @@ export default function createPrompt(
       ? aiState.promptEngine.content(aiState, contentState)
       : "";
   }
-  return [
-    ..._processContextContent(
-      aiState.promptEngine.contextContent(contentState),
-      aiState.contextContentSelections
-    ),
-    aiState.promptEngine.content
-      ? aiState.promptEngine.content(aiState, contentState)
-      : "",
-  ].join(" ");
+
+  const contextPrompt = _processContextContent(
+    aiState.promptEngine.contextContent(contentState),
+    aiState.contextContentSelections
+  );
+  const content = aiState.promptEngine.content
+    ? aiState.promptEngine.content(aiState, contentState)
+    : "";
+
+  return [...contextPrompt, content].join(" ");
 }
 
 function _processContextContent(
@@ -35,7 +37,7 @@ function _processContextContent(
         contextContentSelections[item.id] ||
         item.defaultValue ||
         (item.options[0] as any);
-      output.push(val);
+      output.push(`\`${val}\``);
       if (item.paths) {
         let path, pathIndex;
         if (item.paths) {
@@ -49,5 +51,7 @@ function _processContextContent(
       }
     }
   });
+
+  console.log("output", output);
   return output;
 }

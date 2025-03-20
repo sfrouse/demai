@@ -23,13 +23,6 @@ export const DEMAI_COMPONENT_EXPECTED_FIELDS = [
     required: false,
   },
   {
-    id: "aiDefinition",
-    name: "AI Definition",
-    type: "Object",
-    localized: false,
-    required: false,
-  },
-  {
     id: "javascript",
     name: "Javascript",
     type: "Text",
@@ -37,8 +30,8 @@ export const DEMAI_COMPONENT_EXPECTED_FIELDS = [
     required: false,
   },
   {
-    id: "binding",
-    name: "Binding",
+    id: "bindings",
+    name: "Bindings",
     type: "Object",
     localized: false,
     required: false,

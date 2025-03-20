@@ -7,6 +7,7 @@ import { nanoid } from "nanoid";
 import { AIPromptEngine } from "./AIPromptEngine/AIPromptEngine";
 import createPrompt from "./utils/createPrompt";
 import { ContentState } from "../../contexts/ContentStateContext/ContentStateContext";
+import createContextContentSelectionsDefaults from "./utils/createContextContentSelectionsDefaults";
 
 export default class AIState {
   key: string; // Unique key for React lists
@@ -57,7 +58,6 @@ export default class AIState {
 
     // Prompt Engine
     this.promptEngine = createAIPromptEngine(this.promptEngineId, this);
-    // create default contextContentSelections...
 
     if (isIntroState) {
       this.response = this.promptEngine.introMessage;
@@ -150,6 +150,15 @@ export default class AIState {
   }
 
   createPrompt(contentState: ContentState): string {
+    const defaultSelections = createContextContentSelectionsDefaults(
+      this.promptEngine.contextContent(contentState)
+    );
+    this.contextContentSelections = {
+      ...defaultSelections,
+      ...this.contextContentSelections,
+    };
+    this.updateStatus();
+
     return createPrompt(this, contentState);
   }
 

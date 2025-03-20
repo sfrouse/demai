@@ -6,7 +6,7 @@ import { useContentStateSession } from "../../../../contexts/ContentStateContext
 import { useAIState } from "../../../../contexts/AIStateContext/AIStateContext";
 import tokens from "@contentful/f36-tokens";
 import Divider from "../../../Divider";
-import { NAVIGATION } from "../../../PromptAreaNavList";
+import { NAVIGATION } from "../../../MainNav";
 
 const ContentTypeContent = () => {
   const { contentState, loadProperty, loadingState } = useContentStateSession();
@@ -21,7 +21,7 @@ const ContentTypeContent = () => {
     }
   }, [invalidated]);
 
-  const contentType = contentState.contentTypes?.items.find(
+  const contentType = contentState.contentTypes?.find(
     (ctype) => ctype.sys.id === route?.contentTypeId
   );
   const isLoading = loadingState.contentTypes === true || !contentType;

@@ -4,9 +4,7 @@ import { PageAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { AppInstallationParameters } from "../config/ConfigScreen";
 import tokens from "@contentful/f36-tokens";
-import PromptAreaNavList, {
-  NAVIGATION,
-} from "../../components/PromptAreaNavList";
+import MainNav, { NAVIGATION } from "../../components/MainNav";
 import ConversationPanel from "../../components/ConversationPanel/ConversationPanel";
 import ContentPanel from "../../components/ContentPanel/ContentPanel";
 import { AIStateConfig } from "../../ai/AIState/AIStateTypes";
@@ -72,7 +70,7 @@ const Page = () => {
           marginRight: tokens.spacingL,
         }}
       >
-        <PromptAreaNavList />
+        <MainNav />
         <ContentPanel />
         <ConversationPanel />
       </Flex>

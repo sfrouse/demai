@@ -10,20 +10,37 @@ export class CreateWebComponentEngine extends AIPromptEngine {
 
     this.system = {
       role: "system",
-      content: `You are an expert in Design Systems and are helping guide a Solutions Engineer navigate creating a web component based on a component definition.
-      The web compontent should be entirely self contained and contain only JavaScript code.`,
+      content: `
+
+You are an expert in Design Systems and are helping guide a Solutions Engineer navigate creating a web component based on a component definition.
+The web compontent should be entirely self contained and contain only JavaScript code.
+Make sure to make the attributes responsive, use @property from lit elements.
+Do not create another component definition, create ONLY a web component using the component definition.
+
+`,
     };
     this.toolType = "DemAIDesignSystem";
     this.toolFilters = [CREATE_WEB_COMPONENT_TOOL_NAME];
+    this.introMessage =
+      "Let's create a web component, what would you like to create?";
+    this.executionPrompt = "Creating a component definition...";
+    this.placeholder = "Describe what you want this component to do...";
+    this.prompts = {
+      cancel: "Nope, Let's Rethink",
+      run: "Yes, Let's Create This",
+      cancelIcon: icons.DeleteIcon,
+      runIcon: icons.StarIcon,
+    };
 
+    // ======= CONTENT CONTEXT ========
     this.contextContent = (contentState: ContentState) => {
       let defaultComponentValue = "",
         componentOptions: string[] = [];
       if (contentState.components && contentState.components.length > 0) {
-        defaultComponentValue = `\`${contentState.components[0].sys.id}\``;
+        defaultComponentValue = `${contentState.components[0].sys.id}`;
         componentOptions =
           contentState.components?.map(
-            (comp) => `\`${comp.sys.id}\`` || "unknown"
+            (comp) => `${comp.sys.id}` || "unknown"
           ) || [];
       }
       return [
@@ -33,14 +50,22 @@ export class CreateWebComponentEngine extends AIPromptEngine {
           options: componentOptions,
           defaultValue: defaultComponentValue,
         },
-        "component.",
+        "component definition.",
       ];
     };
+
+    // ======= CONTENT ========
     this.content = (aiState: AIState, contentState: ContentState) => {
       let extraPrompt = "";
       const compDefEntry = contentState.components?.find(
         (comp) =>
           comp.sys.id === aiState.contextContentSelections["componentId"]
+      );
+      console.log(
+        "compDefEntry, contentState",
+        compDefEntry,
+        contentState,
+        aiState
       );
       if (compDefEntry && compDefEntry.fields?.componentDefinition) {
         const compDef = compDefEntry.fields?.componentDefinition["en-US"];
@@ -59,33 +84,30 @@ export class CreateWebComponentEngine extends AIPromptEngine {
           tag: compDef["x-cdef"]?.tag,
           attributes,
         };
-        extraPrompt = `Do not create another component definition, create ONLY a web component using this component definition: ${JSON.stringify(
-          compDefSimple
-        )}`;
+        extraPrompt = `
+        
+Base the web component on this component definition:
+
+\`\`\`        
+${JSON.stringify(compDefSimple)}
+\`\`\`
+
+`;
       }
 
       // now add tokens...
-      extraPrompt = `${extraPrompt}. Use 'dmai' as the prefix. Use only these css properties ( for example: \`color: var( --dami-text-default );\` ).
-      Avoid using any property that is not a css variable, these are all the variable names:
+      extraPrompt = `${extraPrompt}
+
+Use 'dmai' as the prefix. Use only these css properties ( for example: \`color: var( --dami-text-default );\` ).
+Avoid using any property that is not a css variable, these are all the variable names:
 
 \`\`\`
 ${contentState.ai}
-\`\`\``;
+\`\`\`
+
+`;
 
       return `${aiState.userContent}. ${extraPrompt}`;
-    };
-
-    this.introMessage =
-      "Let's create a web component, what would you like to create?";
-
-    this.executionPrompt = "Creating a component definition...";
-    this.placeholder = "Describe what you want this component to do...";
-
-    this.prompts = {
-      cancel: "Nope, Let's Rethink",
-      run: "Yes, Let's Create This",
-      cancelIcon: icons.DeleteIcon,
-      runIcon: icons.StarIcon,
     };
   }
 }

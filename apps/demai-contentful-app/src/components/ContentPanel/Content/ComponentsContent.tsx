@@ -32,9 +32,16 @@ const ComponentsContent = () => {
       if (!forceReload) setLocalInvalidated(invalidated);
       loadProperty("ai", forceReload);
     }
+    if (!contentState.contentTypes || forceReload) {
+      if (!forceReload) setLocalInvalidated(invalidated);
+      loadProperty("contentTypes", forceReload);
+    }
   }, [invalidated]);
 
-  const isLoading = loadingState.components === true;
+  const isLoading =
+    loadingState.components === true ||
+    loadingState.ai === true ||
+    loadingState.contentTypes === true;
 
   return (
     <>
@@ -46,11 +53,14 @@ const ComponentsContent = () => {
           <Flex flexDirection="column">
             {contentState.components
               ?.slice() // Make a shallow copy to avoid mutating the original array
-              .sort((a, b) =>
-                a.fields?.title["en-US"].localeCompare(
-                  b.fields?.title.fields?.title["en-US"]
-                )
-              ) // Sort by title
+              .sort((a, b) => {
+                if (!a.fields?.title || !b.fields?.title) {
+                  return 0;
+                }
+                return a.fields?.title["en-US"].localeCompare(
+                  b.fields?.title["en-US"]
+                );
+              }) // Sort by title
               .map((comp: any) => (
                 <Flex
                   key={comp.sys.id}
@@ -125,7 +135,7 @@ const ComponentsContent = () => {
                       Web Comp
                     </Badge>
                     <Badge
-                      variant={comp.fields.binding ? "primary" : "secondary"}
+                      variant={comp.fields.bindings ? "primary" : "secondary"}
                     >
                       Bindings
                     </Badge>

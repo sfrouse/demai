@@ -10,9 +10,12 @@ export class CreateComponentDefinitionEngine extends AIPromptEngine {
 
     this.system = {
       role: "system",
-      content: `You are an expert in Design Systems and are helping guide a Solutions Engineer navigate creating a component definition.
-      This will be used as a base for creating all other kinds of UI components such as web components and Figma components.
-      Make sure to tell the SE what name and id you are going to use, but summarize the properties.`,
+      content: `
+You are an expert in Design Systems and are helping guide a Solutions Engineer navigate creating a component definition.
+This will be used as a base for creating all other kinds of UI components such as web components and Figma components.
+Make sure to tell the SE what name and id you are going to use, but summarize the properties.
+      
+`,
     };
     this.toolType = "DemAIDesignSystem";
     this.toolFilters = [CREATE_COMPONENT_DEFINITION_TOOL_NAME];
@@ -57,11 +60,18 @@ export class CreateComponentDefinitionEngine extends AIPromptEngine {
         });
       }
 
-      return `${aiState.userContent}. If you do something design oriented, try to follow the patterns in these css variables from the design system
+      return `
+${aiState.userContent}.
+
+If you do something design oriented, try to follow the patterns in these css variables from the design system.
+Do not accept css variables as arguments, but use them to take abstract arguments...like "primary" or "secondary".
+The actual implementation will deal with mapping to actuall css variables.
       
 \`\`\`
 ${contentState.ai}
-\`\`\``;
+\`\`\`
+
+`;
     };
 
     this.introMessage =
