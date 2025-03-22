@@ -11,7 +11,6 @@ export class CreateWebComponentEngine extends AIPromptEngine {
     this.system = {
       role: "system",
       content: `
-
 You are an expert in Design Systems and are helping guide a Solutions Engineer navigate creating a web component based on a component definition.
 The web compontent should be entirely self contained and contain only JavaScript code.
 Make sure to make the attributes responsive, use @property from lit elements.

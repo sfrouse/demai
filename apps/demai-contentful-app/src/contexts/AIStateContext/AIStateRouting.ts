@@ -5,6 +5,7 @@ export type AIStateRoute = {
   navigation: PromptAreas;
   contentTypeId?: string;
   componentId?: string;
+  componentFocusId?: number;
   // ...
   aiStateEngines: AIPromptEngineID[];
   aiStateEngineFocus?: number;

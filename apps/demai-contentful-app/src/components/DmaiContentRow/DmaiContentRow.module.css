@@ -1,0 +1,12 @@
+
+
+
+/* .dmai-content-row {
+    border: 1px solid red;
+} */
+
+.content:hover {
+    background-color: var( --gray-100 );
+    cursor: pointer;
+    border-radius: var( --border-radius-medium );
+}

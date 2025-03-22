@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>!!!!</title>
+</head>
+
+<body>
+    <h1>esbuild-wasm Compiled Web Component</h1>
+
+    <!-- Container where the component will be rendered -->
+    <div id="container"></div>
+
+    <script type="module">
+        import 'https://cdn.jsdelivr.net/npm/lit@2.5.0/+esm';
+        import 'https://cdn.jsdelivr.net/npm/lit@2.5.0/decorators.js';
+    </script>
+
+    <!-- Load esbuild-wasm from a CDN -->
+    <script type="module">
+        // import * as esbuild from 'https://app.unpkg.com/esbuild-wasm@0.25.1/files/esm/browser.min.js';
+        import * as esbuild from 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.25.1/esm/browser.min.js';
+
+        await esbuild.initialize({
+            worker: true,
+            wasmURL: "https://cdn.jsdelivr.net/npm/esbuild-wasm@0.25.1/esbuild.wasm",
+        });
+        const tsCode = `
+                import { LitElement, html, css } from 'https://cdn.jsdelivr.net/npm/lit@2.5.0/+esm';
+                import { property } from 'https://cdn.jsdelivr.net/npm/lit@2.5.0/decorators.js';
+
+
+                class MyCounter extends LitElement {
+                    @property({ type: Number, reflect: true }) count = 0;
+                    @property({ type: String, reflect: true }) color = 'blue';
+
+                    static styles = css\`
+                        :host {
+                            display: block;
+                            font-family: sans-serif;
+                            text-align: center;
+                        }
+                        button {
+                            background-color: var(--color, blue);
+                            color: white;
+                            border: none;
+                            padding: 10px;
+                            cursor: pointer;
+                            font-size: 16px;
+                        }
+                    \`;
+
+                    _increment() {
+                        this.count++;
+                        this.dispatchEvent(new CustomEvent('counterChanged', { detail: { count: this.count } }));
+                    }
+
+                    render() {
+                        return html\`
+                            <p>Count: <strong>\${this.count}</strong></p>
+                            <button @click="\${this._increment}" style="background-color: \${this.color}">
+                                Increment
+                            </button>
+                        \`;
+                    }
+                }
+
+                customElements.define("my-counter", MyCounter);
+            `;
+
+        const result = await esbuild.transform(tsCode, {
+                loader: 'ts',
+                target: 'es2015',
+                format: 'esm',
+            });
+        
+        console.log('result', result);
+        document.getElementById('output').innerText = result.code;
+
+        // new Function(result.code)();
+
+        // const script = document.createElement('script');
+        // script.type = 'module';
+        // script.textContent = result.code;
+        // document.body.appendChild(script);
+    </script>
+    <div style="border: 2px solid red;"">
+        Component:
+    <my-counter></my-counter>
+    </div>
+
+    Code:
+    <pre id="output"></pre>
+
+    
+</body>
+
+</html>

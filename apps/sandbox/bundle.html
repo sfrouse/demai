@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lit Web Component</title>
+    <!-- <script src="./dist/my-component.js" type="module"></script> -->
+    <script type="module">
+        // import { LitElement, html, css } from 'https://cdn.jsdelivr.net/npm/lit@2.5.0/+esm';
+        // import "./dist/lit.js";
+        import { html, css, LitElement } from './lit-bundle.js';
+
+
+        class MyCounter extends LitElement {
+            static properties = {
+                count: { type: Number, reflect: true },
+                color: { type: String, reflect: true }
+            };
+
+            constructor() {
+                super();
+                this.count = 0;
+                this.color = 'blue';
+            }
+
+            static styles = css`
+                :host {
+                    display: block;
+                    font-family: sans-serif;
+                    text-align: center;
+                }
+                button {
+                    background-color: var(--color, blue);
+                    color: white;
+                    border: none;
+                    padding: 10px;
+                    cursor: pointer;
+                    font-size: 16px;
+                }
+            `;
+
+            _increment() {
+                this.count++;
+                this.dispatchEvent(new CustomEvent('counterChanged', { detail: { count: this.count } }));
+            }
+
+            render() {
+                return html`
+                    <p>Count: <strong>${this.count}</strong></p>
+                    <button @click="${this._increment}" style="background-color: ${this.color}">
+                        Increment
+                    </button>
+                `;
+            }
+        }
+
+        customElements.define("my-counter", MyCounter);
+    </script>
+</head>
+
+<body>
+    <h2>Lit Web Component Example</h2>
+
+    <my-component></my-component>
+----
+    <!-- Web component with initial values -->
+    <my-counter color="purple" count="3"></my-counter>
+
+    <script>
+        document.addEventListener("counterChanged", (event) => {
+            console.log("Counter updated:", event.detail.count);
+        });
+    </script>
+</body>
+
+</html>

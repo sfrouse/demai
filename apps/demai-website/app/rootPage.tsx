@@ -99,7 +99,7 @@ export default async function RootPage({
       spaceId={params.spaceId}
       env="master"
     >
-      <style>{demaiTokens.fields.css}</style>
+      <style>{demaiTokens?.fields.css}</style>
       {/* <style>{website?.fields?.globalStyles?.css}</style>
       <script type="module">{bindingStr}</script> */}
       <TrackPage />

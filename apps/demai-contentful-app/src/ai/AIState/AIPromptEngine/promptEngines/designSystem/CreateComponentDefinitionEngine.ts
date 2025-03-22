@@ -62,6 +62,7 @@ Make sure to tell the SE what name and id you are going to use, but summarize th
 
       return `
 ${aiState.userContent}.
+Use \`dmai\` as the prefix for the component id. This will be used for the tag name in web components later.
 
 If you do something design oriented, try to follow the patterns in these css variables from the design system.
 Do not accept css variables as arguments, but use them to take abstract arguments...like "primary" or "secondary".

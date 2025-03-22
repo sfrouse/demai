@@ -28,8 +28,8 @@ const Page = () => {
     setAIStateConfig(newAIConfig);
     validateSpace();
     setRoute({
-      navigation: "components",
-      aiStateEngines: NAVIGATION["components"].aiStateEngines,
+      navigation: "content_model",
+      aiStateEngines: NAVIGATION["content_model"].aiStateEngines,
       aiStateEngineFocus: 0,
     });
   }, []);

@@ -20,8 +20,22 @@ const ContentPanelHeader = ({
 }: ContentPanelHeaderProps) => {
   const { setInvalidated } = useAIState();
   return (
-    <>
-      <Flex flexDirection="row" alignItems="center">
+    <Flex
+      flexDirection="column"
+      style={{
+        height: 76,
+        boxSizing: "border-box",
+      }}
+    >
+      <Flex
+        flexDirection="row"
+        alignItems="center"
+        style={{
+          padding: `0 ${tokens.spacingM}`,
+          paddingBottom: 0,
+          height: 66,
+        }}
+      >
         {goBack ? (
           <IconButton
             variant="transparent"
@@ -50,8 +64,8 @@ const ContentPanelHeader = ({
           />
         ) : null}
       </Flex>
-      <Divider />
-    </>
+      <Divider style={{ marginTop: 0 }} />
+    </Flex>
   );
 };
 

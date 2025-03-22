@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "demai-web-components": {
-      "signature": "436bbed7d82c771bd21719ec1d5f269d",
+      "signature": "657cc3c672d3e575c7fec9d9b759a13a",
       "file": true
     },
     "demai-design-system-core": {

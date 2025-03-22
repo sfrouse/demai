@@ -1,4 +1,5 @@
 import { AIPromptEngine } from "../AIPromptEngine/AIPromptEngine";
+import { ContentfulOpenToolingEngine } from "../AIPromptEngine/promptEngines/contentful/ContentfulOpenToolingEngine";
 import { CreateContentTypeEngine } from "../AIPromptEngine/promptEngines/contentful/CreateContentTypeEngine";
 import { EditContentTypeEngine } from "../AIPromptEngine/promptEngines/contentful/EditContentTypeEngine";
 import { ChangeTokenColorSetEngine } from "../AIPromptEngine/promptEngines/designSystem/ChangeTokenColorSetEngine";
@@ -20,7 +21,7 @@ export enum AIPromptEngineID {
   BINDING = "binding",
   SPACE = "space",
   OPEN = "open",
-  OPEN_TOOL = "open_tool",
+  CONTENTFUL_OPEN_TOOL = "contentful",
 }
 
 export default function createAIPromptEngine(
@@ -45,6 +46,9 @@ export default function createAIPromptEngine(
     }
     case AIPromptEngineID.BINDING: {
       return new CreateBindingEngine(aiState);
+    }
+    case AIPromptEngineID.CONTENTFUL_OPEN_TOOL: {
+      return new ContentfulOpenToolingEngine(aiState);
     }
     default: {
       return new AIPromptEngine(aiState); // OpenEndedAIAction;
