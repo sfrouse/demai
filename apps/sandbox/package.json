@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "main": "esbuild.js",
   "scripts": {
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "build:v2": "node scripts/main.mjs"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "esbuild": "^0.25.1",
+    "esbuild-wasm": "^0.25.1",
     "lit": "^3.2.1"
   }
 }

@@ -6,7 +6,6 @@ import {
   Text,
 } from "@contentful/f36-components";
 import tokens from "@contentful/f36-tokens";
-import * as icons from "@contentful/f36-icons";
 import Divider from "../Divider";
 import styles from "./DmaiContentRow.module.css";
 
@@ -39,7 +38,7 @@ export default function DmaiContentRow({
         flexDirection="column"
         className={styles.content}
         style={{
-          padding: `0 ${tokens.spacingXs} ${tokens.spacingS} ${tokens.spacingXs}`,
+          padding: `${tokens.spacingS}`,
         }}
       >
         <Flex flexDirection="row" alignItems="center">
@@ -71,7 +70,7 @@ export default function DmaiContentRow({
             )}
           </Text>
           <div style={{ flex: 1 }}></div>
-          <IconButton
+          {/* <IconButton
             variant="transparent"
             aria-label="Open"
             size="small"
@@ -81,7 +80,7 @@ export default function DmaiContentRow({
               // });
             }}
             icon={<icons.EditIcon />}
-          />
+          /> */}
         </Flex>
         {description && (
           <Text

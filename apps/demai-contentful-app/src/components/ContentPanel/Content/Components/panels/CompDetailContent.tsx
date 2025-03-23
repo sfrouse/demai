@@ -1,4 +1,4 @@
-import { Flex, Tabs } from "@contentful/f36-components";
+import { Button, Flex, IconButton, Tabs } from "@contentful/f36-components";
 import { useAIState } from "../../../../../contexts/AIStateContext/AIStateContext";
 import { useContentStateSession } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import ContentPanelHeader from "../../../ContentPanelHeader";
@@ -6,21 +6,65 @@ import { NAVIGATION } from "../../../../MainNav";
 import { AIPromptEngineID } from "../../../../../ai/AIState/utils/createAIPromptEngine";
 import tokens from "@contentful/f36-tokens";
 import LoadingIcon from "../../../../LoadingIcon";
+import { useSDK } from "@contentful/react-apps-toolkit";
+import * as icons from "@contentful/f36-icons";
+import precompiledCode from "../../../../../precompiled/packages";
+import transformExports from "./utils/transformExports";
+import generateWebCompInstance from "./utils/generateWebCompInstance";
+import EditablePage from "./EditablePage";
+import { useEffect, useState } from "react";
+import { Entry } from "contentful-management";
+
+export enum COMP_DETAIL_NAVIGATION {
+  DEFINITION = "definition",
+  WEB_COMP = "web-comp",
+  BINDINGS = "bindings",
+  PREVIEW = "preview",
+}
 
 export default function CompDetailContent() {
-  const { contentState, loadProperty, loadingState } = useContentStateSession();
-  const { invalidated, setRoute, route } = useAIState();
+  const sdk = useSDK();
+  const { contentState, loadingState } = useContentStateSession();
+  const { setRoute, route } = useAIState();
+  const [comp, setComp] = useState<Entry | undefined>();
+  const [localCDef, setLocalCDef] = useState<string>("");
+  const [localJavaScript, setLocalJavaScript] = useState<string>("");
+  const [localBindings, setLocalBindings] = useState<string>("");
 
   const isLoading =
     loadingState.components === true ||
     loadingState.ai === true ||
     loadingState.contentTypes === true;
 
-  const comp = contentState.components?.find(
-    (comp) => comp.sys.id === route?.componentId
-  );
+  useEffect(() => {
+    if (contentState.components) {
+      const newComp = contentState.components?.find(
+        (comp) => comp.sys.id === route?.componentId
+      );
+      setComp(newComp);
+      console.log("newComp", newComp);
+      if (newComp) {
+        setLocalCDef(
+          newComp.fields.componentDefinition &&
+            JSON.stringify(newComp.fields.componentDefinition["en-US"], null, 2)
+        );
+        setLocalJavaScript(
+          newComp.fields.javascript && newComp.fields.javascript["en-US"]
+        );
+        setLocalBindings(
+          newComp.fields.bindings &&
+            JSON.stringify(newComp.fields.bindings["en-US"], null, 2)
+        );
+      }
+    }
+  }, [
+    contentState,
+    setComp,
+    setLocalCDef,
+    setLocalJavaScript,
+    setLocalBindings,
+  ]);
 
-  console.log("comp", comp);
   if (!comp) {
     return null;
   }
@@ -36,7 +80,19 @@ export default function CompDetailContent() {
             aiStateEngines: NAVIGATION["components"].aiStateEngines,
           });
         }}
-      />
+      >
+        <IconButton
+          variant="transparent"
+          aria-label="Open"
+          size="small"
+          onClick={async () => {
+            await sdk.navigator.openEntry(comp.sys.id, {
+              slideIn: true,
+            });
+          }}
+          icon={<icons.EditIcon />}
+        />
+      </ContentPanelHeader>
       {isLoading ? (
         <LoadingIcon />
       ) : (
@@ -44,30 +100,39 @@ export default function CompDetailContent() {
           currentTab={`${route?.componentFocusId}`}
           style={{ flex: 1, display: "flex", flexDirection: "column" }}
           onTabChange={(tab: string) => {
-            const index = parseInt(tab);
+            // const index = parseInt(tab);
             setRoute({
               navigation: "components",
               componentId: comp.sys.id,
-              componentFocusId: index,
+              componentFocusId: tab as COMP_DETAIL_NAVIGATION,
               aiStateEngines: [AIPromptEngineID.OPEN],
             });
           }}
         >
           <Tabs.List>
-            <Tabs.Tab panelId={`${0}`}>Definition</Tabs.Tab>
-            <Tabs.Tab panelId={`${2}`}>Web Comp</Tabs.Tab>
-            <Tabs.Tab panelId={`${3}`}>Bindings</Tabs.Tab>
-            <Tabs.Tab panelId={`${1}`}>Preview</Tabs.Tab>
+            <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.DEFINITION}>
+              Definition
+            </Tabs.Tab>
+            <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.WEB_COMP}>
+              Web Comp
+            </Tabs.Tab>
+            <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.BINDINGS}>
+              Bindings
+            </Tabs.Tab>
+            <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.PREVIEW}>
+              Preview
+            </Tabs.Tab>
           </Tabs.List>
-          <Tabs.Panel id={`${0}`} style={{ flex: 1, position: `relative` }}>
+          <Tabs.Panel
+            id={COMP_DETAIL_NAVIGATION.DEFINITION}
+            style={{ flex: 1, position: `relative` }}
+          >
             <Flex
               flexDirection="column"
               style={{
                 backgroundColor: tokens.gray900,
                 color: tokens.colorWhite,
                 fontSize: tokens.fontSizeS,
-                padding: tokens.spacingM,
-                overflowY: "auto",
                 position: `absolute`,
                 top: 0,
                 bottom: 0,
@@ -75,26 +140,79 @@ export default function CompDetailContent() {
                 right: 0,
               }}
             >
-              <pre>
-                {comp.fields.componentDefinition &&
-                  JSON.stringify(
-                    comp.fields.componentDefinition["en-US"],
-                    null,
-                    2
-                  )}
-              </pre>
+              <div style={{ flex: 1 }}>
+                <EditablePage
+                  value={localCDef}
+                  onChange={(e: string) => {
+                    setLocalCDef(e);
+                  }}
+                />
+              </div>
+              <Flex
+                flexDirection="row"
+                justifyContent="flex-end"
+                gap={tokens.spacingXs}
+                style={{
+                  borderTop: `1px solid ${tokens.gray100}`,
+                  padding: `${tokens.spacingS} ${tokens.spacingM}`,
+                  backgroundColor: tokens.colorWhite,
+                }}
+              >
+                <Button variant="secondary">Cancel</Button>
+                <Button variant="primary">Save</Button>
+              </Flex>
             </Flex>
           </Tabs.Panel>
-          <Tabs.Panel id={`${1}`}>Browser</Tabs.Panel>
-          <Tabs.Panel id={`${2}`} style={{ flex: 1, position: `relative` }}>
+          <Tabs.Panel
+            id={COMP_DETAIL_NAVIGATION.PREVIEW}
+            style={{ flex: 1, position: `relative`, overflow: "hidden" }}
+          >
+            <iframe
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "none",
+              }}
+              srcDoc={`
+<html>
+  <head>
+    <script type='module'>
+      ${transformExports(
+        new TextDecoder().decode(
+          Uint8Array.from(atob(precompiledCode), (c) => c.charCodeAt(0))
+        )
+      )}
+      ${comp.fields.javascript && comp.fields.javascript["en-US"]}
+    </script>
+    <style>
+      html, body { padding: 0; margin: 0; }
+      ${contentState.css}
+    </style>
+  </head>
+  <body>
+    ${generateWebCompInstance(
+      comp.fields.componentDefinition &&
+        comp.fields.componentDefinition["en-US"]
+    )}
+    <pre style="white-space: pre-wrap;">${generateWebCompInstance(
+      comp.fields.componentDefinition &&
+        comp.fields.componentDefinition["en-US"],
+      true
+    )}</pre>
+  </body>
+</html>`}
+            />
+          </Tabs.Panel>
+          <Tabs.Panel
+            id={COMP_DETAIL_NAVIGATION.WEB_COMP}
+            style={{ flex: 1, position: `relative` }}
+          >
             <Flex
               flexDirection="column"
               style={{
                 backgroundColor: tokens.gray900,
                 color: tokens.colorWhite,
                 fontSize: tokens.fontSizeS,
-                padding: tokens.spacingM,
-                overflowY: "auto",
                 position: `absolute`,
                 top: 0,
                 bottom: 0,
@@ -102,20 +220,39 @@ export default function CompDetailContent() {
                 right: 0,
               }}
             >
-              <pre>
-                {comp.fields.javascript && comp.fields.javascript["en-US"]}
-              </pre>
+              <div style={{ flex: 1 }}>
+                <EditablePage
+                  value={localJavaScript}
+                  onChange={(e: string) => {
+                    setLocalJavaScript(e);
+                  }}
+                />
+              </div>
+              <Flex
+                flexDirection="row"
+                justifyContent="flex-end"
+                gap={tokens.spacingXs}
+                style={{
+                  borderTop: `1px solid ${tokens.gray100}`,
+                  padding: `${tokens.spacingS} ${tokens.spacingM}`,
+                  backgroundColor: tokens.colorWhite,
+                }}
+              >
+                <Button variant="secondary">Cancel</Button>
+                <Button variant="primary">Save</Button>
+              </Flex>
             </Flex>
           </Tabs.Panel>
-          <Tabs.Panel id={`${3}`} style={{ flex: 1, position: `relative` }}>
+          <Tabs.Panel
+            id={COMP_DETAIL_NAVIGATION.BINDINGS}
+            style={{ flex: 1, position: `relative` }}
+          >
             <Flex
               flexDirection="column"
               style={{
                 backgroundColor: tokens.gray900,
                 color: tokens.colorWhite,
                 fontSize: tokens.fontSizeS,
-                padding: tokens.spacingM,
-                overflowY: "auto",
                 position: `absolute`,
                 top: 0,
                 bottom: 0,
@@ -123,10 +260,27 @@ export default function CompDetailContent() {
                 right: 0,
               }}
             >
-              <pre>
-                {comp.fields.bindings &&
-                  JSON.stringify(comp.fields.bindings["en-US"], null, 2)}
-              </pre>
+              <div style={{ flex: 1 }}>
+                <EditablePage
+                  value={localBindings}
+                  onChange={(e: string) => {
+                    setLocalBindings(e);
+                  }}
+                />
+              </div>
+              <Flex
+                flexDirection="row"
+                justifyContent="flex-end"
+                gap={tokens.spacingXs}
+                style={{
+                  borderTop: `1px solid ${tokens.gray100}`,
+                  padding: `${tokens.spacingS} ${tokens.spacingM}`,
+                  backgroundColor: tokens.colorWhite,
+                }}
+              >
+                <Button variant="secondary">Cancel</Button>
+                <Button variant="primary">Save</Button>
+              </Flex>
             </Flex>
           </Tabs.Panel>
         </Tabs>

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Flex } from "@contentful/f36-components";
+import { Flex, IconButton } from "@contentful/f36-components";
 import LoadingIcon from "../../../LoadingIcon";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { useAIState } from "../../../../contexts/AIStateContext/AIStateContext";
 import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import { AIPromptEngineID } from "../../../../ai/AIState/utils/createAIPromptEngine";
-import CompDetailContent from "./panels/CompDetailContent";
+import CompDetailContent, {
+  COMP_DETAIL_NAVIGATION,
+} from "./panels/CompDetailContent";
 import tokens from "@contentful/f36-tokens";
 
 const ComponentsContent = () => {
@@ -28,12 +30,17 @@ const ComponentsContent = () => {
       if (!forceReload) setLocalInvalidated(invalidated);
       loadProperty("contentTypes", forceReload);
     }
+    if (!contentState.css || forceReload) {
+      if (!forceReload) setLocalInvalidated(invalidated);
+      loadProperty("css", forceReload);
+    }
   }, [invalidated]);
 
   const isLoading =
     loadingState.components === true ||
     loadingState.ai === true ||
-    loadingState.contentTypes === true;
+    loadingState.contentTypes === true ||
+    loadingState.css === true;
 
   if (route?.componentId) {
     return <CompDetailContent />;
@@ -68,7 +75,7 @@ const ComponentsContent = () => {
                     setRoute({
                       navigation: "components",
                       componentId: comp.sys.id,
-                      componentFocusId: 0,
+                      componentFocusId: COMP_DETAIL_NAVIGATION.DEFINITION,
                       aiStateEngines: [AIPromptEngineID.OPEN],
                     });
                   }}

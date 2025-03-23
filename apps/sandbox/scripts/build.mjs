@@ -1,12 +1,16 @@
 import * as esbuild from "esbuild";
 
+
+
 esbuild.build({
-    entryPoints: ["my-component.ts"],
-    outfile: "dist/my-component.js",
+    entryPoints: ["./src/packages.ts", "./src/component.ts"],
+    // outfile: "dist/packages.js",
+    outdir: "dist",
     bundle: true,
     format: "esm",
     target: "esnext",
-    minify: true,
+    minify: false,
     external: [], // Ensures all dependencies are bundled
-    logLevel: "info"
+    logLevel: "info",
+    // keepNames: true,
 }).catch(() => process.exit(1));

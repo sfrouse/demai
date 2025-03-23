@@ -45,7 +45,7 @@ const ConversationPanel = () => {
       aria-label="Content Panel"
       flexDirection="column"
       style={{
-        flex: 1.5,
+        flex: 1,
         position: "relative",
       }}
     >
