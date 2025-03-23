@@ -11,6 +11,7 @@ import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP
 import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
 import { useAIState } from "../../../contexts/AIStateContext/AIStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
+import tokens from "@contentful/f36-tokens";
 
 export const COLOR_SET_ALLOW_LIST = [
   "primary",
@@ -83,7 +84,13 @@ const DSysTokensContent = () => {
           icon={<icons.EditIcon />}
         />
       </ContentPanelHeader>
-      <Flex flexDirection="column" style={{ overflowY: "auto" }}>
+      <Flex
+        flexDirection="column"
+        style={{
+          overflowY: "auto",
+          padding: `${tokens.spacingM} ${tokens.spacingL}`,
+        }}
+      >
         {isLoading ? (
           <LoadingIcon />
         ) : (

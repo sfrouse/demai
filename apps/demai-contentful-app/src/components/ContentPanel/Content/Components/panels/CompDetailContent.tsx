@@ -125,7 +125,15 @@ export default function CompDetailContent() {
           </Tabs.List>
           <Tabs.Panel
             id={COMP_DETAIL_NAVIGATION.DEFINITION}
-            style={{ flex: 1, position: `relative` }}
+            forceMount
+            style={{
+              flex: 1,
+              position: `relative`,
+              display:
+                route?.componentFocusId === COMP_DETAIL_NAVIGATION.DEFINITION
+                  ? "block"
+                  : "none",
+            }}
           >
             <Flex
               flexDirection="column"
@@ -165,7 +173,16 @@ export default function CompDetailContent() {
           </Tabs.Panel>
           <Tabs.Panel
             id={COMP_DETAIL_NAVIGATION.PREVIEW}
-            style={{ flex: 1, position: `relative`, overflow: "hidden" }}
+            forceMount
+            style={{
+              flex: 1,
+              position: `relative`,
+              overflow: "hidden",
+              display:
+                route?.componentFocusId === COMP_DETAIL_NAVIGATION.PREVIEW
+                  ? "block"
+                  : "none",
+            }}
           >
             <iframe
               style={{
@@ -205,7 +222,15 @@ export default function CompDetailContent() {
           </Tabs.Panel>
           <Tabs.Panel
             id={COMP_DETAIL_NAVIGATION.WEB_COMP}
-            style={{ flex: 1, position: `relative` }}
+            forceMount
+            style={{
+              flex: 1,
+              position: `relative`,
+              display:
+                route?.componentFocusId === COMP_DETAIL_NAVIGATION.WEB_COMP
+                  ? "block"
+                  : "none",
+            }}
           >
             <Flex
               flexDirection="column"
@@ -245,7 +270,15 @@ export default function CompDetailContent() {
           </Tabs.Panel>
           <Tabs.Panel
             id={COMP_DETAIL_NAVIGATION.BINDINGS}
-            style={{ flex: 1, position: `relative` }}
+            forceMount
+            style={{
+              flex: 1,
+              position: `relative`,
+              display:
+                route?.componentFocusId === COMP_DETAIL_NAVIGATION.BINDINGS
+                  ? "block"
+                  : "none",
+            }}
           >
             <Flex
               flexDirection="column"
