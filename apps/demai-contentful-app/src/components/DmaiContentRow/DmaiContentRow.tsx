@@ -8,14 +8,16 @@ import {
 import tokens from "@contentful/f36-tokens";
 import Divider from "../Divider";
 import styles from "./DmaiContentRow.module.css";
+import * as icons from "@contentful/f36-icons";
 
 interface DmaiContentRowProps {
   title: string;
   id?: string;
-  status?: "archived" | "published" | "draft";
+  status?: "archived" | "published" | "draft" | "none";
   description?: string;
   onClick?: () => void;
   badges?: { text: string; variant: "primary" | "secondary" }[];
+  editOnClick?: () => void;
 }
 
 console.log("styles", styles);
@@ -26,6 +28,7 @@ export default function DmaiContentRow({
   description,
   onClick,
   badges,
+  editOnClick,
 }: DmaiContentRowProps) {
   return (
     <Flex
@@ -61,7 +64,7 @@ export default function DmaiContentRow({
                 {id}
               </span>
             )}{" "}
-            {status && (
+            {status && status !== "none" && (
               <EntityStatusBadge
                 key={`comp-badge-${id}`}
                 size="small"
@@ -70,17 +73,17 @@ export default function DmaiContentRow({
             )}
           </Text>
           <div style={{ flex: 1 }}></div>
-          {/* <IconButton
-            variant="transparent"
-            aria-label="Open"
-            size="small"
-            onClick={async () => {
-              // await sdk.navigator.openEntry(comp.sys.id, {
-              //   slideIn: true,
-              // });
-            }}
-            icon={<icons.EditIcon />}
-          /> */}
+          {editOnClick && (
+            <IconButton
+              variant="transparent"
+              aria-label="Open"
+              size="small"
+              onClick={() => {
+                editOnClick();
+              }}
+              icon={<icons.EditIcon />}
+            />
+          )}
         </Flex>
         {description && (
           <Text

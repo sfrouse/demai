@@ -1,10 +1,5 @@
 import OpenAI from "openai";
-import {
-  AIModels,
-  OPEN_AI_MAX_TOKENS,
-  OPEN_AI_TEMPERATURE,
-  OPEN_AI_TOP_P,
-} from "../../openAI/openAIConfig";
+import { AIModels } from "../../openAI/openAIConfig";
 import AIState from "../AIState";
 import {
   AIStateContent,
@@ -17,6 +12,9 @@ import { DesignSystemMCPClient } from "../../mcp/designSystemMCP/DesignSystemMCP
 import { ContentfulMCP } from "../../mcp/contentfulMCP/ContentfulMCP";
 import getOpeAIClient from "../../openAI/getOpenAIClient";
 import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
+import openAIChatCompletions from "../../openAI/openAIChatCompletions";
+import openAIResponses from "../../openAI/openAIResponses";
+import { Tool } from "openai/resources/responses/responses.mjs";
 
 export class AIPromptEngine {
   label: string = "Open Ended";
@@ -66,40 +64,40 @@ export class AIPromptEngine {
   async run(contentState: ContentState) {
     const aiState = this.aiState.deref()!;
     try {
-      let tools = await this.getTools();
+      let tools = await this.getToolsForResponses();
       if (this.toolFilters && this.toolFilters.length > 0) {
         tools = tools.filter((tool) =>
-          this.toolFilters.includes(tool.function.name) ? true : false
+          tool.type === "function" && this.toolFilters.includes(tool.name)
+            ? true
+            : false
         );
       }
       const prevState = aiState.getStateHistory();
-      const body: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming =
-        {
-          model: this.model,
-          max_tokens: OPEN_AI_MAX_TOKENS,
-          top_p: OPEN_AI_TOP_P,
-          temperature: OPEN_AI_TEMPERATURE,
-          messages: [
-            this.system,
-            ...prevState,
-            {
-              role: "user",
-              content: aiState.createPrompt(contentState),
-            },
-          ],
-          tools,
-          tool_choice: "none",
-          // store: true, // not working the way I think...
-        };
-      const { data: stream, response } =
-        await this.openAIClient.chat.completions.create(body).withResponse();
-      console.log("run results:", stream);
-      const description =
-        stream.choices && stream.choices.length > 0
-          ? stream.choices[0].message.content
-          : "No description";
+      // const result = await openAIChatCompletions({
+      //   openAIClient: this.openAIClient,
+      //   systemPrompt: this.system,
+      //   userPrompt: {
+      //     role: "user",
+      //     content: aiState.createPrompt(contentState),
+      //   },
+      //   prevMessages: prevState,
+      //   tools,
+      //   tool_choice: "none",
+      // });
+      const result = await openAIResponses({
+        openAIClient: this.openAIClient,
+        systemPrompt: this.system,
+        userPrompt: {
+          role: "user",
+          content: aiState.createPrompt(contentState),
+        },
+        prevMessages: prevState,
+        tools,
+        tool_choice: "none",
+      });
+      console.log("run:", result);
 
-      return description;
+      return result.description;
     } catch (err) {
       console.error(err);
       return "Error";
@@ -110,48 +108,50 @@ export class AIPromptEngine {
     const aiState = this.aiState.deref()!;
 
     try {
-      let tools = await this.getTools();
+      let tools = await this.getToolsForResponses();
       if (this.toolFilters && this.toolFilters.length > 0) {
         tools = tools.filter((tool) =>
-          this.toolFilters.includes(tool.function.name) ? true : false
+          tool.type === "function" && this.toolFilters.includes(tool.name)
+            ? true
+            : false
         );
       }
-      const body: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming =
-        {
-          model: this.model,
-          max_tokens: OPEN_AI_MAX_TOKENS,
-          top_p: OPEN_AI_TOP_P,
-          temperature: OPEN_AI_TEMPERATURE,
-          messages: [
-            this.system,
-            {
-              role: "assistant",
-              content: aiState.response,
-            },
-          ],
-          tools,
-          tool_choice: "required",
-          // store: true, // not working the way I think...
-        };
-      const { data: toolStream, response } =
-        await this.openAIClient.chat.completions.create(body).withResponse();
-      console.log("execute result:", toolStream);
-      const toolCalls =
-        toolStream.choices && toolStream.choices.length > 0
-          ? toolStream.choices[0].message.tool_calls
-          : undefined;
 
-      if (toolCalls) {
-        for (const toolCall of toolCalls) {
+      // const result = await openAIChatCompletions({
+      //   openAIClient: this.openAIClient,
+      //   systemPrompt: this.system,
+      //   userPrompt: {
+      //     role: "assistant",
+      //     content: aiState.response,
+      //   },
+      //   tools,
+      //   tool_choice: "required",
+      // });
+
+      const result = await openAIResponses({
+        openAIClient: this.openAIClient,
+        systemPrompt: this.system,
+        userPrompt: {
+          role: "assistant",
+          content: aiState.response,
+        },
+        tools,
+        tool_choice: "required",
+      });
+      console.log("runExe:", result);
+
+      if (result.toolCalls) {
+        for (const toolCall of result.toolCalls) {
           const mcpClient =
             this.toolType === "DemAIDesignSystem"
               ? this.designSystemCMPClient
               : this.contentfulMCP;
+
           const exeResult = await mcpClient?.callFunction(
-            toolCall.function.name,
-            JSON.parse(toolCall.function.arguments)
+            toolCall.name,
+            JSON.parse(toolCall.arguments)
           );
-          // this.onToolExecuted(exeResult);
+          console.log("AIPromptEngin toolCall, exeResult", toolCall, exeResult);
           if (exeResult?.isError === true) {
             return exeResult.content &&
               Array.isArray(exeResult.content) &&
@@ -162,9 +162,9 @@ export class AIPromptEngine {
         }
       }
 
-      return toolCalls?.map((tool) => tool.function.name);
+      return []; // result.toolCalls?.map((tool) => tool.function.name);
     } catch (err) {
-      console.error(err);
+      console.error("AIPromptEngine: ", err);
       return;
     }
   }
@@ -174,6 +174,15 @@ export class AIPromptEngine {
       return await this.designSystemCMPClient!.getToolsForOpenAI();
     } else {
       const tools = await this.contentfulMCP!.getToolsForOpenAI();
+      return tools;
+    }
+  }
+
+  async getToolsForResponses() {
+    if (this.toolType === "DemAIDesignSystem") {
+      return await this.designSystemCMPClient!.getToolsForOpenAIResponses();
+    } else {
+      const tools = await this.contentfulMCP!.getToolsForOpenAIResponses();
       return tools;
     }
   }

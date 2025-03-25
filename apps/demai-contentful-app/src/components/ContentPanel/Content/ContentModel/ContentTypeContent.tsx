@@ -35,6 +35,7 @@ const ContentTypeContent = () => {
           setRoute({
             navigation: "content_model",
             aiStateEngines: NAVIGATION["content_model"].aiStateEngines,
+            aiStateEngineFocus: 0,
           });
         }}
       />

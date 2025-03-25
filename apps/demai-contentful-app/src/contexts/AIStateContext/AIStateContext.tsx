@@ -101,7 +101,7 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
         setAIState,
         aiStateStatus,
         setAIStateStatus,
-        setAISessionManager, // Setter function only
+        setAISessionManager,
         aiSession,
         setAISession,
         invalidated,

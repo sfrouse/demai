@@ -13,6 +13,7 @@ import { create } from "domain";
 import createBinding, {
   CREATE_BINDING_TOOL_NAME,
 } from "./functions/createBinding";
+import { Tool } from "openai/resources/responses/responses.mjs";
 
 export class DesignSystemMCPClient implements IMCPClient {
   cma: string;
@@ -46,6 +47,7 @@ export class DesignSystemMCPClient implements IMCPClient {
                   "The actual javascript that instantiates an HTML5 web component.",
                 type: "string",
               },
+              additionalProperties: false,
             },
             required: ["componentDefinition"],
           },
@@ -56,6 +58,19 @@ export class DesignSystemMCPClient implements IMCPClient {
       createWebComponent.tool,
       createBinding.tool,
     ];
+  }
+
+  async getToolsForOpenAIResponses(): Promise<Tool[]> {
+    const tools = await this.getToolsForOpenAI();
+    return tools.map((tool) => ({
+      name: tool.function.name,
+      parameters: {
+        ...tool.function.parameters,
+      },
+      description: tool.function.description,
+      strict: true,
+      type: "function",
+    }));
   }
 
   async callFunction(toolName: string, params: any) {

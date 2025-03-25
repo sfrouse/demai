@@ -26,8 +26,16 @@ const ConversationPanel = () => {
   const chatLastBubbleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    chatLastBubbleRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [aiSession, aiStateStatus?.isRunning]);
+    setTimeout(() => {
+      chatLastBubbleRef.current?.scrollIntoView();
+    }, 100);
+  }, [aiSession]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      chatLastBubbleRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }, [aiStateStatus?.isRunning]);
 
   useEffect(() => {
     if (route && route.aiStateEngines.length > 0) {

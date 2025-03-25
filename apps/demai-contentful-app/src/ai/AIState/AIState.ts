@@ -22,6 +22,7 @@ export default class AIState {
   // Prompt State
   role: "user" | "assistant" = "assistant";
   response: string = "(default response...change)";
+  executionResponse: string = "";
 
   // Content
   userContent: string = "";
@@ -85,7 +86,10 @@ export default class AIState {
     this.isRunning = true;
     this.refreshState();
 
-    if (this.phase === AIStatePhase.describing) {
+    if (
+      this.phase === AIStatePhase.describing ||
+      this.phase === AIStatePhase.executed
+    ) {
       await this.runExecute();
     } else {
       await this.runAnswerOrDescribe(contentState);
@@ -126,26 +130,15 @@ export default class AIState {
   protected async runExecute() {
     const sessionManager = this.aiSessionManager.deref();
     if (!sessionManager) return;
-    // Add an Orphaned Assistant Prompt State...
-    const assistantState = this.clone();
-    assistantState.role = "assistant";
-    assistantState.response = `${this.promptEngine.executionPrompt}`;
-    assistantState.phase = AIStatePhase.executing;
-    assistantState.isRunning = true;
-    sessionManager.addAIState(assistantState);
 
-    // run prompt...
+    this.phase = AIStatePhase.executing;
+    this.isRunning = true;
     const toolCalls = await this.promptEngine.runExe();
+    this.executionResponse = `Executed : ${toolCalls}`;
+    this.phase = AIStatePhase.executed;
+    this.isRunning = false;
+    this.updateStatus();
 
-    // hand off to next action
-    const nextAction = this.clone(false);
-    nextAction.role = "assistant";
-    nextAction.response = toolCalls
-      ? `Executed ${toolCalls.join(", ")}`
-      : "error";
-    nextAction.phase = AIStatePhase.executed;
-    this.aiSessionManager.deref()!.addAndActivateAIState(nextAction);
-    nextAction.updateStatus();
     this.contentChangeEvent && this.contentChangeEvent();
   }
 

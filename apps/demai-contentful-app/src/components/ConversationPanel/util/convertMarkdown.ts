@@ -17,7 +17,7 @@ export default function convertMarkdown(markdown: string, styles: any) {
 
   // Configure marked with the custom renderer
   marked.use({ renderer });
-  return marked.parse(addHTMLColorChips(markdown));
+  return marked.parse(addHTMLColorChips(markdown), { async: false });
 }
 
 function escapeHTML(html: string) {

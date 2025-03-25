@@ -53,6 +53,7 @@ const createBinding: IMCPTool = {
                       type: "object",
                       properties: {
                         replace: { type: "boolean" },
+                        additionalProperties: false,
                       },
                       required: ["replace"],
                       description:
@@ -66,6 +67,7 @@ const createBinding: IMCPTool = {
                           description:
                             "The name of the slot to inject the model property into.",
                         },
+                        additionalProperties: false,
                       },
                       required: ["slot"],
                       description:
@@ -73,9 +75,11 @@ const createBinding: IMCPTool = {
                     },
                   ],
                 },
+                additionalProperties: false,
               },
             },
           },
+          additionalProperties: false,
         },
         required: ["modelId", "name", "properties"],
       },

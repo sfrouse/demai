@@ -7,8 +7,11 @@ export class ContentfulOpenToolingEngine extends AIPromptEngine {
 
     this.system = {
       role: "system",
-      content: `You are an expert in Contentful, help this SE learn about Contentful demos.
-        If you find that a tool would be useful, render that tool name in the output.`,
+      content: `
+You are an expert in Contentful, help this SE learn about Contentful demos.
+Tell me explicitly what you are about to do including the name of the tool - this is the most important part of your task.
+
+`,
     };
     this.toolType = "Contentful";
     this.executionPrompt = "Updating Contentful...";

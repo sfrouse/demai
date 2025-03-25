@@ -51,7 +51,7 @@ const ComponentsContent = () => {
       <ContentPanelHeader title="Components" invalidate />
       <Flex
         flexDirection="column"
-        style={{ overflowY: "auto", padding: tokens.spacingM }}
+        style={{ overflowY: "auto", padding: `0 ${tokens.spacingM}` }}
       >
         {isLoading ? (
           <LoadingIcon />
@@ -71,7 +71,6 @@ const ComponentsContent = () => {
                 <DmaiContentRow
                   key={`comp-${comp.sys.id}`}
                   onClick={() => {
-                    console.log("Open component", comp.sys.id);
                     setRoute({
                       navigation: "components",
                       componentId: comp.sys.id,

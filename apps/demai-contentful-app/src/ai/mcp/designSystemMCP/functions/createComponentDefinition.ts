@@ -79,9 +79,12 @@ const createComponentDefinition: IMCPTool = {
                   description:
                     "If a default value makes sense, this will define it.",
                 },
+                additionalProperties: false,
               },
             },
+            additionalProperties: false,
           },
+          additionalProperties: false,
         },
         required: ["id", "name", "properties"],
       },

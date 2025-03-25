@@ -1,5 +1,5 @@
 import tokens from "@contentful/f36-tokens";
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import AIState from "../../ai/AIState/AIState";
 import { AIStatePhase } from "../../ai/AIState/AIStateTypes";
 import { Flex } from "@contentful/f36-components";
@@ -14,6 +14,17 @@ import convertMarkdown from "./util/convertMarkdown";
 const ConversationState = ({ aiState }: { aiState: AIState }) => {
   if (!aiState) return null;
   const { contentState } = useContentStateSession();
+  const [html, setHTML] = useState<string>("");
+
+  useEffect(() => {
+    (async () => {
+      const newHTML = convertMarkdown(
+        `${aiState.response}\n\n${aiState.executionResponse}`,
+        styles
+      );
+      setHTML(newHTML);
+    })();
+  }, [aiState.response, aiState.executionResponse]);
 
   const baseCSS: CSSProperties = {
     maxWidth: "85%",
@@ -30,8 +41,6 @@ const ConversationState = ({ aiState }: { aiState: AIState }) => {
     borderRadius: tokens.borderRadiusMedium,
     fontSize: 12,
   };
-
-  const html = convertMarkdown(aiState.response, styles);
 
   const stats = (
     <Flex
@@ -84,7 +93,7 @@ const ConversationState = ({ aiState }: { aiState: AIState }) => {
             )}
             style={{
               alignSelf: "flex-start",
-              backgroundColor: tokens.green100,
+              backgroundColor: tokens.green200,
               ...baseCSS,
             }}
           >
@@ -102,13 +111,23 @@ const ConversationState = ({ aiState }: { aiState: AIState }) => {
             )}
             style={{
               alignSelf: "flex-start",
-              backgroundColor: tokens.gray100,
+              backgroundColor: tokens.green100,
               ...baseCSS,
             }}
           >
             <span dangerouslySetInnerHTML={{ __html: html }}></span>
             <Divider />
-            {stats}
+            <Flex flexDirection="row" alignContent="center">
+              {stats}
+              <div style={{ flex: 1, minWidth: 30 }}></div>
+              <ButtonXs
+                onClick={async () => {
+                  await aiState.run(contentState);
+                }}
+              >
+                Re-Execute
+              </ButtonXs>
+            </Flex>
           </div>
         );
       } else if (aiState.phase === AIStatePhase.describing) {
