@@ -35,11 +35,11 @@ const App = () => {
   }, [sdk.location]);
 
   return Component ? (
-    <AIStateProvider>
-      <ContentStateProvider>
+    <ContentStateProvider>
+      <AIStateProvider>
         <Component />
-      </ContentStateProvider>
-    </AIStateProvider>
+      </AIStateProvider>
+    </ContentStateProvider>
   ) : null;
 };
 

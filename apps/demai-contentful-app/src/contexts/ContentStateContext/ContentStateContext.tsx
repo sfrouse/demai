@@ -1,12 +1,6 @@
 import { PageAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import {
-  Collection,
-  ContentType,
-  ContentTypeProps,
-  createClient,
-  Entry,
-} from "contentful-management";
+import { ContentType, createClient, Entry } from "contentful-management";
 import React, { createContext, useContext, useReducer, useState } from "react";
 import getLatestTokens from "./services/getLatestTokens";
 import getComponents from "./services/getComponents";

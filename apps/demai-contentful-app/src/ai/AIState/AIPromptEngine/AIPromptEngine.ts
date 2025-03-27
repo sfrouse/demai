@@ -12,9 +12,7 @@ import { DesignSystemMCPClient } from "../../mcp/designSystemMCP/DesignSystemMCP
 import { ContentfulMCP } from "../../mcp/contentfulMCP/ContentfulMCP";
 import getOpeAIClient from "../../openAI/getOpenAIClient";
 import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
-import openAIChatCompletions from "../../openAI/openAIChatCompletions";
 import openAIResponses from "../../openAI/openAIResponses";
-import { Tool } from "openai/resources/responses/responses.mjs";
 
 export class AIPromptEngine {
   label: string = "Open Ended";
