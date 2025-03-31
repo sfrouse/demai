@@ -3,7 +3,7 @@ import { Flex, Heading, IconButton } from "@contentful/f36-components";
 import * as icons from "@contentful/f36-icons";
 import { ReactNode } from "react";
 import Divider from "../Divider";
-import { useAIState } from "../../contexts/AIStateContext/AIStateContext";
+import useAIState from "../../contexts/AIStateContext/useAIState";
 
 interface ContentPanelHeaderProps {
   title: string;
@@ -23,7 +23,7 @@ const ContentPanelHeader = ({
     <Flex
       flexDirection="column"
       style={{
-        height: 76,
+        height: 64,
         boxSizing: "border-box",
       }}
     >
@@ -46,8 +46,10 @@ const ContentPanelHeader = ({
         ) : null}
         <Heading
           style={{
+            fontSize: "1.15em", // tokens.fontSizeXl,
             paddingLeft: tokens.spacingXs,
             paddingRight: tokens.spacingXs,
+            paddingTop: 4,
             marginBottom: 0,
             flex: 1,
           }}

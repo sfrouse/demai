@@ -25,9 +25,9 @@ const createWebComponent: IMCPTool = {
             description:
               "The actual JavaScript that can execute on it's own. It should only be JavaScript. It should have the customElements.define statement at the end using the name.",
           },
-          additionalProperties: false,
         },
-        required: ["name", "code"],
+        additionalProperties: false,
+        required: ["id", "code"],
       },
     },
   },

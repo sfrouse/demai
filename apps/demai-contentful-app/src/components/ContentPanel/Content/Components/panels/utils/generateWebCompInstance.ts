@@ -27,8 +27,14 @@ export default function generateWebCompInstance(
   const tag = schema["x-cdef"].tag;
   const properties = schema.properties;
 
+  const filterOutProps = ["disabled"]; // Add keys to ignore here
+
   const attributes = Object.entries(properties)
-    .filter(([_, value]) => value["x-cdef"]?.output?.webComponent?.attribute)
+    .filter(
+      ([key, value]) =>
+        !filterOutProps.includes(key) &&
+        value["x-cdef"]?.output?.webComponent?.attribute
+    )
     .map(([key, value]) => {
       const attrName = value["x-cdef"]!.output!.webComponent!.attribute!;
       let placeholderValue: string = "";
@@ -37,7 +43,6 @@ export default function generateWebCompInstance(
         if (key.includes("image")) {
           placeholderValue = "https://picsum.photos/600/400";
         } else {
-          // Prioritize `defaultValue`, then first option from `options`, then title-based fallback
           placeholderValue =
             value["x-cdef"]?.input?.defaultValue ||
             Object.values(value["x-cdef"]?.input?.options ?? {})[0] ||

@@ -1,6 +1,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { ChatCompletionTool } from "openai/resources/index.mjs";
-import { createTransport } from "@smithery/sdk";
+// import { createTransport } from "@smithery/sdk";
+import { createTransport } from "@smithery/sdk/transport.js";
 import { IMCPClient } from "../IMCPClient";
 import { Tool } from "openai/resources/responses/responses.mjs";
 
@@ -25,8 +26,8 @@ export class ContentfulMCP implements IMCPClient {
         spaceId: this.spaceId,
         environmentId: this.environmentId,
       }
+      // ""
     );
-
     const client = new Client({
       name: "DemAI",
       version: "1.0.0",

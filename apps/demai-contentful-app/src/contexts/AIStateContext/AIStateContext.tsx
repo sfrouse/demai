@@ -1,13 +1,17 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AIState from "../../ai/AIState/AIState";
 import AISessionManager from "../../ai/AIState/AISessionManager";
-import { AIStateConfig, AIStateStatus } from "../../ai/AIState/AIStateTypes";
+import {
+  AIPromptEngineID,
+  AIStateConfig,
+  AIStateStatus,
+} from "../../ai/AIState/AIStateTypes";
 import findAISessionManager from "../../locations/page/utils/findAISessionManager";
-import { AIPromptEngineID } from "../../ai/AIState/utils/createAIPromptEngine";
 import { AIStateRoute } from "./AIStateRouting";
+import { AIStateContext } from "./useAIState";
 
 // Define the shape of the context
-interface AIStateContextType {
+export interface AIStateContextType {
   aiStateConfig?: AIStateConfig;
   setAIStateConfig: React.Dispatch<
     React.SetStateAction<AIStateConfig | undefined>
@@ -21,6 +25,7 @@ interface AIStateContextType {
     React.SetStateAction<AIStateStatus | undefined>
   >;
 
+  aiSessionManager?: AISessionManager;
   setAISessionManager: React.Dispatch<
     React.SetStateAction<AISessionManager | undefined>
   >; // Setter only, no stored value
@@ -40,16 +45,13 @@ interface AIStateContextType {
   setRoute: React.Dispatch<React.SetStateAction<AIStateRoute | undefined>>;
 }
 
-// Create the context
-const AIStateContext = createContext<AIStateContextType | undefined>(undefined);
-
 export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [aiStateConfig, setAIStateConfig] = useState<AIStateConfig>();
   const [aiState, setAIState] = useState<AIState>();
   const [aiStateStatus, setAIStateStatus] = useState<AIStateStatus>();
-  const [, setAISessionManager] = useState<AISessionManager>(); // No need to store, just setter
+  const [aiSessionManager, setAISessionManager] = useState<AISessionManager>(); // No need to store, just setter
   const [aiSession, setAISession] = useState<AIState[]>([]);
   const [invalidated, setInvalidated] = useState<number>(0);
   const [route, setRoute] = useState<AIStateRoute>();
@@ -72,11 +74,12 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
           aiStateConfig,
           setAIStateStatus,
           aiStateEngineId,
-          () => setInvalidated((prev) => prev + 1),
-          true
+          () => setInvalidated((prev) => prev + 1)
+          // true
         );
         newAIStackManager.addAndActivateAIState(newAIState);
       } else {
+        // if (newFocusedAIState) {
         newAIStackManager.refreshState();
         setAIState(newFocusedAIState);
         newFocusedAIState.refreshState();
@@ -101,6 +104,7 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
         setAIState,
         aiStateStatus,
         setAIStateStatus,
+        aiSessionManager,
         setAISessionManager,
         aiSession,
         setAISession,
@@ -117,10 +121,12 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 // Hook to use the AI state context
-export const useAIState = () => {
-  const context = useContext(AIStateContext);
-  if (!context) {
-    throw new Error("useAIState must be used within an AIStateProvider");
-  }
-  return context;
-};
+// export const useAIState = () => {
+//   const context = useContext(AIStateContext);
+//   // console.log("AIStateContext, context", AIStateContext, context);
+//   if (!context) {
+//     console.log("AIStateContext, context", AIStateContext, context);
+//     throw new Error("useAIState must be used within an AIStateProvider");
+//   }
+//   return context;
+// };

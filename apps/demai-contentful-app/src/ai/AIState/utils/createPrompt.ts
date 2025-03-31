@@ -1,7 +1,6 @@
 import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
 import AIState from "../AIState";
-import { AIStateContentPrefix, AIStateStatus } from "../AIStateTypes";
-import createContextContentSelectionsDefaults from "./createContextContentSelectionsDefaults";
+import { AIStateContentPrefix } from "../AIStateTypes";
 
 export default function createPrompt(
   aiState: AIState,
@@ -51,7 +50,5 @@ function _processContextContent(
       }
     }
   });
-
-  console.log("output", output);
   return output;
 }

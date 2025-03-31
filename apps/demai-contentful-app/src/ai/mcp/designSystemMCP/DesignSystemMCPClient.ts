@@ -9,7 +9,6 @@ import createComponentDefinition, {
 import createWebComponent, {
   CREATE_WEB_COMPONENT_TOOL_NAME,
 } from "./functions/createWebComponent";
-import { create } from "domain";
 import createBinding, {
   CREATE_BINDING_TOOL_NAME,
 } from "./functions/createBinding";

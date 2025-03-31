@@ -5,11 +5,11 @@ import { PageAppSDK } from "@contentful/app-sdk";
 import LoadingIcon from "../../../LoadingIcon";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
-import { useAIState } from "../../../../contexts/AIStateContext/AIStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import { AIPromptEngineID } from "../../../../ai/AIState/utils/createAIPromptEngine";
 import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import tokens from "@contentful/f36-tokens";
+import useAIState from "../../../../contexts/AIStateContext/useAIState";
+import { AIPromptEngineID } from "../../../../ai/AIState/AIStateTypes";
 
 const ContentModelContent = () => {
   const sdk = useSDK<PageAppSDK>();

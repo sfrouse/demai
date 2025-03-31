@@ -2,6 +2,7 @@ export enum AIModels {
   gpt4Turbo = "gpt-4-turbo",
   gpt4oMini = "gpt-4o-mini",
   gpt4o = "gpt-4o",
+  gpt4oSearchPreview = "gpt-4o-search-preview",
 }
 
 export const OPEN_AI_MODEL = AIModels.gpt4o;

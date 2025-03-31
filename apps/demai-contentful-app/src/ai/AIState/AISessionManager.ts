@@ -38,6 +38,18 @@ export default class AISessionManager {
     return this._session[this._session.length - 1];
   }
 
+  deleteAIState(stateToDelete: AIState) {
+    this._session = this._session.filter((state) => state !== stateToDelete);
+    this._setAISession(this._session);
+
+    if (this._activeAIState === stateToDelete) {
+      const last = this.getLastState();
+      if (last) {
+        this.setActiveAIState(last);
+      }
+    }
+  }
+
   refreshState() {
     this._setAISession(this._session);
   }

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Flex, IconButton } from "@contentful/f36-components";
+import { Flex } from "@contentful/f36-components";
 import LoadingIcon from "../../../LoadingIcon";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
-import { useAIState } from "../../../../contexts/AIStateContext/AIStateContext";
 import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
-import { AIPromptEngineID } from "../../../../ai/AIState/utils/createAIPromptEngine";
 import CompDetailContent, {
   COMP_DETAIL_NAVIGATION,
 } from "./panels/CompDetailContent";
 import tokens from "@contentful/f36-tokens";
+import useAIState from "../../../../contexts/AIStateContext/useAIState";
+import { AIPromptEngineID } from "../../../../ai/AIState/AIStateTypes";
 
 const ComponentsContent = () => {
   const { contentState, loadProperty, loadingState } = useContentStateSession();

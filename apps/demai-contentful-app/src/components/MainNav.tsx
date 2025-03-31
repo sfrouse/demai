@@ -3,10 +3,10 @@ import React from "react";
 import Divider from "./Divider";
 import tokens from "@contentful/f36-tokens";
 import { Flex, Heading, SectionHeading } from "@contentful/f36-components";
-import { AIPromptEngineID } from "../ai/AIState/utils/createAIPromptEngine";
 import { useContentStateSession } from "../contexts/ContentStateContext/ContentStateContext";
-import { useAIState } from "../contexts/AIStateContext/AIStateContext";
 import ContentPanelHeader from "./ContentPanel/ContentPanelHeader";
+import useAIState from "../contexts/AIStateContext/useAIState";
+import { AIPromptEngineID } from "../ai/AIState/AIStateTypes";
 
 type NAVIGATION_ENTRY = {
   label: string;
@@ -20,11 +20,11 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
     label: "Research",
     section_header: "Prospect Research",
     end: true,
-    aiStateEngines: [AIPromptEngineID.OPEN],
+    aiStateEngines: [AIPromptEngineID.RESEARCH_STYLES],
   },
   content_model: {
     label: "Content Types",
-    section_header: "Space Actions",
+    section_header: "Contentful",
     aiStateEngines: [
       AIPromptEngineID.CONTENT_MODEL,
       AIPromptEngineID.CONTENTFUL_OPEN_TOOL,
@@ -32,7 +32,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
   },
   entries: {
     label: "Entries / Content",
-    aiStateEngines: [AIPromptEngineID.OPEN],
+    aiStateEngines: [AIPromptEngineID.ENTRIES],
   },
   personalization: {
     label: "Personalization",
@@ -56,7 +56,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
   },
   pages: {
     label: "Pages",
-    section_header: "Website",
+    section_header: "Layouts",
     end: true,
     aiStateEngines: [AIPromptEngineID.OPEN],
   },
@@ -89,10 +89,11 @@ const MainNav = () => {
       <ContentPanelHeader title="DemAI" />
       <Flex
         flexDirection="column"
+        flex="1"
         style={{ padding: `${tokens.spacingS} ${tokens.spacingL}` }}
       >
         {navEntries.map(([key, { label, end, section_header }], index) => {
-          if (key === "settings") return;
+          if (key === "space") return;
           return (
             <React.Fragment key={key}>
               {section_header && (
@@ -118,8 +119,21 @@ const MainNav = () => {
             </React.Fragment>
           );
         })}
-
         <div style={{ flex: 1 }}></div>
+        <NavList.Item
+          onClick={() => {
+            setRoute({
+              navigation: "space",
+              aiStateEngines: NAVIGATION["space"]
+                .aiStateEngines as unknown as AIPromptEngineID[],
+              aiStateEngineFocus: 0,
+            });
+          }}
+          isActive={route?.navigation === "space"}
+          isDisabled={spaceStatus?.valid === false}
+        >
+          Settings
+        </NavList.Item>
       </Flex>
     </NavList>
   );

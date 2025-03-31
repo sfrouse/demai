@@ -1,9 +1,7 @@
 import { Button, Flex, IconButton, Tabs } from "@contentful/f36-components";
-import { useAIState } from "../../../../../contexts/AIStateContext/AIStateContext";
 import { useContentStateSession } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import ContentPanelHeader from "../../../ContentPanelHeader";
 import { NAVIGATION } from "../../../../MainNav";
-import { AIPromptEngineID } from "../../../../../ai/AIState/utils/createAIPromptEngine";
 import tokens from "@contentful/f36-tokens";
 import LoadingIcon from "../../../../LoadingIcon";
 import { useSDK } from "@contentful/react-apps-toolkit";
@@ -14,6 +12,8 @@ import generateWebCompInstance from "./utils/generateWebCompInstance";
 import EditablePage from "./EditablePage";
 import { useEffect, useState } from "react";
 import { Entry } from "contentful-management";
+import useAIState from "../../../../../contexts/AIStateContext/useAIState";
+import { AIPromptEngineID } from "../../../../../ai/AIState/AIStateTypes";
 
 export enum COMP_DETAIL_NAVIGATION {
   DEFINITION = "definition",
@@ -42,7 +42,6 @@ export default function CompDetailContent() {
         (comp) => comp.sys.id === route?.componentId
       );
       setComp(newComp);
-      console.log("newComp", newComp);
       if (newComp) {
         setLocalCDef(
           newComp.fields.componentDefinition &&
@@ -78,6 +77,7 @@ export default function CompDetailContent() {
           setRoute({
             navigation: "components",
             aiStateEngines: NAVIGATION["components"].aiStateEngines,
+            aiStateEngineFocus: 0,
           });
         }}
       >
@@ -199,7 +199,10 @@ export default function CompDetailContent() {
           Uint8Array.from(atob(precompiledCode), (c) => c.charCodeAt(0))
         )
       )}
-      ${comp.fields.javascript && comp.fields.javascript["en-US"]}
+      ${
+        comp.fields.javascript &&
+        comp.fields.javascript["en-US"].replace(/import/g, "// import")
+      }
     </script>
     <style>
       html, body { padding: 0; margin: 0; }

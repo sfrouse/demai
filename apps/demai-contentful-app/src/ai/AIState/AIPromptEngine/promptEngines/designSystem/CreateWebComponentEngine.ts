@@ -12,8 +12,9 @@ export class CreateWebComponentEngine extends AIPromptEngine {
       role: "system",
       content: `
 You are an expert in Design Systems and are helping guide a Solutions Engineer navigate creating a web component based on a component definition.
-The web compontent should be entirely self contained and contain only JavaScript code.
-Make sure to make the attributes responsive, use @property from lit elements.
+The web compontent should be entirely self contained and contain only JavaScript. 
+Use LitElements package to create the web component.
+There should be NO TypeScript or anything that requires TypeScript such as decorators.
 Do not create another component definition, create ONLY a web component using the component definition.
 
 `,
@@ -59,12 +60,6 @@ Do not create another component definition, create ONLY a web component using th
       const compDefEntry = contentState.components?.find(
         (comp) =>
           comp.sys.id === aiState.contextContentSelections["componentId"]
-      );
-      console.log(
-        "compDefEntry, contentState",
-        compDefEntry,
-        contentState,
-        aiState
       );
       if (compDefEntry && compDefEntry.fields?.componentDefinition) {
         const compDef = compDefEntry.fields?.componentDefinition["en-US"];

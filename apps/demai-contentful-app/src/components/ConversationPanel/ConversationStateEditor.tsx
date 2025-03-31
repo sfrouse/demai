@@ -18,7 +18,7 @@ import {
   useContentStateSession,
 } from "../../contexts/ContentStateContext/ContentStateContext";
 import LoadingIcon from "../LoadingIcon";
-import { useAIState } from "../../contexts/AIStateContext/AIStateContext";
+import useAIState from "../../contexts/AIStateContext/useAIState";
 
 interface ConversationStateEditorProps {}
 
@@ -40,6 +40,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
         paddingTop: 0,
         paddingBottom: tokens.spacingM,
         minHeight: isLoading ? 200 : 0,
+        position: "relative",
       }}
     >
       {isLoading ? (
@@ -58,7 +59,12 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
               aiState.updateStatus({ userContent: event.target.value });
             }}
           />
-          <Flex justifyContent="flex-end" gap={tokens.spacing2Xs}>
+          <Flex
+            justifyContent="flex-end"
+            alignItems="center"
+            gap={tokens.spacing2Xs}
+          >
+            {aiStateStatus.isRunning ? <LoadingIcon /> : null}
             <div style={{ flex: 1 }}></div>
             <Button
               onClick={() => {
@@ -81,6 +87,19 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
           </Flex>
         </>
       )}
+      {aiStateStatus?.isRunning ? (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: "rgba(255,255,255,.5)",
+            zIndex: 1000,
+          }}
+        ></div>
+      ) : null}
     </Flex>
   );
 };
@@ -179,25 +198,26 @@ const renderContextContentRow = (
 
     // select...
     output.push(
-      <Select
-        key={key}
-        value={val}
-        onChange={(e) => {
-          const val = e.target.value;
-          aiState.updateStatus({
-            contextContentSelections: {
-              ...aiState.contextContentSelections,
-              [item.id]: val,
-            },
-          });
-        }}
-      >
-        {item.options.map((option, optionIndex) => (
-          <Select.Option value={option as any} key={`${key}-${optionIndex}`}>
-            {option as string}
-          </Select.Option>
-        ))}
-      </Select>
+      <div key={key} style={{ padding: `${tokens.spacing2Xs} 0` }}>
+        <Select
+          value={val}
+          onChange={(e) => {
+            const val = e.target.value;
+            aiState.updateStatus({
+              contextContentSelections: {
+                ...aiState.contextContentSelections,
+                [item.id]: val,
+              },
+            });
+          }}
+        >
+          {item.options.map((option, optionIndex) => (
+            <Select.Option value={option as any} key={`${key}-${optionIndex}`}>
+              {option as string}
+            </Select.Option>
+          ))}
+        </Select>
+      </div>
     );
 
     output.push(<div key={`${key}-space`} style={{ width: 6 }}></div>);

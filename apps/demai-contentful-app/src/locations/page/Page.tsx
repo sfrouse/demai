@@ -8,12 +8,12 @@ import MainNav, { NAVIGATION } from "../../components/MainNav";
 import ConversationPanel from "../../components/ConversationPanel/ConversationPanel";
 import ContentPanel from "../../components/ContentPanel/ContentPanel";
 import { AIStateConfig } from "../../ai/AIState/AIStateTypes";
-import { useAIState } from "../../contexts/AIStateContext/AIStateContext";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
+import useAIState from "../../contexts/AIStateContext/useAIState";
 
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
-  const { spaceStatus, validateSpace } = useContentStateSession();
+  const { spaceStatus, validateSpace, loadProperty } = useContentStateSession();
   const { setAIStateConfig, setRoute } = useAIState();
 
   useEffect(() => {
@@ -28,10 +28,16 @@ const Page = () => {
     setAIStateConfig(newAIConfig);
     validateSpace();
     setRoute({
-      navigation: "content_model",
-      aiStateEngines: NAVIGATION["content_model"].aiStateEngines,
+      navigation: "research",
+      aiStateEngines: NAVIGATION["research"].aiStateEngines,
       aiStateEngineFocus: 0,
     });
+
+    // lazy load some stuff
+    loadProperty("css");
+    loadProperty("contentTypes");
+    loadProperty("ai");
+    loadProperty("components");
   }, []);
 
   useEffect(() => {

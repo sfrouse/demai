@@ -38,50 +38,52 @@ const createBinding: IMCPTool = {
               type: "object",
               properties: {
                 model: {
-                  type: "string",
-                  description:
-                    "The id of the model property that is to be bound to the view.",
-                },
-                view: {
-                  oneOf: [
-                    {
+                  type: "object",
+                  properties: {
+                    property: {
                       type: "string",
                       description:
                         "The id of the view property to bind to the model.",
                     },
-                    {
-                      type: "object",
-                      properties: {
-                        replace: { type: "boolean" },
-                        additionalProperties: false,
-                      },
-                      required: ["replace"],
+                  },
+                  additionalProperties: false,
+                  required: ["property"],
+                },
+                view: {
+                  type: "object",
+                  properties: {
+                    property: {
+                      type: "string",
+                      description:
+                        "The id of the view property to bind to the model.",
+                    },
+                    call: {
+                      type: "string",
+                      description:
+                        "The id of the function to call if this should be post processed",
+                    },
+                    replace: {
+                      type: "boolean",
                       description:
                         "Indicates a full replacement of the focused model with the model found in this view's property. When a content type (model) has a property like 'override' it should be used as a replacement.",
                     },
-                    {
-                      type: "object",
-                      properties: {
-                        slot: {
-                          type: "string",
-                          description:
-                            "The name of the slot to inject the model property into.",
-                        },
-                        additionalProperties: false,
-                      },
-                      required: ["slot"],
+                    slot: {
+                      type: "string",
                       description:
                         "Indicates that the model property should be injected into a slot in the view.",
                     },
-                  ],
+                  },
+                  additionalProperties: false,
+                  required: ["property", "call", "replace", "slot"],
                 },
-                additionalProperties: false,
               },
+              additionalProperties: false,
+              required: ["model", "view"],
             },
           },
-          additionalProperties: false,
         },
-        required: ["modelId", "name", "properties"],
+        additionalProperties: false,
+        required: ["modelId", "viewId", "default", "bindings"],
       },
     },
   },

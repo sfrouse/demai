@@ -3,10 +3,10 @@ import { Caption, Flex, Text } from "@contentful/f36-components";
 import LoadingIcon from "../../../LoadingIcon";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
-import { useAIState } from "../../../../contexts/AIStateContext/AIStateContext";
 import tokens from "@contentful/f36-tokens";
 import Divider from "../../../Divider";
 import { NAVIGATION } from "../../../MainNav";
+import useAIState from "../../../../contexts/AIStateContext/useAIState";
 
 const ContentTypeContent = () => {
   const { contentState, loadProperty, loadingState } = useContentStateSession();

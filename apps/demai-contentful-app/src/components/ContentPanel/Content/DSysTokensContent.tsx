@@ -9,9 +9,9 @@ import ContentPanelHeader from "../ContentPanelHeader";
 import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/revertDemAITokensSingletonEntry";
 import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/contentTypes/demaiTokensCType";
 import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
-import { useAIState } from "../../../contexts/AIStateContext/AIStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import tokens from "@contentful/f36-tokens";
+import useAIState from "../../../contexts/AIStateContext/useAIState";
 
 export const COLOR_SET_ALLOW_LIST = [
   "primary",

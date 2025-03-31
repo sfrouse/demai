@@ -2,16 +2,15 @@ import tokens from "@contentful/f36-tokens";
 import { Flex, Tabs } from "@contentful/f36-components";
 import Divider from "../Divider";
 import { useEffect, useRef } from "react";
-import LoadingIcon from "../LoadingIcon";
 import ConversationConfirm from "./ConversationConfirm";
 import AIState from "../../ai/AIState/AIState";
-import ConversationState from "./ConversationState";
 import ConversationStateEditor from "./ConversationStateEditor";
 import { AIStatePhase } from "../../ai/AIState/AIStateTypes";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
-import { useAIState } from "../../contexts/AIStateContext/AIStateContext";
 import scrollBarStyles from "../utils/ScrollBarMinimal.module.css";
 import classNames from "../utils/classNames";
+import useAIState from "../../contexts/AIStateContext/useAIState";
+import ConversationBubble from "./ConversationBubble/ConversationBubble";
 
 const ConversationPanel = () => {
   const { contentState, spaceStatus } = useContentStateSession();
@@ -57,6 +56,34 @@ const ConversationPanel = () => {
         position: "relative",
       }}
     >
+      {useNav ? (
+        <Flex
+          style={{ height: 57 }}
+          flexDirection="column"
+          justifyContent="flex-end"
+        >
+          <Tabs
+            currentTab={`${route?.aiStateEngineFocus}`}
+            style={{ marginLeft: tokens.spacingS }}
+            onTabChange={(tab: string) => {
+              const index = parseInt(tab);
+              setRoute({
+                ...route,
+                aiStateEngineFocus: index,
+              });
+            }}
+          >
+            <Tabs.List>
+              {route?.aiStateEngines.map((engine, index) => (
+                <Tabs.Tab panelId={`${index}`} key={`${index}`}>
+                  {engineIDToSentence(engine)}
+                </Tabs.Tab>
+              ))}
+            </Tabs.List>
+          </Tabs>
+          <Divider style={{ marginBottom: 0, marginTop: 0 }} />
+        </Flex>
+      ) : null}
       {!spaceStatus?.valid ? (
         <div
           style={{
@@ -83,34 +110,12 @@ const ConversationPanel = () => {
         }}
       >
         {aiSession.map((aiState: AIState) => {
-          return <ConversationState key={aiState.key} aiState={aiState} />;
+          return <ConversationBubble key={aiState.key} aiState={aiState} />;
         })}
-        {aiStateStatus?.isRunning ? <LoadingIcon /> : null}
+        {/* {aiStateStatus?.isRunning ? <LoadingIcon /> : null} */}
         <div ref={chatLastBubbleRef}></div>
       </div>
       <Divider style={{ marginTop: 0 }} />
-      {useNav ? (
-        <Flex>
-          <Tabs
-            currentTab={`${route?.aiStateEngineFocus}`}
-            onTabChange={(tab: string) => {
-              const index = parseInt(tab);
-              setRoute({
-                ...route,
-                aiStateEngineFocus: index,
-              });
-            }}
-          >
-            <Tabs.List>
-              {route?.aiStateEngines.map((engine, index) => (
-                <Tabs.Tab panelId={`${index}`} key={`${index}`}>
-                  {engineIDToSentence(engine)}
-                </Tabs.Tab>
-              ))}
-            </Tabs.List>
-          </Tabs>
-        </Flex>
-      ) : null}
       <div style={{ position: "relative" }}>
         {aiState && aiStateStatus ? (
           <>

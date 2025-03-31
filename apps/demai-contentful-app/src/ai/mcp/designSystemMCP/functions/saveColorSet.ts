@@ -69,8 +69,8 @@ const saveColorSet: IMCPTool = {
             description: "Almost completely white, but not pure.",
             type: "string",
           },
-          additionalProperties: false,
         },
+        additionalProperties: false,
         required: [
           "name",
           "100",

@@ -9,7 +9,7 @@ import tokens from "@contentful/f36-tokens";
 import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/revertDemAITokensSingletonEntry";
 import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import { useAIState } from "../../../contexts/AIStateContext/AIStateContext";
+import useAIState from "../../../contexts/AIStateContext/useAIState";
 
 function generateErrorMessage(
   validationResult: Record<string, any>

@@ -1,13 +1,25 @@
 import AISessionManager from "./AISessionManager";
-import { AIStateConfig, AIStatePhase, AIStateStatus } from "./AIStateTypes";
-import createAIPromptEngine, {
+import {
   AIPromptEngineID,
-} from "./utils/createAIPromptEngine";
+  AIStateConfig,
+  AIStatePhase,
+  AIStateStatus,
+} from "./AIStateTypes";
 import { nanoid } from "nanoid";
 import { AIPromptEngine } from "./AIPromptEngine/AIPromptEngine";
 import createPrompt from "./utils/createPrompt";
 import { ContentState } from "../../contexts/ContentStateContext/ContentStateContext";
 import createContextContentSelectionsDefaults from "./utils/createContextContentSelectionsDefaults";
+import { CreateContentTypeEngine } from "./AIPromptEngine/promptEngines/contentful/CreateContentTypeEngine";
+import { CreateEntryEngine } from "./AIPromptEngine/promptEngines/contentful/CreateEntryEngine";
+import { ChangeTokenColorSetEngine } from "./AIPromptEngine/promptEngines/designSystem/ChangeTokenColorSetEngine";
+import { EditContentTypeEngine } from "./AIPromptEngine/promptEngines/contentful/EditContentTypeEngine";
+import { CreateWebComponentEngine } from "./AIPromptEngine/promptEngines/designSystem/CreateWebComponentEngine";
+import { CreateComponentDefinitionEngine } from "./AIPromptEngine/promptEngines/designSystem/CreateComponentDefinitionEngine";
+import { CreateBindingEngine } from "./AIPromptEngine/promptEngines/designSystem/CreateBindingEngine";
+import { StylesFromWebSiteEngine } from "./AIPromptEngine/promptEngines/research/StylesFromWebSiteEngine";
+import { ContentfulOpenToolingEngine } from "./AIPromptEngine/promptEngines/contentful/ContentfulOpenToolingEngine";
+import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
 export default class AIState {
   key: string; // Unique key for React lists
@@ -20,13 +32,16 @@ export default class AIState {
   contentChangeEvent?: () => void;
 
   // Prompt State
-  role: "user" | "assistant" = "assistant";
-  response: string = "(default response...change)";
-  executionResponse: string = "";
+  request: string | undefined;
+  response: string | undefined;
+  executionResponse: string | undefined;
+
+  startRunTime: number | undefined;
+  suggestionRunTime: number | undefined;
+  executeRunTime: number | undefined;
 
   // Content
   userContent: string = "";
-  // contextContent: AIStateContentPrefix = [];
   contextContentSelections: { [key: string]: string } = {};
   ignoreContextContent: boolean = false; // toggles context content
 
@@ -46,8 +61,7 @@ export default class AIState {
       React.SetStateAction<AIStateStatus | undefined>
     >,
     promptEngineId: AIPromptEngineID = AIPromptEngineID.OPEN,
-    contentChangeEvent?: () => void,
-    isIntroState: boolean = false
+    contentChangeEvent?: () => void
   ) {
     this.key = nanoid(); // Generate a unique key
 
@@ -58,10 +72,44 @@ export default class AIState {
     this.contentChangeEvent = contentChangeEvent;
 
     // Prompt Engine
-    this.promptEngine = createAIPromptEngine(this.promptEngineId, this);
+    this.promptEngine = AIState.createAIPromptEngine(this.promptEngineId, this);
+  }
 
-    if (isIntroState) {
-      this.response = this.promptEngine.introMessage;
+  static createAIPromptEngine(
+    actionName: AIPromptEngineID,
+    aiState: AIState
+  ): AIPromptEngine {
+    switch (actionName) {
+      case AIPromptEngineID.CONTENT_MODEL: {
+        return new CreateContentTypeEngine(aiState);
+      }
+      case AIPromptEngineID.ENTRIES: {
+        return new CreateEntryEngine(aiState);
+      }
+      case AIPromptEngineID.DESIGN_TOKENS: {
+        return new ChangeTokenColorSetEngine(aiState);
+      }
+      case AIPromptEngineID.COMPONENT_DEFINITIONS: {
+        return new CreateComponentDefinitionEngine(aiState);
+      }
+      case AIPromptEngineID.WEB_COMPONENTS: {
+        return new CreateWebComponentEngine(aiState);
+      }
+      case AIPromptEngineID.EDIT_CONTENT_TYPE: {
+        return new EditContentTypeEngine(aiState);
+      }
+      case AIPromptEngineID.BINDING: {
+        return new CreateBindingEngine(aiState);
+      }
+      case AIPromptEngineID.CONTENTFUL_OPEN_TOOL: {
+        return new ContentfulOpenToolingEngine(aiState);
+      }
+      case AIPromptEngineID.RESEARCH_STYLES: {
+        return new StylesFromWebSiteEngine(aiState);
+      }
+      default: {
+        return new AIPromptEngine(aiState); // OpenEndedAIAction;
+      }
     }
   }
 
@@ -82,59 +130,63 @@ export default class AIState {
     return clone;
   }
 
-  async run(contentState: ContentState) {
-    this.isRunning = true;
+  async run(contentState: ContentState, forceExecution: boolean = false) {
     this.refreshState();
-
-    if (
-      this.phase === AIStatePhase.describing ||
-      this.phase === AIStatePhase.executed
-    ) {
-      await this.runExecute();
+    if (forceExecution === true || this.phase === AIStatePhase.describing) {
+      await this.runExecute(contentState);
     } else {
       await this.runAnswerOrDescribe(contentState);
     }
-
-    this.isRunning = false;
   }
 
   protected async runAnswerOrDescribe(contentState: ContentState) {
     const sessionManager = this.aiSessionManager.deref();
     if (!sessionManager) return;
-    // Add an Orphaned User Prompt State...
+
+    const startRunTime = Date.now();
+
+    // SHOW USER PROMPT
     const prompt = this.createPrompt(contentState);
     const userState = this.clone();
-    userState.role = "user";
-    userState.response = prompt;
-    userState.phase = AIStatePhase.prompting;
+    userState.request = prompt;
     userState.isRunning = true;
-    sessionManager.addAIState(userState);
-
-    // run prompt...
-    const description = await userState.promptEngine.run(contentState);
-
-    userState.isRunning = false;
-
-    // hand off to next action
-    const nextAction = this.clone();
-    nextAction.role = "assistant";
-    nextAction.response = `${description}`;
-    nextAction.phase =
+    userState.phase =
       this.promptEngine.toolType === "none"
         ? AIStatePhase.answered
         : AIStatePhase.describing;
-    this.aiSessionManager.deref()!.addAndActivateAIState(nextAction);
-    nextAction.updateStatus();
+    this.aiSessionManager.deref()!.addAndActivateAIState(userState);
+
+    // RUN
+    const description = await userState.promptEngine.run(this);
+
+    // FINISH
+    userState.isRunning = false;
+    userState.response = userState.promptEngine.responseContent(
+      `${description}`,
+      this,
+      contentState
+    );
+    userState.updateStatus();
+    userState.suggestionRunTime = Date.now() - startRunTime;
   }
 
-  protected async runExecute() {
+  protected async runExecute(contentState: ContentState) {
     const sessionManager = this.aiSessionManager.deref();
     if (!sessionManager) return;
 
     this.phase = AIStatePhase.executing;
     this.isRunning = true;
-    const toolCalls = await this.promptEngine.runExe();
-    this.executionResponse = `Executed : ${toolCalls}`;
+    this.startRunTime = Date.now();
+    this.updateStatus();
+
+    // RUN
+    const toolCalls = await this.promptEngine.runExe(this);
+
+    // FINISH
+    this.executeRunTime = Date.now() - this.startRunTime;
+    this.executionResponse = `Successfully executed. ${
+      toolCalls && `Used tools: ${toolCalls}`
+    }`;
     this.phase = AIStatePhase.executed;
     this.isRunning = false;
     this.updateStatus();
@@ -167,10 +219,22 @@ export default class AIState {
     if (!sessionManager) return [];
     const convos = sessionManager.getSessions();
     const lastFour = convos.slice(Math.max(convos.length - 4, 0));
-    return lastFour.map((msg: AIState) => ({
-      role: msg.role,
-      content: msg.response,
-    }));
+    const history: ChatCompletionMessageParam[] = [];
+    lastFour.map((msg: AIState) => {
+      if (msg.request) {
+        history.push({
+          role: "user",
+          content: `${msg.request}`,
+        });
+      }
+      if (msg.response) {
+        history.push({
+          role: "assistant",
+          content: msg.response,
+        });
+      }
+    });
+    return history;
   }
 
   refreshState() {
@@ -182,6 +246,7 @@ export default class AIState {
       ignoreContextContent: this.ignoreContextContent,
       placeholder: this.promptEngine.placeholder,
       prompts: this.promptEngine.prompts,
+      // runTime: this.runTime,
     });
   }
 }
