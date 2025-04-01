@@ -1,13 +1,21 @@
 import { PageAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { ContentType, createClient, Entry } from "contentful-management";
-import React, { createContext, useContext, useReducer, useState } from "react";
+import * as contentful from "contentful";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import getLatestTokens from "./services/getLatestTokens";
 import getComponents from "./services/getComponents";
 import { AppInstallationParameters } from "../../locations/config/ConfigScreen";
 import { IMCPClientValidation } from "../../ai/mcp/MCPClient";
 import { DesignSystemMCPClient } from "../../ai/mcp/designSystemMCP/DesignSystemMCPClient";
 import { ResearchMCP } from "../../ai/mcp/researchMCP/ResearchMCP";
+import { DEMAI_RESEARCH_SINGLETON_ENTRY_ID } from "../../ai/mcp/researchMCP/validate/ctypes/demaiResearchCType";
 
 // Define the shape of your session data
 export interface ContentState {
@@ -17,6 +25,14 @@ export interface ContentState {
   css?: string;
   ai?: string;
   components?: Entry[];
+  research?: {
+    fields: {
+      primaryColor: string;
+      secondaryColor: string;
+      tertiaryColor: string;
+    };
+    contentTypeId: string;
+  };
 }
 
 // Define action types for updating session contentState
@@ -47,6 +63,7 @@ const ContentStateContext = createContext<
       spaceStatus: IMCPClientValidation | undefined;
       validateSpace: () => Promise<void>;
       setContentType: (ctypeId: string | undefined) => Promise<void>;
+      cpa: string;
     }
   | undefined
 >(undefined);
@@ -58,10 +75,32 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [contentState, dispatch] = useReducer(sessionReducer, initialState);
   const [spaceStatus, setSpaceStatus] = useState<
     IMCPClientValidation | undefined
-  >(); // Separate state for validation
+  >();
   const [loadingState, setLoadingState] = useState<{
     [key in keyof ContentState]?: boolean;
   }>({});
+  const [cpa, setCpa] = useState<string>("");
+
+  useEffect(() => {
+    (async () => {
+      const params = sdk.parameters.installation as AppInstallationParameters;
+      const client = createClient({
+        accessToken: params.cma,
+      });
+      const space = await client.getSpace(sdk.ids.space);
+      const previewKeys = await space.getPreviewApiKeys();
+      if (
+        previewKeys &&
+        previewKeys.items &&
+        previewKeys.items[0] &&
+        previewKeys.items[0].accessToken
+      ) {
+        setCpa(previewKeys.items[0].accessToken);
+      } else {
+        console.error("NO CPA KEY");
+      }
+    })();
+  }, []);
 
   // Function to fetch only one property on demand, preventing duplicate calls
   const loadProperty = async (
@@ -79,6 +118,15 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     const params = sdk.parameters.installation as AppInstallationParameters;
     setLoadingState((prev) => ({ ...prev, [key]: true })); // Mark as loading
 
+    const previewClient = cpa
+      ? contentful.createClient({
+          space: sdk.ids.space,
+          environment: sdk.ids.environment,
+          accessToken: cpa,
+          host: "preview.contentful.com",
+        })
+      : undefined;
+
     switch (key) {
       case "contentTypes": {
         const client = createClient({
@@ -93,6 +141,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         break;
       }
       case "tokens": {
+        // TODO: migrate to previewClient
         const tokens = await getLatestTokens(
           params.cma,
           sdk.ids.space,
@@ -103,6 +152,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         break;
       }
       case "css": {
+        // TODO: migrate to previewClient
         const css = await getLatestTokens(
           params.cma,
           sdk.ids.space,
@@ -113,6 +163,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         break;
       }
       case "ai": {
+        // TODO: migrate to previewClient
         const css = await getLatestTokens(
           params.cma,
           sdk.ids.space,
@@ -123,12 +174,24 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         break;
       }
       case "components": {
+        // TODO: migrate to previewClient
         const components = await getComponents(
           params.cma,
           sdk.ids.space,
           sdk.ids.environment
         );
         payload = components;
+        break;
+      }
+      case "research": {
+        if (!previewClient) {
+          payload = undefined;
+        } else {
+          const researchEntry = await previewClient.getEntry(
+            DEMAI_RESEARCH_SINGLETON_ENTRY_ID
+          );
+          payload = researchEntry;
+        }
         break;
       }
       default:
@@ -203,6 +266,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         spaceStatus,
         validateSpace,
         setContentType,
+        cpa,
       }}
     >
       {children}

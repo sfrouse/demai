@@ -1,6 +1,8 @@
-import { COLOR_SET_ALLOW_LIST } from "../../../../../components/ContentPanel/Content/DSysTokensContent";
+import { COLOR_SET_ALLOW_LIST } from "../../../../../components/ContentPanel/Content/DesignSystem/DSysTokensContent";
+import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import { SAVE_COLOR_SET_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/saveColorSet";
 import AIState from "../../../AIState";
+import rgbaToHex from "../../../utils/rgbaToHex";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import * as icons from "@contentful/f36-icons";
 
@@ -19,13 +21,21 @@ export class ChangeTokenColorSetEngine extends AIPromptEngine {
     this.toolType = "DemAIDesignSystem";
     this.toolFilters = [SAVE_COLOR_SET_TOOL_NAME];
 
+    // CONTENT CONTEXT
     this.contextContent = () => [
       "Update",
       {
         id: "updateType",
-        options: ["colorset", "core colorsets", "by color pattern"],
-        defaultValue: "colorset",
+        options: [
+          "brand colors",
+          "core colorsets",
+          "specific colorset",
+          "by color pattern",
+        ],
+        defaultValue: "brand colors",
         paths: [
+          ["defined in research."],
+          ["primary, secondary, and tertiary colors."],
           [
             {
               id: "colorSetList",
@@ -34,7 +44,6 @@ export class ChangeTokenColorSetEngine extends AIPromptEngine {
             },
             "color.",
           ],
-          ["primary, secondary, and tertiary colors."],
           [
             {
               id: "colorPatterns",
@@ -53,8 +62,33 @@ export class ChangeTokenColorSetEngine extends AIPromptEngine {
         ],
       },
     ];
-    this.content = (aiState: AIState) =>
-      `${aiState.userContent}. Please show the hex colors for each step and don't change any color names.`;
+
+    // CONTENT
+    this.content = (aiState: AIState, contentState: ContentState) => {
+      let extra = "";
+      if (aiState.contextContentSelections["updateType"] === "brand colors") {
+        extra = `
+The brand colors are primary ${contentState.research?.fields.primaryColor}, secondary ${contentState.research?.fields.secondaryColor}, tertiary ${contentState.research?.fields.tertiaryColor}. `;
+      }
+      if (
+        aiState.contextContentSelections["updateType"] === "specific colorset"
+      ) {
+        console.log("contentState.tokens", contentState.tokens);
+        if (
+          contentState.tokens?.color?.[
+            aiState.contextContentSelections["colorSetList"]
+          ]?.["500"]
+        ) {
+          extra = `
+ The base color that you will be updating for this colorset now is ${rgbaToHex(
+   contentState.tokens.color[aiState.contextContentSelections["colorSetList"]][
+     "500"
+   ]
+ )}. `;
+        }
+      }
+      return `${extra}${aiState.userContent}. Please show the hex colors for each step and don't change any color names.`;
+    };
 
     this.introMessage =
       "Let's update some colors, what would you like to change?";

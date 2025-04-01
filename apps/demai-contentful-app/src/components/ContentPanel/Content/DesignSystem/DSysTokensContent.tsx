@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Button, Flex, IconButton, Text } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
 import * as icons from "@contentful/f36-icons";
-import { AppInstallationParameters } from "../../../locations/config/ConfigScreen";
-import LoadingIcon from "../../LoadingIcon";
-import Divider from "../../Divider";
-import ContentPanelHeader from "../ContentPanelHeader";
-import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/revertDemAITokensSingletonEntry";
-import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
+import { AppInstallationParameters } from "../../../../locations/config/ConfigScreen";
+import LoadingIcon from "../../../LoadingIcon";
+import Divider from "../../../Divider";
+import ContentPanelHeader from "../../ContentPanelHeader";
+import revertDemAITokensSingletonEntry from "../../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/revertDemAITokensSingletonEntry";
+import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import tokens from "@contentful/f36-tokens";
-import useAIState from "../../../contexts/AIStateContext/useAIState";
-import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/validate/ctypes/demaiTokensCType";
+import useAIState from "../../../../contexts/AIStateContext/useAIState";
+import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../../ai/mcp/designSystemMCP/validate/ctypes/demaiTokensCType";
 
 export const COLOR_SET_ALLOW_LIST = [
   "primary",
@@ -133,13 +133,7 @@ function renderColorSet(name: string, colorSet: any, output: any[]) {
   }
   output.push(
     <Flex flexDirection="column" gap="4px" key={`color-token-${name}`}>
-      <Text
-        fontSize="fontSizeM"
-        fontWeight="fontWeightDemiBold"
-        style={{ flex: 1 }}
-      >
-        {name}
-      </Text>
+      {propHeader(name)}
       <Flex flexDirection="row" gap="6px">
         {Object.entries(colorSet).map((set) =>
           renderChip(`${name}-${set[0]}`, set[1] as string)
@@ -150,7 +144,15 @@ function renderColorSet(name: string, colorSet: any, output: any[]) {
   );
 }
 
-function renderChip(name: string, colorHex: string) {
+export function propHeader(name: string) {
+  return (
+    <Text fontSize="fontSizeM" fontWeight="fontWeightDemiBold">
+      {name}
+    </Text>
+  );
+}
+
+export function renderChip(name: string, colorHex: string | undefined) {
   if (typeof colorHex !== "string") return;
   return (
     <div

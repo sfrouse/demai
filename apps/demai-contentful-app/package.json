@@ -17,6 +17,7 @@
     "@modelcontextprotocol/sdk": "^1.6.1",
     "@smithery/sdk": "^1.0.3",
     "@types/node": "^22.13.5",
+    "contentful": "^11.5.11",
     "contentful-management": "10.46.4",
     "demai-design-system-core": "file:.yalc/demai-design-system-core",
     "emotion": "10.0.27",

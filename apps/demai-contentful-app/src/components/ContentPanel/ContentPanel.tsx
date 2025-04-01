@@ -1,12 +1,13 @@
 import tokens from "@contentful/f36-tokens";
 import { Flex } from "@contentful/f36-components";
-import DSysTokensContent from "./Content/DSysTokensContent";
 import ContentModelContent from "./Content/ContentModel/ContentModelContent";
 import ContentTypeContent from "./Content/ContentModel/ContentTypeContent";
 import SpaceContent from "./Content/SpaceContent";
 import ComponentsContent from "./Content/Components/ComponentsContent";
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import EntriesContent from "./Content/Entries/EntriesContent";
+import ResearchContent from "./Content/ResearchContent";
+import DSysTokensContent from "./Content/DesignSystem/DSysTokensContent";
 
 const ContentPanel = () => {
   const { route } = useAIState();
@@ -31,6 +32,7 @@ const ContentPanel = () => {
       {route?.navigation === "components" ? <ComponentsContent /> : null}
       {route?.navigation === "space" ? <SpaceContent /> : null}
       {route?.navigation === "entries" ? <EntriesContent /> : null}
+      {route?.navigation === "research" ? <ResearchContent /> : null}
     </Flex>
   );
 };

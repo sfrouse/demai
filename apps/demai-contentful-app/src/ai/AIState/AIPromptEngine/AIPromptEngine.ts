@@ -25,11 +25,22 @@ import { ResearchMCP } from "../../mcp/researchMCP/ResearchMCP";
 
 export class AIPromptEngine {
   label: string = "Open Ended";
-  introMessage: string = "Let's do something";
+
+  // USER CONTENT
   contextContent: (contentState: ContentState) => AIStateContentPrefix =
     () => [];
   content: AIStateContent = (aiState: AIState) => `${aiState.userContent}`;
+
+  // AI SETUP
+  system: AIStateSystemPrompt = {
+    role: "system",
+    content:
+      "You are an expert in Contentful, help this SE learn about Contentful demos.",
+  };
   responseContent: AIStateResponseContent = (response: string) => `${response}`;
+
+  // UI CONTENT
+  introMessage: string = "Let's do something";
   placeholder: string =
     "This is an open ended prompt that uses tools...ask me something about Contentful.";
   prompts: AIStatePrompts = {
@@ -40,6 +51,11 @@ export class AIPromptEngine {
   };
   executionPrompt: string | undefined;
 
+  // AI CLIENTS
+  protected model: AIModels = AIModels.gpt4o;
+  private openAIClient: OpenAI;
+
+  // TOOL CONFIG
   toolType:
     | "DemAIDesignSystem"
     | "Contentful"
@@ -47,24 +63,10 @@ export class AIPromptEngine {
     | "Research"
     | "none" = "none";
   toolFilters: string[] = [];
-  protected model: AIModels = AIModels.gpt4o;
-  system: AIStateSystemPrompt = {
-    role: "system",
-    content:
-      "You are an expert in Contentful, help this SE learn about Contentful demos.",
-  };
-  private openAIClient: OpenAI;
+  // -- MCPs
   private contentfulMCP: ContentfulMCP | undefined;
   private designSystemCMPClient: DesignSystemMCPClient | undefined;
   private researchMCP: ResearchMCP | undefined;
-
-  // Daisy Chaining
-  protected runNextEngine = async () => {
-    return null;
-  };
-  protected executeNextEngine = async () => {
-    return null;
-  };
 
   constructor(aiState: AIState) {
     this.openAIClient = getOpeAIClient(aiState.config.openAiApiKey);

@@ -24,7 +24,6 @@ import { SaveBrandColorsEngine } from "./AIPromptEngine/promptEngines/research/S
 
 export default class AIState {
   key: string; // Unique key for React lists
-
   aiSessionManager: WeakRef<AISessionManager>; // avoid circular ref issues...
   config: AIStateConfig;
   setAIStateStatus: React.Dispatch<
@@ -32,25 +31,26 @@ export default class AIState {
   >;
   contentChangeEvent?: () => void;
 
-  // Prompt State
+  // PROMPTS
   request: string | undefined;
   response: string | undefined;
   executionResponse: string | undefined;
 
+  // TIMERS
   startRunTime: number | undefined;
   suggestionRunTime: number | undefined;
   executeRunTime: number | undefined;
 
-  // Content
+  // USER CONTENT
   userContent: string = "";
   contextContentSelections: { [key: string]: string } = {};
   ignoreContextContent: boolean = false; // toggles context content
 
-  // Engine
+  // ENGINE
   promptEngineId: AIPromptEngineID = AIPromptEngineID.OPEN;
   promptEngine: AIPromptEngine;
 
-  // State
+  // STATE
   isRunning: boolean = false;
   phase: AIStatePhase = AIStatePhase.prompting;
 
@@ -64,15 +64,12 @@ export default class AIState {
     promptEngineId: AIPromptEngineID = AIPromptEngineID.OPEN,
     contentChangeEvent?: () => void
   ) {
-    this.key = nanoid(); // Generate a unique key
-
+    this.key = nanoid();
     this.aiSessionManager = new WeakRef(aiStateManager);
     this.config = config;
     this.promptEngineId = promptEngineId;
     this.setAIStateStatus = setAIStateStatus;
     this.contentChangeEvent = contentChangeEvent;
-
-    // Prompt Engine
     this.promptEngine = AIState.createAIPromptEngine(this.promptEngineId, this);
   }
 
@@ -150,9 +147,8 @@ export default class AIState {
     const startRunTime = Date.now();
 
     // SHOW USER PROMPT
-    const prompt = this.createPrompt(contentState);
     const userState = this.clone();
-    userState.request = prompt;
+    userState.request = this.createPrompt(contentState);
     userState.isRunning = true;
     userState.phase =
       this.promptEngine.toolType === "none"
@@ -161,7 +157,7 @@ export default class AIState {
     this.aiSessionManager.deref()!.addAndActivateAIState(userState);
 
     // RUN
-    const description = await userState.promptEngine.run(this);
+    const description = await userState.promptEngine.run(userState);
 
     // FINISH
     userState.isRunning = false;

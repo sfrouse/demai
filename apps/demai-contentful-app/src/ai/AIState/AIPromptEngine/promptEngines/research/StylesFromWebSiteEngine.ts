@@ -56,7 +56,7 @@ Double check your work to see if you got a hex color and if you got enough color
         aiState
       );
       const aiStateClone = aiState.clone();
-      aiStateClone.request = `
+      aiStateClone.response = `
 The research below should have definitions for primary, secondary, or tertiary colors.
 Find them and save to research:
 
