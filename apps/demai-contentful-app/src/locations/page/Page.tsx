@@ -28,12 +28,14 @@ const Page = () => {
       });
       const space = await client.getSpace(sdk.ids.space);
       const previewKeys = await space.getPreviewApiKeys();
+      let cpaResult;
       if (
         previewKeys &&
         previewKeys.items &&
         previewKeys.items[0] &&
         previewKeys.items[0].accessToken
       ) {
+        cpaResult = previewKeys.items[0].accessToken;
         setCPA(previewKeys.items[0].accessToken);
       } else {
         console.error("NO CPA KEY");
@@ -51,6 +53,7 @@ const Page = () => {
         openAiApiKey: params.openai,
         spaceId: sdk.ids.space,
         environmentId: sdk.ids.environment,
+        cpa: cpaResult,
       };
       setAIStateConfig(newAIConfig);
       validateSpace();

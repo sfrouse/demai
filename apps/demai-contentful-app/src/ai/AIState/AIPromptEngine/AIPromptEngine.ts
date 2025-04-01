@@ -73,17 +73,20 @@ export class AIPromptEngine {
     this.designSystemCMPClient = new DesignSystemMCPClient(
       aiState.config.cma,
       aiState.config.spaceId,
-      aiState.config.environmentId
+      aiState.config.environmentId,
+      aiState.config.cpa
     );
     this.contentfulMCP = new ContentfulMCP(
       aiState.config.cma,
       aiState.config.spaceId,
-      aiState.config.environmentId
+      aiState.config.environmentId,
+      aiState.config.cpa
     );
     this.researchMCP = new ResearchMCP(
       aiState.config.cma,
       aiState.config.spaceId,
-      aiState.config.environmentId
+      aiState.config.environmentId,
+      aiState.config.cpa
     );
   }
 

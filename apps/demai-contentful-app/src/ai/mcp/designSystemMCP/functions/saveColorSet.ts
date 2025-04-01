@@ -5,6 +5,7 @@ import { DesignSystemMCPClient } from "../DesignSystemMCPClient";
 import transformTokens from "demai-design-system-core/src/tokens/scripts/transformTokens";
 import updateColorSetInTokens from "./utils/tokens/updateColorSetInTokens";
 import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../validate/ctypes/demaiTokensCType";
+import * as contentful from "contentful";
 
 export const SAVE_COLOR_SET_TOOL_NAME = "save_color_set";
 
@@ -89,11 +90,13 @@ const saveColorSet: IMCPTool = {
     },
   },
   functionCall: async (mcp: DesignSystemMCPClient, params: any) => {
-    const tokens = await getLatestTokens(
-      mcp.cma,
-      mcp.spaceId,
-      mcp.environmentId
-    );
+    const previewClient = contentful.createClient({
+      space: mcp.spaceId,
+      environment: mcp.environmentId,
+      accessToken: mcp.cpa,
+      host: "preview.contentful.com",
+    });
+    const tokens = await getLatestTokens(previewClient);
     const newTokens = updateColorSetInTokens(tokens, params.name, {
       ...params,
       name: undefined,

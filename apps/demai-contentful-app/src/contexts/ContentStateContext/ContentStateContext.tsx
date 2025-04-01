@@ -1,6 +1,6 @@
 import { PageAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import { ContentType, createClient, Entry } from "contentful-management";
+import { ContentType, Entry } from "contentful-management";
 import * as contentful from "contentful";
 import React, { createContext, useContext, useReducer, useState } from "react";
 import getLatestTokens from "./services/getLatestTokens";
@@ -171,14 +171,16 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
       const designSysMCP = new DesignSystemMCPClient(
         params.cma,
         sdk.ids.space,
-        sdk.ids.environment
+        sdk.ids.environment,
+        cpa
       );
       const dSysValidResult = await designSysMCP.validate();
 
       const researchMCP = new ResearchMCP(
         params.cma,
         sdk.ids.space,
-        sdk.ids.environment
+        sdk.ids.environment,
+        cpa
       );
       const researchValidResult = await researchMCP.validate();
 

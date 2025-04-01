@@ -22,11 +22,18 @@ export class MCPClient {
   cma: string;
   spaceId: string;
   environmentId: string;
+  cpa: string;
 
-  constructor(cma: string, spaceId: string, environmentId: string) {
+  constructor(
+    cma: string,
+    spaceId: string,
+    environmentId: string,
+    cpa: string
+  ) {
     this.cma = cma;
     this.spaceId = spaceId;
     this.environmentId = environmentId;
+    this.cpa = cpa;
   }
 
   async getToolsForOpenAI(): Promise<ChatCompletionTool[]> {

@@ -7,6 +7,7 @@ export type AIStateConfig = {
   openAiApiKey: string;
   spaceId: string;
   environmentId: string;
+  cpa: string;
 };
 
 export enum AIStatePhase {
