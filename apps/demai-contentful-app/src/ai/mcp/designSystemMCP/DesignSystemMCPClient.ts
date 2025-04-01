@@ -1,5 +1,5 @@
 import { ChatCompletionTool } from "openai/resources/index.mjs";
-import { IMCPClient } from "../IMCPClient";
+import { IMCPClientValidation, MCPClient } from "../MCPClient";
 import saveColorSet, {
   SAVE_COLOR_SET_TOOL_NAME,
 } from "./functions/saveColorSet";
@@ -12,19 +12,9 @@ import createWebComponent, {
 import createBinding, {
   CREATE_BINDING_TOOL_NAME,
 } from "./functions/createBinding";
-import { Tool } from "openai/resources/responses/responses.mjs";
+import validateDesignSystemMCP from "./validate/validateDesignSystemMCP";
 
-export class DesignSystemMCPClient implements IMCPClient {
-  cma: string;
-  spaceId: string;
-  environmentId: string;
-
-  constructor(cma: string, spaceId: string, environmentId: string) {
-    this.cma = cma;
-    this.spaceId = spaceId;
-    this.environmentId = environmentId;
-  }
-
+export class DesignSystemMCPClient extends MCPClient {
   async getToolsForOpenAI(): Promise<ChatCompletionTool[]> {
     return [
       {
@@ -59,19 +49,6 @@ export class DesignSystemMCPClient implements IMCPClient {
     ];
   }
 
-  async getToolsForOpenAIResponses(): Promise<Tool[]> {
-    const tools = await this.getToolsForOpenAI();
-    return tools.map((tool) => ({
-      name: tool.function.name,
-      parameters: {
-        ...tool.function.parameters,
-      },
-      description: tool.function.description,
-      strict: true,
-      type: "function",
-    }));
-  }
-
   async callFunction(toolName: string, params: any) {
     switch (toolName) {
       case SAVE_COLOR_SET_TOOL_NAME: {
@@ -98,5 +75,14 @@ export class DesignSystemMCPClient implements IMCPClient {
         };
       }
     }
+  }
+
+  async validate(): Promise<IMCPClientValidation> {
+    const validationResult = await validateDesignSystemMCP(
+      this.cma,
+      this.spaceId,
+      this.environmentId
+    );
+    return validationResult;
   }
 }

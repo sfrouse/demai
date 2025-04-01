@@ -5,9 +5,9 @@ import React, { createContext, useContext, useReducer, useState } from "react";
 import getLatestTokens from "./services/getLatestTokens";
 import getComponents from "./services/getComponents";
 import { AppInstallationParameters } from "../../locations/config/ConfigScreen";
-import validateDemAIContentModel, {
-  DEMAI_VALID,
-} from "../../ai/mcp/designSystemMCP/contentTypes/validateDemAIContentModel";
+import { IMCPClientValidation } from "../../ai/mcp/MCPClient";
+import { DesignSystemMCPClient } from "../../ai/mcp/designSystemMCP/DesignSystemMCPClient";
+import { ResearchMCP } from "../../ai/mcp/researchMCP/ResearchMCP";
 
 // Define the shape of your session data
 export interface ContentState {
@@ -44,7 +44,7 @@ const ContentStateContext = createContext<
       contentState: ContentState;
       loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void;
       loadingState: { [key in keyof ContentState]?: boolean };
-      spaceStatus: DEMAI_VALID | undefined;
+      spaceStatus: IMCPClientValidation | undefined;
       validateSpace: () => Promise<void>;
       setContentType: (ctypeId: string | undefined) => Promise<void>;
     }
@@ -56,7 +56,9 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const sdk = useSDK<PageAppSDK>();
   const [contentState, dispatch] = useReducer(sessionReducer, initialState);
-  const [spaceStatus, setSpaceStatus] = useState<DEMAI_VALID | undefined>(); // Separate state for validation
+  const [spaceStatus, setSpaceStatus] = useState<
+    IMCPClientValidation | undefined
+  >(); // Separate state for validation
   const [loadingState, setLoadingState] = useState<{
     [key in keyof ContentState]?: boolean;
   }>({});
@@ -165,12 +167,27 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const validateSpace = async () => {
     try {
       const params = sdk.parameters.installation as AppInstallationParameters;
-      const validationResult = await validateDemAIContentModel(
+      const designSysMCP = new DesignSystemMCPClient(
         params.cma,
         sdk.ids.space,
         sdk.ids.environment
       );
-      setSpaceStatus(validationResult);
+      const dSysValidResult = await designSysMCP.validate();
+
+      const researchMCP = new ResearchMCP(
+        params.cma,
+        sdk.ids.space,
+        sdk.ids.environment
+      );
+      const researchValidResult = await researchMCP.validate();
+
+      setSpaceStatus({
+        valid: dSysValidResult.valid && researchValidResult.valid,
+        details: {
+          ...dSysValidResult.details,
+          ...researchValidResult.details,
+        },
+      });
     } catch (error) {
       console.error("Error validating space:", error);
       setSpaceStatus(undefined);

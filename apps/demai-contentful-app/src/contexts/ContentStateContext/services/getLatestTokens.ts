@@ -1,6 +1,6 @@
 import { createClient } from "contentful-management";
-import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/contentTypes/demaiTokensCType";
-import ensureDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/ensureDemAITokensSingletonEntry";
+import ensureDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/ensureDemAITokensSingletonEntry";
+import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/validate/ctypes/demaiTokensCType";
 
 export default async function getLatestTokens(
   cma: string,

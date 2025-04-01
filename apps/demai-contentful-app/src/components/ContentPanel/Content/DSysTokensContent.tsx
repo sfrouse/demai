@@ -6,12 +6,12 @@ import { AppInstallationParameters } from "../../../locations/config/ConfigScree
 import LoadingIcon from "../../LoadingIcon";
 import Divider from "../../Divider";
 import ContentPanelHeader from "../ContentPanelHeader";
-import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/revertDemAITokensSingletonEntry";
-import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/contentTypes/demaiTokensCType";
+import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/revertDemAITokensSingletonEntry";
 import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../contexts/AIStateContext/useAIState";
+import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/validate/ctypes/demaiTokensCType";
 
 export const COLOR_SET_ALLOW_LIST = [
   "primary",

@@ -1,7 +1,7 @@
 import { createClient } from "contentful-management";
-import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/contentTypes/demaiTokensCType";
-import { DEMAI_COMPONENT_CTYPE_ID } from "../../../ai/mcp/designSystemMCP/components/demaiComponentCType";
-import ensureDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/ensureDemAITokensSingletonEntry";
+import ensureDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/ensureDemAITokensSingletonEntry";
+import { DEMAI_COMPONENT_CTYPE_ID } from "../../../ai/mcp/designSystemMCP/validate/ctypes/demaiComponentCType";
+import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/validate/ctypes/demaiTokensCType";
 
 export default async function getComponents(
   cma: string,

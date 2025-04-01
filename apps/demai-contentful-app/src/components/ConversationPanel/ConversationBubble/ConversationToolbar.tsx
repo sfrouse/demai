@@ -32,15 +32,14 @@ const ConversationToolbar = ({
     : tokens.green100;
 
   return (
-    <>
-      <Divider style={{ margin: 0 }} />
+    <div>
       <Flex
         flexDirection="row"
         alignContent="center"
         style={{
           backgroundColor: bgColor,
           padding: `${tokens.spacingM} ${tokens.spacingL}`,
-          borderRadius: `0 0 ${tokens.borderRadiusMedium} ${tokens.borderRadiusMedium}`,
+          // borderRadius: `0 0 ${tokens.borderRadiusMedium} ${tokens.borderRadiusMedium}`,
         }}
       >
         {getStats(aiState)}
@@ -61,7 +60,8 @@ const ConversationToolbar = ({
         </ButtonXs>
         {!aiState.isRunning && getAction(aiState, contentState)}
       </Flex>
-    </>
+      <Divider style={{ margin: 0 }} />
+    </div>
   );
 };
 

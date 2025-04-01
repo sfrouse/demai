@@ -21,6 +21,7 @@ import { ContentState } from "../../../contexts/ContentStateContext/ContentState
 import openAIChatCompletions, {
   OpenAIChatCompletionsProps,
 } from "../../openAI/openAIChatCompletions";
+import { ResearchMCP } from "../../mcp/researchMCP/ResearchMCP";
 
 export class AIPromptEngine {
   label: string = "Open Ended";
@@ -39,7 +40,12 @@ export class AIPromptEngine {
   };
   executionPrompt: string | undefined;
 
-  toolType: "DemAIDesignSystem" | "Contentful" | "WebSearch" | "none" = "none";
+  toolType:
+    | "DemAIDesignSystem"
+    | "Contentful"
+    | "WebSearch"
+    | "Research"
+    | "none" = "none";
   toolFilters: string[] = [];
   protected model: AIModels = AIModels.gpt4o;
   system: AIStateSystemPrompt = {
@@ -50,6 +56,7 @@ export class AIPromptEngine {
   private openAIClient: OpenAI;
   private contentfulMCP: ContentfulMCP | undefined;
   private designSystemCMPClient: DesignSystemMCPClient | undefined;
+  private researchMCP: ResearchMCP | undefined;
 
   // Daisy Chaining
   protected runNextEngine = async () => {
@@ -71,11 +78,16 @@ export class AIPromptEngine {
       aiState.config.spaceId,
       aiState.config.environmentId
     );
+    this.researchMCP = new ResearchMCP(
+      aiState.config.cma,
+      aiState.config.spaceId,
+      aiState.config.environmentId
+    );
   }
 
   async run(aiState: AIState, chain: boolean = false) {
     try {
-      const prevState = aiState.getStateHistory();
+      // const prevState = aiState.getStateHistory();
 
       // API CHAT COMPLETETIONS
       let tools = await this.getTools(this.toolFilters);
@@ -87,7 +99,7 @@ export class AIPromptEngine {
           role: "user",
           content: `${aiState.request}`,
         },
-        prevMessages: prevState,
+        // prevMessages: prevState,
         max_tokens: OPEN_AI_MAX_TOKENS,
       };
       if (this.toolType !== "WebSearch") {
@@ -117,9 +129,12 @@ export class AIPromptEngine {
     }
   }
 
-  async runExe(aiState: AIState): Promise<string[] | undefined> {
+  async runExe(
+    aiState: AIState,
+    chain: boolean = true
+  ): Promise<string[] | undefined> {
     try {
-      const prevState = aiState.getStateHistory();
+      // const prevState = aiState.getStateHistory();
 
       // API CHAT COMPLETETIONS
       let tools = await this.getTools(this.toolFilters);
@@ -131,7 +146,7 @@ export class AIPromptEngine {
           role: "assistant",
           content: `${aiState.response}`,
         },
-        prevMessages: prevState,
+        // prevMessages: prevState,
         max_tokens: OPEN_AI_MAX_TOKENS,
       };
       if (this.toolType !== "WebSearch") {
@@ -159,6 +174,8 @@ export class AIPromptEngine {
           const mcpClient =
             this.toolType === "DemAIDesignSystem"
               ? this.designSystemCMPClient
+              : this.toolType === "Research"
+              ? this.researchMCP
               : this.contentfulMCP;
 
           // API CHAT COMPLETETIONS
@@ -195,6 +212,10 @@ export class AIPromptEngine {
       }
       case "Contentful": {
         tools = await this.contentfulMCP!.getToolsForOpenAI();
+        break;
+      }
+      case "Research": {
+        tools = await this.researchMCP!.getToolsForOpenAI();
         break;
       }
       case "WebSearch": {

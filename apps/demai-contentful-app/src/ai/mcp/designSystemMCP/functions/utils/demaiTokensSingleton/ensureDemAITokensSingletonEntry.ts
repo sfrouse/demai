@@ -4,7 +4,7 @@ import transformTokens from "demai-design-system-core/src/tokens/scripts/transfo
 import {
   DEMAI_TOKENS_CTYPE_ID,
   DEMAI_TOKENS_SINGLETON_ENTRY_ID,
-} from "../demaiTokensCType";
+} from "../../../validate/ctypes/demaiTokensCType";
 
 export default async function ensureDemAITokensSingletonEntry(
   cmaToken: string,
@@ -58,7 +58,7 @@ export default async function ensureDemAITokensSingletonEntry(
     } catch {}
 
     const entry = await environment.createEntryWithId(
-      "demai-tokens",
+      DEMAI_TOKENS_CTYPE_ID,
       DEMAI_TOKENS_SINGLETON_ENTRY_ID,
       {
         fields: {

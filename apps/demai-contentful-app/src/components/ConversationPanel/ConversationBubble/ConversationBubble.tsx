@@ -8,6 +8,7 @@ import classNames from "../../utils/classNames";
 import convertMarkdown from "../util/convertMarkdown";
 import ConversationToolbar from "./ConversationToolbar";
 import ConversationTitle from "./ConversationTitle";
+import { Flex } from "@contentful/f36-components";
 
 const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
   if (!aiState) return null;
@@ -51,23 +52,26 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
 
   if (!aiState.request) {
     return (
-      <div
-        style={{
-          alignSelf: "flex-start",
-          backgroundColor: tokens.colorWhite,
-          maxWidth: "100%",
-          width: "100%",
-          fontSize: tokens.fontSizeM,
-          paddingBottom: tokens.fontSizeM,
-        }}
-      >
-        <span>{aiState.promptEngine.introMessage}</span>
+      <div>
+        <div
+          style={{
+            alignSelf: "flex-start",
+            backgroundColor: tokens.colorWhite,
+            maxWidth: "100%",
+            width: "100%",
+            fontSize: tokens.fontSizeM,
+            padding: `0 ${tokens.spacingL} ${tokens.spacingM} ${tokens.spacingL}`,
+          }}
+        >
+          <span>{aiState.promptEngine.introMessage}</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div
+    <Flex
+      flexDirection="column"
       className={classNames(
         styles["conversation-state"],
         scrollBarStyles["scrollbar-minimal"]
@@ -81,16 +85,19 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
         overflowWrap: "break-word",
 
         margin: 0,
-        marginBottom: tokens.spacingS,
+        // marginBottom: tokens.spacingS,
         fontFamily: tokens.fontStackPrimary,
-        backgroundColor: tokens.gray100,
+        // backgroundColor: tokens.gray100,
         borderRadius: tokens.borderRadiusMedium,
         fontSize: 12,
+        // padding: `${tokens.spacingM} 0 0 0`,
+        gap: tokens.spacingM,
       }}
     >
+      <Divider style={{ margin: 0 }} />
       <div
         style={{
-          padding: `${tokens.spacingM} ${tokens.spacingL}`,
+          padding: `0 ${tokens.spacingL}`,
         }}
       >
         <ConversationTitle title="Prompt" />
@@ -98,10 +105,10 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
       </div>
       {showSystem && (
         <>
-          <Divider style={{ marginTop: 0 }} />
+          {/* <Divider style={{ marginTop: 0 }} /> */}
           <div
             style={{
-              padding: `${tokens.spacingM} ${tokens.spacingL}`,
+              padding: `0 ${tokens.spacingL}`,
             }}
           >
             <ConversationTitle title="System" />
@@ -111,10 +118,10 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
       )}
       {aiState.response && (
         <>
-          <Divider style={{ marginTop: 0 }} />
+          {/* <Divider style={{ marginTop: 0 }} /> */}
           <div
             style={{
-              padding: `${tokens.spacingM} ${tokens.spacingL}`,
+              padding: `0 ${tokens.spacingL}`,
             }}
           >
             <ConversationTitle title="Suggestion" />
@@ -124,10 +131,10 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
       )}
       {aiState.executionResponse && (
         <>
-          <Divider style={{ marginTop: 0 }} />
+          {/* <Divider style={{ marginTop: 0 }} /> */}
           <div
             style={{
-              padding: `${tokens.spacingM} ${tokens.spacingL}`,
+              padding: `0 ${tokens.spacingL}`,
             }}
           >
             <ConversationTitle title="Results" />
@@ -138,7 +145,7 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
         </>
       )}
       <ConversationToolbar aiState={aiState} setShowSystem={setShowSystem} />
-    </div>
+    </Flex>
   );
 
   // switch (aiState.role) {

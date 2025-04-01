@@ -1,58 +1,72 @@
-import { createClient, Environment } from "contentful-management";
-import {
-  DEMAI_TOKENS_EXPECTED_FIELDS,
-  DEMAI_TOKENS_CTYPE_ID,
-  DEMAI_TOKENS_DISPLAY_FIELD,
-} from "./demaiTokensCType";
-import {
-  checkContentType,
-  checkExpectedFields,
-} from "./validateDemAIContentModel";
-import ensureDemAITokensSingletonEntry from "./tokenSingleton/ensureDemAITokensSingletonEntry";
-import {
-  DEMAI_COMPONENT_CTYPE_ID,
-  DEMAI_COMPONENT_DISPLAY_FIELD,
-  DEMAI_COMPONENT_EXPECTED_FIELDS,
-} from "../components/demaiComponentCType";
+import { Environment } from "contentful-management";
 
-export default async function updateDemAIContentModel(
-  cmaToken: string,
-  spaceId: string,
-  environmentId: string
+export async function checkSingleton(
+  singletonId: string,
+  environment: Environment
 ) {
-  const client = createClient({ accessToken: cmaToken });
-  const space = await client.getSpace(spaceId);
-  const environment = await space.getEnvironment(environmentId);
-
-  const errors: string[] = [];
-
-  await updateContenType(
-    DEMAI_TOKENS_CTYPE_ID,
-    DEMAI_TOKENS_EXPECTED_FIELDS,
-    DEMAI_TOKENS_DISPLAY_FIELD,
-    environment,
-    errors
-  );
-
-  await updateContenType(
-    DEMAI_COMPONENT_CTYPE_ID,
-    DEMAI_COMPONENT_EXPECTED_FIELDS,
-    DEMAI_COMPONENT_DISPLAY_FIELD,
-    environment,
-    errors
-  );
-
-  await ensureDemAITokensSingletonEntry(
-    cmaToken,
-    spaceId,
-    environmentId,
-    errors
-  );
-
-  return errors;
+  try {
+    await environment.getEntry(singletonId);
+    return true;
+  } catch (error: any) {
+    return false;
+  }
 }
 
-async function updateContenType(
+export async function checkContentTypeValid(
+  contentTypeId: string,
+  expectedFields: any,
+  environment: Environment
+) {
+  const exists = await checkContentType(contentTypeId, environment);
+  const fieldsValid = await checkExpectedFields(
+    contentTypeId,
+    expectedFields,
+    environment
+  );
+
+  return {
+    exists,
+    fieldsValid,
+    valid: exists && fieldsValid,
+  };
+}
+
+export async function checkContentType(
+  contentTypeId: string,
+  environment: Environment
+) {
+  let contentType;
+  try {
+    contentType = await environment.getContentType(contentTypeId);
+    return true;
+  } catch (error: any) {
+    return false;
+  }
+}
+
+export async function checkExpectedFields(
+  contentTypeId: string,
+  expectedFields: any,
+  environment: Environment
+) {
+  try {
+    const contentType = await environment.getContentType(contentTypeId);
+    let isValid = true;
+    for (const field of expectedFields) {
+      const existingField = contentType.fields.find(
+        (f: any) => f.id === field.id
+      );
+      if (!existingField || existingField.type !== field.type) {
+        isValid = false;
+      }
+    }
+    return isValid;
+  } catch (error: any) {
+    return false;
+  }
+}
+
+export async function updateContenType(
   contentTypeId: string,
   fields: any,
   displayField: string,
@@ -86,7 +100,7 @@ async function updateContenType(
   }
 }
 
-async function createContentType(
+export async function createContentType(
   contentTypeId: string,
   fields: any,
   displayField: string,
@@ -98,8 +112,8 @@ async function createContentType(
       contentTypeId,
       {
         name: contentTypeId,
-        description:
-          "Stores component information (Definition and Web Component) for use in the DemAI system.",
+        // description:
+        //   "Stores component information (Definition and Web Component) for use in the DemAI system.",
         fields,
       }
     );

@@ -52,7 +52,7 @@ export default async function openAIChatCompletions(
     .create(body)
     .withResponse();
 
-  console.log("run results:", stream);
+  console.log("openAIChatCompletions:", stream);
   const description =
     stream.choices && stream.choices.length > 0
       ? stream.choices[0].message.content

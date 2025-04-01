@@ -17,19 +17,7 @@ export class StylesFromWebSiteEngine extends AIPromptEngine {
       content: `
 You are an expert in design system colors and can figure out what a website's brand design system colors are from investigating the site and the relavant websites that talk about the colors for that brand.
 Make sure to get the exact *hex* color for the various brand colors that can fit into a "primary", "secondary", or "tertiary" schema.
-In _every_ response include your answer in this format:
-
-\`\`\`
-{
-    "colors" : {
-        "primary": "#ff0000",
-        "secondary": "#ff0000",
-        "tertiary": "#ff0000",
-    }
-}
-\`\`\`
-
-Only answer the questions that you researched. For instance do not even include "secondary" or "tertiary" if you were not asked to show them.
+Double check your work to see if you got a hex color and if you got enough colors to satisfy the request.
 
 `,
     };
@@ -41,45 +29,61 @@ Only answer the questions that you researched. For instance do not even include 
       {
         id: "styleTarget",
         options: [
-          "The Primary Hex Color",
-          "The Secondary Hex Color",
-          "The Tertiary Hex Color",
-          "The Semantic Hex Colors",
+          // "The Primary Hex Color",
+          // "The Secondary Hex Color",
+          // "The Tertiary Hex Color",
+          // "The Semantic Hex Colors",
           "Three Brand Hex Colors",
         ],
-        defaultValue: "The Primary Hex Color",
+        defaultValue: "Three Brand Hex Colors",
       },
-      "from https://www.contentful.com.",
+      "from",
     ];
 
     // CONTENT
     this.content = (aiState: AIState, contentState: ContentState) => {
-      return `${aiState.userContent}. Make sure to keep searching until you find a hex color.`;
+      return `${aiState.userContent}`;
     };
   }
 
-  async run(aiState: AIState, chain: boolean = true) {
-    const results = await super.run(aiState);
+  async runExe(aiState: AIState, chain: boolean = true) {
+    const results = await super.runExe(aiState);
 
     if (chain) {
       // add stuff...
       const otherEngine = AIState.createAIPromptEngine(
-        AIPromptEngineID.RESEARCH_STYLES,
+        AIPromptEngineID.SAVE_BRAND_COLORS,
         aiState
       );
       const aiStateClone = aiState.clone();
-      aiStateClone.request =
-        "Find a secondary color now for the same website. Choose only one.";
-      const otherResults = await otherEngine.run(aiStateClone, false);
+      aiStateClone.request = `
+The research below should have definitions for primary, secondary, or tertiary colors.
+Find them and save to research:
+
+${aiState.response}
+`;
+      const otherResults = await otherEngine.runExe(aiStateClone, false);
       console.log("otherResults", otherResults);
 
-      return `${results}
-      
-### Secondary
-
-${otherResults}
-`;
+      return [
+        ...(Array.isArray(results) ? results : []),
+        ...(Array.isArray(otherResults) ? otherResults : []),
+      ];
     }
     return results;
   }
 }
+
+/*
+\`\`\`
+{
+    "colors" : {
+        "primary": "#ff0000",
+        "secondary": "#ff0000",
+        "tertiary": "#ff0000",
+    }
+}
+\`\`\`
+
+Only answer the questions that you researched. For instance do not even include "secondary" or "tertiary" if you were not asked to show them.
+*/

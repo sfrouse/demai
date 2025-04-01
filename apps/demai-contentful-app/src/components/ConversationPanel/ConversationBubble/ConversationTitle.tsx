@@ -13,7 +13,13 @@ const ConversationTitle = ({ title }: { title: string }) => {
     //   {title}
     // </div>
     <SectionHeading
-      style={{ margin: 0, color: tokens.blue700, marginBottom: 4 }}
+      style={{
+        margin: 0,
+        color: tokens.blue500,
+        fontSize: tokens.fontSizeSHigh,
+        marginBottom: 4,
+        textTransform: "uppercase",
+      }}
     >
       {title}
     </SectionHeading>

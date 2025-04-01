@@ -20,6 +20,7 @@ import { CreateBindingEngine } from "./AIPromptEngine/promptEngines/designSystem
 import { StylesFromWebSiteEngine } from "./AIPromptEngine/promptEngines/research/StylesFromWebSiteEngine";
 import { ContentfulOpenToolingEngine } from "./AIPromptEngine/promptEngines/contentful/ContentfulOpenToolingEngine";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
+import { SaveBrandColorsEngine } from "./AIPromptEngine/promptEngines/research/SaveBrandColorsEngine";
 
 export default class AIState {
   key: string; // Unique key for React lists
@@ -107,6 +108,9 @@ export default class AIState {
       case AIPromptEngineID.RESEARCH_STYLES: {
         return new StylesFromWebSiteEngine(aiState);
       }
+      case AIPromptEngineID.SAVE_BRAND_COLORS: {
+        return new SaveBrandColorsEngine(aiState);
+      }
       default: {
         return new AIPromptEngine(aiState); // OpenEndedAIAction;
       }
@@ -185,7 +189,9 @@ export default class AIState {
     // FINISH
     this.executeRunTime = Date.now() - this.startRunTime;
     this.executionResponse = `Successfully executed. ${
-      toolCalls && `Used tools: ${toolCalls}`
+      toolCalls && toolCalls.length > 0
+        ? `Used tools: ${toolCalls.join(", ")}`
+        : "no tools used"
     }`;
     this.phase = AIStatePhase.executed;
     this.isRunning = false;

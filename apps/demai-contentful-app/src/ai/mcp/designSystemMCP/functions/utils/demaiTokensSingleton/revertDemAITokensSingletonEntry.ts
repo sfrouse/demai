@@ -3,7 +3,7 @@ import ensureDemAITokensSingletonEntry from "./ensureDemAITokensSingletonEntry";
 import {
   DEMAI_TOKENS_CTYPE_ID,
   DEMAI_TOKENS_SINGLETON_ENTRY_ID,
-} from "../demaiTokensCType";
+} from "../../../validate/ctypes/demaiTokensCType";
 
 export default async function revertDemAITokensSingletonEntry(
   cmaToken: string,

@@ -102,8 +102,8 @@ const ConversationPanel = () => {
         style={{
           flex: 1,
           paddingTop: tokens.spacingL,
-          paddingLeft: tokens.spacingL,
-          paddingRight: tokens.spacingL,
+          // paddingLeft: tokens.spacingL,
+          // paddingRight: tokens.spacingL,
           display: "flex",
           flexDirection: "column",
           overflowY: "scroll",

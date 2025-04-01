@@ -1,10 +1,10 @@
 import getLatestTokens from "../../../../contexts/ContentStateContext/services/getLatestTokens";
-import { IMCPTool } from "../../IMCPClient";
-import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../contentTypes/demaiTokensCType";
-import { updateDemAITokensEntry } from "../contentTypes/tokenSingleton/updateDemAITokensEntry";
+import { IMCPTool } from "../../MCPClient";
+import { updateDemAITokensEntry } from "./utils/demaiTokensSingleton/updateDemAITokensEntry";
 import { DesignSystemMCPClient } from "../DesignSystemMCPClient";
-import updateColorSetInTokens from "../utils/tokens/updateColorSetInTokens";
 import transformTokens from "demai-design-system-core/src/tokens/scripts/transformTokens";
+import updateColorSetInTokens from "./utils/tokens/updateColorSetInTokens";
+import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../validate/ctypes/demaiTokensCType";
 
 export const SAVE_COLOR_SET_TOOL_NAME = "save_color_set";
 

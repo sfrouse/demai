@@ -16,6 +16,13 @@
     display: block;
 }
 
+.conversation-state a  {
+    color: var( --gray-500 );
+}
+.conversation-state * {
+    color: var(--gray-800);
+}
+
 .conversation-state pre {
     white-space: pre-wrap;
 }

@@ -1,6 +1,6 @@
 import { createClient, Entry } from "contentful-management";
-import { IMCPTool } from "../../IMCPClient";
-import ensureDemAIComponentEntry from "../components/ensureDemAIComponentEntry";
+import { IMCPTool } from "../../MCPClient";
+import ensureDemAIComponentEntry from "./utils/demaiComponent/ensureDemAIComponentEntry";
 import { DesignSystemMCPClient } from "../DesignSystemMCPClient";
 
 export const CREATE_BINDING_TOOL_NAME = "create_binding";

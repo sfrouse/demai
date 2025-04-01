@@ -12,6 +12,14 @@ export default function convertMarkdown(markdown: string, styles: any) {
         code.text
       )}</code>`;
     },
+    link(link: any) {
+      const titleAttr = link.title ? ` title="${escapeHTML(link.title)}"` : "";
+      return `<a href="${escapeHTML(
+        link.href
+      )}"${titleAttr} target="_blank" rel="noopener noreferrer">${
+        link.text
+      }</a>`;
+    },
   };
 
   // Configure marked with the custom renderer
@@ -28,6 +36,24 @@ function escapeHTML(html: string) {
     .replace(/'/g, "&#39;");
 }
 
+// function addHTMLColorChips(text: string) {
+//   // Regex to match hex color codes (#RGB, #RRGGBB)
+//   const hexRegex = /#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/g;
+
+//   return text.replace(hexRegex, (match) => {
+//     return `<span style="
+//                     display: inline-block;
+//                     width: 14px;
+//                     height: 14px;
+//                     border-radius: 3px;
+//                     background-color: ${match};
+//                     margin: 0 4px;
+//                     border: 1px solid #aaa;
+//                     vertical-align: middle;" title="${match}">
+//                 </span> ${match}`;
+//   });
+// }
+
 function addHTMLColorChips(text: string) {
   const hexRegex = /#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b/g;
   const codeBlockRegex = /(```[\s\S]*?```|`[^`]*?`)/g;
@@ -36,14 +62,14 @@ function addHTMLColorChips(text: string) {
 
   const renderColorChip = (hex: string) => `
         <span style="
-            display: inline-block; 
-            width: 14px; 
-            height: 14px; 
-            border-radius: 3px; 
-            background-color: ${hex}; 
-            margin: 0 4px; 
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            background-color: ${hex};
+            margin: 0 4px;
             border: 1px solid #aaa;
-            vertical-align: middle;" 
+            vertical-align: middle;"
             title="${hex}">
         </span> ${hex}`;
 
@@ -66,5 +92,22 @@ function addHTMLColorChips(text: string) {
   const rest = text.slice(lastIndex).replace(hexRegex, renderColorChip);
   segments.push(rest);
 
-  return segments.join("");
+  const final = segments.join("");
+
+  // Now the inline code version
+  const hexInBackticksRegex = /`(#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}))`/g;
+  return final.replace(hexInBackticksRegex, (match) => {
+    return `<span style="
+                      display: inline-block;
+                      width: 14px;
+                      height: 14px;
+                      border-radius: 3px;
+                      background-color: ${match.substring(1, match.length - 1)};
+                      margin: 0 4px;
+                      border: 1px solid #aaa;
+                      vertical-align: middle;" title="${match.substring(
+                        1,
+                        match.length - 1
+                      )}"></span>${match}`;
+  });
 }

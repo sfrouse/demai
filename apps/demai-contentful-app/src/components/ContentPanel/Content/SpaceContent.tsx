@@ -4,17 +4,19 @@ import { PageAppSDK } from "@contentful/app-sdk";
 import { AppInstallationParameters } from "../../../locations/config/ConfigScreen";
 import LoadingIcon from "../../LoadingIcon";
 import ContentPanelHeader from "../ContentPanelHeader";
-import updateDemAIContentModel from "../../../ai/mcp/designSystemMCP/contentTypes/updateDemAIContentModel";
 import tokens from "@contentful/f36-tokens";
-import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/contentTypes/tokenSingleton/revertDemAITokensSingletonEntry";
+import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/revertDemAITokensSingletonEntry";
 import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import useAIState from "../../../contexts/AIStateContext/useAIState";
+import updateDesignSystemMCP from "../../../ai/mcp/designSystemMCP/validate/updateDesignSystemMCP";
+import { IMCPClientValidation } from "../../../ai/mcp/MCPClient";
+import updateResearchMCP from "../../../ai/mcp/researchMCP/validate/updateResearchMCP";
 
 function generateErrorMessage(
-  validationResult: Record<string, any>
+  validationResult: IMCPClientValidation
 ): (string | null)[] {
-  const issues = Object.entries(validationResult)
+  const issues = Object.entries(validationResult.details || {})
     .filter(([key, value]) => typeof value === "object")
     .map(([key, value]) => {
       if (!value.exists) {
@@ -27,6 +29,7 @@ function generateErrorMessage(
     })
     .filter(Boolean);
 
+  console.log("validationResult", validationResult);
   return issues.length > 0 ? issues : ["No errors found."];
 }
 
@@ -59,7 +62,7 @@ const SpaceContent = () => {
       <ContentPanelHeader title="Settings"></ContentPanelHeader>
       <Flex
         flexDirection="column"
-        style={{ overflowY: "auto" }}
+        style={{ overflowY: "auto", flex: 1, padding: tokens.spacingL }}
         alignContent="stretch"
       >
         <Flex flexDirection="column" gap={tokens.spacingM}>
@@ -76,13 +79,18 @@ const SpaceContent = () => {
               setErrors([]);
               const params = sdk.parameters
                 .installation as AppInstallationParameters;
-              const errors = await updateDemAIContentModel(
+              const errors = await updateDesignSystemMCP(
+                params.cma,
+                sdk.ids.space,
+                sdk.ids.environment
+              );
+              const researchErrors = await updateResearchMCP(
                 params.cma,
                 sdk.ids.space,
                 sdk.ids.environment
               );
               setIsLoading(false);
-              setErrors(errors);
+              setErrors([...errors, ...researchErrors]);
               if (errors.length === 0) {
                 await localValidateSpace();
               }

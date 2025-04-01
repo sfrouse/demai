@@ -1,5 +1,5 @@
-import { IMCPTool } from "../../IMCPClient";
-import ensureDemAIComponentEntry from "../components/ensureDemAIComponentEntry";
+import { IMCPTool } from "../../MCPClient";
+import ensureDemAIComponentEntry from "./utils/demaiComponent/ensureDemAIComponentEntry";
 import { DesignSystemMCPClient } from "../DesignSystemMCPClient";
 
 export const CREATE_WEB_COMPONENT_TOOL_NAME = "create_web_component";

@@ -1,5 +1,5 @@
 import { createClient, Entry } from "contentful-management";
-import { DEMAI_COMPONENT_CTYPE_ID } from "./demaiComponentCType";
+import { DEMAI_COMPONENT_CTYPE_ID } from "../../../validate/ctypes/demaiComponentCType";
 
 export default async function ensureDemAIComponentEntry(
   cmaToken: string,
