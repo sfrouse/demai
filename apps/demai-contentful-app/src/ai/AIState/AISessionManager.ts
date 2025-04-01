@@ -7,13 +7,16 @@ export default class AISessionManager {
     React.SetStateAction<AIState | undefined>
   >;
   private _activeAIState: AIState | undefined;
+  name: string;
 
   constructor(
     setAISession: React.Dispatch<React.SetStateAction<AIState[]>>,
-    setAIState: React.Dispatch<React.SetStateAction<AIState | undefined>>
+    setAIState: React.Dispatch<React.SetStateAction<AIState | undefined>>,
+    name: string
   ) {
     this._setAISession = setAISession;
     this._setAIState = setAIState;
+    this.name = name;
   }
 
   addAndActivateAIState(newAIState: AIState) {

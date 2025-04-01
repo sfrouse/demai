@@ -11,7 +11,7 @@ import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import { AIPromptEngineID } from "../../../../ai/AIState/AIStateTypes";
 
-const ContentModelContent = () => {
+const ContentTypesContent = () => {
   const sdk = useSDK<PageAppSDK>();
   const { contentState, loadProperty, loadingState, setContentType } =
     useContentStateSession();
@@ -71,4 +71,4 @@ const ContentModelContent = () => {
   );
 };
 
-export default ContentModelContent;
+export default ContentTypesContent;

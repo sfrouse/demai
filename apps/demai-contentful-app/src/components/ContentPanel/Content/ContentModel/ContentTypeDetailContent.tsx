@@ -8,7 +8,7 @@ import Divider from "../../../Divider";
 import { NAVIGATION } from "../../../MainNav";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 
-const ContentTypeContent = () => {
+const ContentTypeDetailContent = () => {
   const { contentState, loadProperty, loadingState } = useContentStateSession();
   const { invalidated, route, setRoute } = useAIState();
   const [localInvalidated, setLocalInvalidated] = useState<number>(invalidated);
@@ -30,7 +30,9 @@ const ContentTypeContent = () => {
     <>
       <ContentPanelHeader
         title={contentType?.name || "Loading"}
+        secondaryTitle={contentType?.sys.id}
         invalidate
+        status={contentType?.sys.publishedCounter === 0 ? "draft" : "none"}
         goBack={() => {
           setRoute({
             navigation: "content_model",
@@ -39,7 +41,10 @@ const ContentTypeContent = () => {
           });
         }}
       />
-      <Flex flexDirection="column" style={{ overflowY: "auto" }}>
+      <Flex
+        flexDirection="column"
+        style={{ overflowY: "auto", padding: tokens.spacingM }}
+      >
         {isLoading ? (
           <LoadingIcon />
         ) : (
@@ -88,4 +93,4 @@ const ContentTypeContent = () => {
   );
 };
 
-export default ContentTypeContent;
+export default ContentTypeDetailContent;

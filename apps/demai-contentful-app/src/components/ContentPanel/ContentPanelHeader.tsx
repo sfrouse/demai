@@ -1,5 +1,10 @@
 import tokens from "@contentful/f36-tokens";
-import { Flex, Heading, IconButton } from "@contentful/f36-components";
+import {
+  EntityStatusBadge,
+  Flex,
+  Heading,
+  IconButton,
+} from "@contentful/f36-components";
 import * as icons from "@contentful/f36-icons";
 import { ReactNode } from "react";
 import Divider from "../Divider";
@@ -7,6 +12,8 @@ import useAIState from "../../contexts/AIStateContext/useAIState";
 
 interface ContentPanelHeaderProps {
   title: string;
+  secondaryTitle?: string;
+  status?: "archived" | "published" | "draft" | "none";
   invalidate?: boolean;
   goBack?: () => void;
   children?: ReactNode;
@@ -14,6 +21,8 @@ interface ContentPanelHeaderProps {
 
 const ContentPanelHeader = ({
   title,
+  secondaryTitle,
+  status,
   invalidate = false,
   children,
   goBack,
@@ -44,18 +53,28 @@ const ContentPanelHeader = ({
             onClick={() => goBack()}
           />
         ) : null}
-        <Heading
-          style={{
-            fontSize: "1.15em", // tokens.fontSizeXl,
-            paddingLeft: tokens.spacingXs,
-            paddingRight: tokens.spacingXs,
-            paddingTop: 4,
-            marginBottom: 0,
-            flex: 1,
-          }}
-        >
-          {title || "Unknown"}
-        </Heading>
+        <Flex alignItems="baseline" gap={tokens.spacingXs}>
+          <Heading
+            style={{
+              fontSize: "1.15em", // tokens.fontSizeXl,
+              paddingLeft: tokens.spacingXs,
+              paddingRight: tokens.spacingXs,
+              paddingTop: 4,
+              marginBottom: 0,
+            }}
+          >
+            {title || "Unknown"}
+          </Heading>
+          {status && status !== "none" && (
+            <EntityStatusBadge size="small" entityStatus={status} />
+          )}
+          {secondaryTitle && (
+            <div style={{ fontSize: "0.8em", color: tokens.gray600 }}>
+              {secondaryTitle}
+            </div>
+          )}
+        </Flex>
+        <div style={{ flex: 1 }}></div>
         <Flex flexDirection="row">{children}</Flex>
         {invalidate === true ? (
           <IconButton

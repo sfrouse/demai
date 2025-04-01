@@ -31,6 +31,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
     !aiState ||
     !aiStateStatus ||
     !spaceStatus?.valid;
+
   return (
     <Flex
       flexDirection="column"

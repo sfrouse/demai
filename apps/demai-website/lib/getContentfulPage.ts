@@ -7,7 +7,7 @@ export default async function getContentfulPage(
 ): Promise<Entry<any> | null> {
   try {
     const pageResults = await client.getEntries<any>({
-      content_type: "demAiPageView",
+      content_type: "demai-page-view",
       "fields.slug": slug,
       limit: 1,
       include: 10,

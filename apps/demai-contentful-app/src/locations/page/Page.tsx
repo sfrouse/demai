@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Flex } from "@contentful/f36-components";
+import React, { useEffect, useState } from "react";
+import { Flex, Heading } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { AppInstallationParameters } from "../config/ConfigScreen";
@@ -10,34 +10,58 @@ import ContentPanel from "../../components/ContentPanel/ContentPanel";
 import { AIStateConfig } from "../../ai/AIState/AIStateTypes";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
 import useAIState from "../../contexts/AIStateContext/useAIState";
+import { createClient } from "contentful-management";
+import LoadingIcon from "../../components/LoadingIcon";
 
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
-  const { spaceStatus, validateSpace, loadProperty } = useContentStateSession();
+  const { spaceStatus, validateSpace, setCPA } = useContentStateSession();
   const { setAIStateConfig, setRoute } = useAIState();
+  const [configReady, setConfigReady] = useState<boolean>(false);
 
   useEffect(() => {
-    // Save Config
-    const params = sdk.parameters.installation as AppInstallationParameters;
-    const newAIConfig: AIStateConfig = {
-      cma: params.cma,
-      openAiApiKey: params.openai,
-      spaceId: sdk.ids.space,
-      environmentId: sdk.ids.environment,
-    };
-    setAIStateConfig(newAIConfig);
-    validateSpace();
-    setRoute({
-      navigation: "research",
-      aiStateEngines: NAVIGATION["research"].aiStateEngines,
-      aiStateEngineFocus: 0,
-    });
+    (async () => {
+      // find CPA for Context...
+      const params = sdk.parameters.installation as AppInstallationParameters;
+      const client = createClient({
+        accessToken: params.cma,
+      });
+      const space = await client.getSpace(sdk.ids.space);
+      const previewKeys = await space.getPreviewApiKeys();
+      if (
+        previewKeys &&
+        previewKeys.items &&
+        previewKeys.items[0] &&
+        previewKeys.items[0].accessToken
+      ) {
+        setCPA(previewKeys.items[0].accessToken);
+      } else {
+        console.error("NO CPA KEY");
+        sdk.dialogs.openAlert({
+          title: "No CPA Key",
+          message: "No CPA key found, please create an API key for the space.",
+          confirmLabel: "OK",
+        });
+        return;
+      }
 
-    // lazy load some stuff
-    loadProperty("css");
-    loadProperty("contentTypes");
-    loadProperty("ai");
-    loadProperty("components");
+      // Build and Save Config...pass on to AI State Context
+      const newAIConfig: AIStateConfig = {
+        cma: params.cma,
+        openAiApiKey: params.openai,
+        spaceId: sdk.ids.space,
+        environmentId: sdk.ids.environment,
+      };
+      setAIStateConfig(newAIConfig);
+      validateSpace();
+      setRoute({
+        navigation: "research",
+        aiStateEngines: NAVIGATION["research"].aiStateEngines,
+        aiStateEngineFocus: 0,
+      });
+
+      setConfigReady(true);
+    })();
   }, []);
 
   useEffect(() => {
@@ -76,9 +100,29 @@ const Page = () => {
           marginRight: tokens.spacingL,
         }}
       >
-        <MainNav />
-        <ContentPanel />
-        <ConversationPanel />
+        {configReady === false || !spaceStatus?.valid ? (
+          <Flex
+            style={{ width: "100%", height: "100%" }}
+            alignItems="center"
+            justifyContent="center"
+            flexDirection="column"
+          >
+            <Heading
+              style={{
+                fontSize: tokens.fontSizeL,
+              }}
+            >
+              DemAI
+            </Heading>
+            <LoadingIcon />
+          </Flex>
+        ) : (
+          <>
+            <MainNav />
+            <ContentPanel />
+            <ConversationPanel />
+          </>
+        )}
       </Flex>
     </Flex>
   );

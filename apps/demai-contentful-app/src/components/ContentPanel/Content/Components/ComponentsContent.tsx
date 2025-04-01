@@ -63,9 +63,7 @@ const ComponentsContent = () => {
                 if (!a.fields?.title || !b.fields?.title) {
                   return 0;
                 }
-                return a.fields?.title["en-US"].localeCompare(
-                  b.fields?.title["en-US"]
-                );
+                return a.fields?.title.localeCompare(b.fields?.title);
               }) // Sort by title
               .map((comp: any) => (
                 <DmaiContentRow
@@ -78,10 +76,10 @@ const ComponentsContent = () => {
                       aiStateEngines: [AIPromptEngineID.OPEN],
                     });
                   }}
-                  title={comp.fields.title && comp.fields.title["en-US"]}
+                  title={comp.fields.title && comp.fields.title}
                   id={comp.sys.id}
                   description={
-                    comp.fields.description && comp.fields.description["en-US"]
+                    comp.fields.description && comp.fields.description
                   }
                   status={
                     comp.sys.archivedAt

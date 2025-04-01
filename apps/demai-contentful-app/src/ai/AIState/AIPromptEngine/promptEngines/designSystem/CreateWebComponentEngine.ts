@@ -62,7 +62,7 @@ Do not create another component definition, create ONLY a web component using th
           comp.sys.id === aiState.contextContentSelections["componentId"]
       );
       if (compDefEntry && compDefEntry.fields?.componentDefinition) {
-        const compDef = compDefEntry.fields?.componentDefinition["en-US"];
+        const compDef = compDefEntry.fields?.componentDefinition;
         const attributes: any[] = [];
         Object.entries(compDef.properties).map((prop) => {
           const name = prop[0];

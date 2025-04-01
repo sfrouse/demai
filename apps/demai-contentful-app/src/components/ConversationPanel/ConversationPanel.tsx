@@ -56,34 +56,6 @@ const ConversationPanel = () => {
         position: "relative",
       }}
     >
-      {useNav ? (
-        <Flex
-          style={{ height: 57 }}
-          flexDirection="column"
-          justifyContent="flex-end"
-        >
-          <Tabs
-            currentTab={`${route?.aiStateEngineFocus}`}
-            style={{ marginLeft: tokens.spacingS }}
-            onTabChange={(tab: string) => {
-              const index = parseInt(tab);
-              setRoute({
-                ...route,
-                aiStateEngineFocus: index,
-              });
-            }}
-          >
-            <Tabs.List>
-              {route?.aiStateEngines.map((engine, index) => (
-                <Tabs.Tab panelId={`${index}`} key={`${index}`}>
-                  {engineIDToSentence(engine)}
-                </Tabs.Tab>
-              ))}
-            </Tabs.List>
-          </Tabs>
-          <Divider style={{ marginBottom: 0, marginTop: 0 }} />
-        </Flex>
-      ) : null}
       {!spaceStatus?.valid ? (
         <div
           style={{
@@ -116,6 +88,30 @@ const ConversationPanel = () => {
         <div ref={chatLastBubbleRef}></div>
       </div>
       <Divider style={{ marginTop: 0 }} />
+      {useNav ? (
+        <Flex flexDirection="column" justifyContent="flex-end">
+          <Tabs
+            currentTab={`${route?.aiStateEngineFocus}`}
+            style={{ marginLeft: tokens.spacingS }}
+            onTabChange={(tab: string) => {
+              const index = parseInt(tab);
+              setRoute({
+                ...route,
+                aiStateEngineFocus: index,
+              });
+            }}
+          >
+            <Tabs.List>
+              {route?.aiStateEngines.map((engine, index) => (
+                <Tabs.Tab panelId={`${index}`} key={`${index}`}>
+                  {engineIDToSentence(engine)}
+                </Tabs.Tab>
+              ))}
+            </Tabs.List>
+          </Tabs>
+          <Divider style={{ marginBottom: 0, marginTop: 0 }} />
+        </Flex>
+      ) : null}
       <div style={{ position: "relative" }}>
         {aiState && aiStateStatus ? (
           <>

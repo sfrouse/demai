@@ -9,7 +9,11 @@ export default function findAISessionManager(
   setAIState: React.Dispatch<React.SetStateAction<AIState | undefined>>
 ): AISessionManager {
   if (!aiSessionLookup.get(name)) {
-    const newAISessionManager = new AISessionManager(setAISession, setAIState);
+    const newAISessionManager = new AISessionManager(
+      setAISession,
+      setAIState,
+      name
+    );
     aiSessionLookup.set(name, newAISessionManager);
   }
   return aiSessionLookup.get(name);

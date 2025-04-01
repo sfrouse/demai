@@ -20,7 +20,6 @@ interface DmaiContentRowProps {
   editOnClick?: () => void;
 }
 
-console.log("styles", styles);
 export default function DmaiContentRow({
   title,
   id,

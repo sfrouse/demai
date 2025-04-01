@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AIState from "../../ai/AIState/AIState";
 import AISessionManager from "../../ai/AIState/AISessionManager";
 import {
@@ -119,14 +119,3 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
     </AIStateContext.Provider>
   );
 };
-
-// Hook to use the AI state context
-// export const useAIState = () => {
-//   const context = useContext(AIStateContext);
-//   // console.log("AIStateContext, context", AIStateContext, context);
-//   if (!context) {
-//     console.log("AIStateContext, context", AIStateContext, context);
-//     throw new Error("useAIState must be used within an AIStateProvider");
-//   }
-//   return context;
-// };

@@ -70,7 +70,7 @@ Just make sure that the types of data are the same on both sides, boolean to boo
       );
 
       const cDef = component?.fields.componentDefinition
-        ? component.fields.componentDefinition["en-US"]
+        ? component.fields.componentDefinition
         : null;
 
       const prompt = `

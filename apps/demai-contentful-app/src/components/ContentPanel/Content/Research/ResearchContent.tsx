@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Flex } from "@contentful/f36-components";
-import ContentPanelHeader from "../ContentPanelHeader";
+import ContentPanelHeader from "../../ContentPanelHeader";
 import tokens from "@contentful/f36-tokens";
-import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
-import useAIState from "../../../contexts/AIStateContext/useAIState";
-import LoadingIcon from "../../LoadingIcon";
-import Divider from "../../Divider";
-import { propHeader, renderChip } from "./DesignSystem/DSysTokensContent";
+import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import useAIState from "../../../../contexts/AIStateContext/useAIState";
+import LoadingIcon from "../../../LoadingIcon";
+import Divider from "../../../Divider";
+import { propHeader, renderChip } from "./../DesignSystem/DSysTokensContent";
 
 const ResearchContent = () => {
   const { contentState, loadProperty, loadingState, cpa } =

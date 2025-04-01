@@ -46,7 +46,7 @@ Make sure to tell the SE what name and id you are going to use, but summarize th
           comp.sys.id === aiState.contextContentSelections["componentId"]
       );
       if (compDefEntry && compDefEntry.fields?.componentDefinition) {
-        const compDef = compDefEntry.fields?.componentDefinition["en-US"];
+        const compDef = compDefEntry.fields?.componentDefinition;
         const attributes: any[] = [];
         Object.entries(compDef.properties).map((prop) => {
           const name = prop[0];

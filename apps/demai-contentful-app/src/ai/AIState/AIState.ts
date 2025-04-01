@@ -191,6 +191,7 @@ export default class AIState {
     }`;
     this.phase = AIStatePhase.executed;
     this.isRunning = false;
+    this.userContent = ""; // we are done...move on.
     this.updateStatus();
 
     this.contentChangeEvent && this.contentChangeEvent();

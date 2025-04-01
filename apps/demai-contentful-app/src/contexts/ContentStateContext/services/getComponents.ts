@@ -1,33 +1,20 @@
-import { createClient } from "contentful-management";
-import ensureDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/ensureDemAITokensSingletonEntry";
 import { DEMAI_COMPONENT_CTYPE_ID } from "../../../ai/mcp/designSystemMCP/validate/ctypes/demaiComponentCType";
-import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../ai/mcp/designSystemMCP/validate/ctypes/demaiTokensCType";
+import { ContentfulClientApi } from "contentful";
 
 export default async function getComponents(
-  cma: string,
-  spaceId: string,
-  environmentId: string
+  previewClient: ContentfulClientApi<undefined> | undefined
 ) {
-  await ensureDemAITokensSingletonEntry(cma, spaceId, environmentId);
-  const client = createClient({ accessToken: cma });
-
+  if (!previewClient) return null;
   try {
-    const space = await client.getSpace(spaceId);
-    const environment = await space.getEnvironment(environmentId);
-
-    // Retrieve the singleton entry
-    const entry = await environment.getEntries({
+    const componentEntries = await previewClient.getEntries({
       content_type: DEMAI_COMPONENT_CTYPE_ID,
     });
-    return entry.items.sort((a, b) => a.sys.id.localeCompare(b.sys.id)) || [];
+
+    return (componentEntries.items || []).sort((a, b) => {
+      return a.sys.id.localeCompare(b.sys.id);
+    });
   } catch (error: any) {
-    if (error.name === "NotFound") {
-      console.error(
-        `Singleton entry "${DEMAI_TOKENS_SINGLETON_ENTRY_ID}" not found.`
-      );
-      return [];
-    }
     console.error("Error fetching DemAI Tokens:", error);
-    return [];
+    return null;
   }
 }

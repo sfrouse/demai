@@ -45,14 +45,14 @@ export default function CompDetailContent() {
       if (newComp) {
         setLocalCDef(
           newComp.fields.componentDefinition &&
-            JSON.stringify(newComp.fields.componentDefinition["en-US"], null, 2)
+            JSON.stringify(newComp.fields.componentDefinition, null, 2)
         );
         setLocalJavaScript(
-          newComp.fields.javascript && newComp.fields.javascript["en-US"]
+          newComp.fields.javascript && newComp.fields.javascript
         );
         setLocalBindings(
           newComp.fields.bindings &&
-            JSON.stringify(newComp.fields.bindings["en-US"], null, 2)
+            JSON.stringify(newComp.fields.bindings, null, 2)
         );
       }
     }
@@ -71,7 +71,7 @@ export default function CompDetailContent() {
   return (
     <>
       <ContentPanelHeader
-        title={comp.fields.title["en-US"] || "Loading"}
+        title={comp.fields.title || "Loading"}
         invalidate
         goBack={() => {
           setRoute({
@@ -201,7 +201,7 @@ export default function CompDetailContent() {
       )}
       ${
         comp.fields.javascript &&
-        comp.fields.javascript["en-US"].replace(/import/g, "// import")
+        comp.fields.javascript.replace(/import/g, "// import")
       }
     </script>
     <style>
@@ -211,12 +211,10 @@ export default function CompDetailContent() {
   </head>
   <body>
     ${generateWebCompInstance(
-      comp.fields.componentDefinition &&
-        comp.fields.componentDefinition["en-US"]
+      comp.fields.componentDefinition && comp.fields.componentDefinition
     )}
     <pre style="white-space: pre-wrap;">${generateWebCompInstance(
-      comp.fields.componentDefinition &&
-        comp.fields.componentDefinition["en-US"],
+      comp.fields.componentDefinition && comp.fields.componentDefinition,
       true
     )}</pre>
   </body>

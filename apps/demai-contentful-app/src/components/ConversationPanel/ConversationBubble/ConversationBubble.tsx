@@ -16,6 +16,7 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
   const [systemHtml, setSystemHtml] = useState<string>("");
   const [requestHtml, setRequestHTML] = useState<string>("");
   const [responseHtml, setResponseHTML] = useState<string>("");
+  const [toolsHtml, setToolsHTML] = useState<string>("");
   const [executionResponseHtml, setExecutionResponseHTML] =
     useState<string>("");
 
@@ -28,6 +29,19 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
       setSystemHtml(newHTML);
     })();
   }, [aiState.promptEngine.system]);
+
+  useEffect(() => {
+    (async () => {
+      if (!showSystem || toolsHtml) return;
+      const tools = await aiState.promptEngine.getTools(
+        aiState.promptEngine.toolFilters
+      );
+      const toolNames = (tools || [])
+        .map((tool: any) => tool.function?.name)
+        .join(", ");
+      setToolsHTML(toolNames || "");
+    })();
+  }, [aiState.promptEngine, showSystem]);
 
   useEffect(() => {
     (async () => {
@@ -104,45 +118,46 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
         <span dangerouslySetInnerHTML={{ __html: requestHtml }}></span>
       </div>
       {showSystem && (
-        <>
-          {/* <Divider style={{ marginTop: 0 }} /> */}
-          <div
-            style={{
-              padding: `0 ${tokens.spacingL}`,
-            }}
-          >
-            <ConversationTitle title="System" />
-            <span dangerouslySetInnerHTML={{ __html: systemHtml }}></span>
-          </div>
-        </>
+        <div
+          style={{
+            padding: `0 ${tokens.spacingL}`,
+          }}
+        >
+          <ConversationTitle title="System" />
+          <span dangerouslySetInnerHTML={{ __html: systemHtml }}></span>
+        </div>
+      )}
+      {showSystem && (
+        <div
+          style={{
+            padding: `0 ${tokens.spacingL}`,
+          }}
+        >
+          <ConversationTitle title="Tools" />
+          <span>{toolsHtml}</span>
+        </div>
       )}
       {aiState.response && (
-        <>
-          {/* <Divider style={{ marginTop: 0 }} /> */}
-          <div
-            style={{
-              padding: `0 ${tokens.spacingL}`,
-            }}
-          >
-            <ConversationTitle title="Suggestion" />
-            <span dangerouslySetInnerHTML={{ __html: responseHtml }}></span>
-          </div>
-        </>
+        <div
+          style={{
+            padding: `0 ${tokens.spacingL}`,
+          }}
+        >
+          <ConversationTitle title="Suggestion" />
+          <span dangerouslySetInnerHTML={{ __html: responseHtml }}></span>
+        </div>
       )}
       {aiState.executionResponse && (
-        <>
-          {/* <Divider style={{ marginTop: 0 }} /> */}
-          <div
-            style={{
-              padding: `0 ${tokens.spacingL}`,
-            }}
-          >
-            <ConversationTitle title="Results" />
-            <span
-              dangerouslySetInnerHTML={{ __html: executionResponseHtml }}
-            ></span>
-          </div>
-        </>
+        <div
+          style={{
+            padding: `0 ${tokens.spacingL}`,
+          }}
+        >
+          <ConversationTitle title="Results" />
+          <span
+            dangerouslySetInnerHTML={{ __html: executionResponseHtml }}
+          ></span>
+        </div>
       )}
       <ConversationToolbar aiState={aiState} setShowSystem={setShowSystem} />
     </Flex>

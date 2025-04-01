@@ -148,6 +148,12 @@ export class AIPromptEngine {
           role: "assistant",
           content: `${aiState.response}`,
         },
+        prevMessages: [
+          {
+            role: "user",
+            content: `${aiState.request}`,
+          },
+        ],
         // prevMessages: prevState,
         max_tokens: OPEN_AI_MAX_TOKENS,
       };
