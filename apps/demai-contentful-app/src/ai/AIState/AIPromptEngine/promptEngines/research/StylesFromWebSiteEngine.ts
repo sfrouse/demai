@@ -65,10 +65,10 @@ ${aiState.response}
       const otherResults = await otherEngine.runExe(aiStateClone, false);
       console.log("otherResults", otherResults);
 
-      return [
-        ...(Array.isArray(results) ? results : []),
-        ...(Array.isArray(otherResults) ? otherResults : []),
-      ];
+      return {
+        toolCalls: [...results.toolCalls, ...otherResults.toolCalls],
+        toolResults: [...results.toolResults, ...otherResults.toolResults],
+      };
     }
     return results;
   }

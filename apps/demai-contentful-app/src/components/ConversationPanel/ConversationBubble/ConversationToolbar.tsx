@@ -23,13 +23,26 @@ const ConversationToolbar = ({
   const { contentState } = useContentStateSession();
   const { aiSessionManager } = useAIState();
 
-  const bgColor = aiState.isRunning
-    ? tokens.blue100
-    : aiState.phase === AIStatePhase.executed
-    ? tokens.gray100
-    : aiState.phase === AIStatePhase.answered
-    ? tokens.gray100
-    : tokens.green100;
+  let bgColor = tokens.gray100;
+
+  switch (aiState.phase) {
+    case AIStatePhase.describing: {
+      bgColor = aiState.isRunning ? tokens.green100 : tokens.blue100;
+      break;
+    }
+    case AIStatePhase.executing: {
+      bgColor = tokens.green100;
+      break;
+    }
+    case AIStatePhase.answered: {
+      bgColor = tokens.orange100;
+      break;
+    }
+    case AIStatePhase.executed: {
+      bgColor = tokens.gray100;
+      break;
+    }
+  }
 
   return (
     <div>
@@ -69,7 +82,7 @@ const getStats = (aiState: AIState) => {
   return (
     <Flex
       style={{
-        color: tokens.gray400,
+        color: tokens.gray500,
         font: tokens.fontStackPrimary,
         fontSize: 10,
       }}
@@ -102,7 +115,7 @@ const getAction = (aiState: AIState, contentState: ContentState) => {
             await aiState.run(contentState, true);
           }}
         >
-          Re-Execute
+          Execute
         </ButtonXs>
       );
 

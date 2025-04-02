@@ -137,7 +137,7 @@ export class AIPromptEngine {
   async runExe(
     aiState: AIState,
     chain: boolean = true
-  ): Promise<string[] | undefined> {
+  ): Promise<{ toolCalls: string[]; toolResults: any[] }> {
     try {
       // const prevState = aiState.getStateHistory();
 
@@ -180,6 +180,7 @@ export class AIPromptEngine {
       const result = await openAIChatCompletions(aiArg);
       console.log("runExe[end]:", result);
 
+      const toolResults = [];
       if (result.toolCalls) {
         for (const toolCall of result.toolCalls) {
           const mcpClient =
@@ -195,22 +196,28 @@ export class AIPromptEngine {
             JSON.parse(toolCall.function.arguments)
           );
           console.log("AIPromptEngin toolCall, exeResult", toolCall, exeResult);
-
-          if (exeResult?.isError === true) {
-            return exeResult.content &&
-              Array.isArray(exeResult.content) &&
-              exeResult.content.length > 0
-              ? exeResult.content[0].text
-              : ["error"];
-          }
+          toolResults.push(exeResult);
+          // if (exeResult?.isError === true) {
+          //   return exeResult.content &&
+          //     Array.isArray(exeResult.content) &&
+          //     exeResult.content.length > 0
+          //     ? exeResult.content[0].text
+          //     : ["error"];
+          // }
         }
       }
-      return result.toolCalls
-        ? result.toolCalls.map((toolCall) => toolCall.function.name)
-        : [];
+      return {
+        toolCalls: result.toolCalls
+          ? result.toolCalls.map((toolCall) => toolCall.function.name)
+          : [],
+        toolResults,
+      };
     } catch (err) {
       console.error("AIPromptEngine: ", err);
-      return;
+      return {
+        toolCalls: [],
+        toolResults: [],
+      };
     }
   }
 

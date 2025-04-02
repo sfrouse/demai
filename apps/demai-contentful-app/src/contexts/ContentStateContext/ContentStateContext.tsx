@@ -11,6 +11,7 @@ import { DesignSystemMCPClient } from "../../ai/mcp/designSystemMCP/DesignSystem
 import { ResearchMCP } from "../../ai/mcp/researchMCP/ResearchMCP";
 import { DEMAI_RESEARCH_SINGLETON_ENTRY_ID } from "../../ai/mcp/researchMCP/validate/ctypes/demaiResearchCType";
 import getContentTypes from "./services/getContentTypes";
+import getEntries from "./services/getEntries";
 
 // Define the shape of your session data
 export interface ContentState {
@@ -20,6 +21,7 @@ export interface ContentState {
   css?: string;
   ai?: string;
   components?: Entry[];
+  entries?: Entry[];
   research?: {
     fields: {
       primaryColor: string;
@@ -107,6 +109,10 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
       switch (key) {
         case "contentTypes": {
           payload = await getContentTypes(sdk);
+          break;
+        }
+        case "entries": {
+          payload = await getEntries(previewClient);
           break;
         }
         case "tokens": {

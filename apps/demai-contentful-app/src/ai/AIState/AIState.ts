@@ -131,16 +131,23 @@ export default class AIState {
     return clone;
   }
 
-  async run(contentState: ContentState, forceExecution: boolean = false) {
+  async run(
+    contentState: ContentState,
+    forceExecution: boolean = false,
+    autoExecute: boolean = false
+  ) {
     this.refreshState();
     if (forceExecution === true || this.phase === AIStatePhase.describing) {
       await this.runExecute(contentState);
     } else {
-      await this.runAnswerOrDescribe(contentState);
+      await this.runAnswerOrDescribe(contentState, autoExecute);
     }
   }
 
-  protected async runAnswerOrDescribe(contentState: ContentState) {
+  protected async runAnswerOrDescribe(
+    contentState: ContentState,
+    autoExecute: boolean = false
+  ) {
     const sessionManager = this.aiSessionManager.deref();
     if (!sessionManager) return;
 
@@ -168,6 +175,10 @@ export default class AIState {
     );
     userState.updateStatus();
     userState.suggestionRunTime = Date.now() - startRunTime;
+
+    if (autoExecute) {
+      return userState.runExecute(contentState);
+    }
   }
 
   protected async runExecute(contentState: ContentState) {
@@ -180,13 +191,31 @@ export default class AIState {
     this.updateStatus();
 
     // RUN
-    const toolCalls = await this.promptEngine.runExe(this);
+    const executionResults = await this.promptEngine.runExe(this);
+    console.log("executionResults", executionResults);
 
     // FINISH
     this.executeRunTime = Date.now() - this.startRunTime;
     this.executionResponse = `Successfully executed. ${
-      toolCalls && toolCalls.length > 0
-        ? `Used tools: ${toolCalls.join(", ")}`
+      executionResults?.toolCalls && executionResults.toolCalls.length > 0
+        ? `Used tools: ${executionResults.toolCalls.join(", ")}.
+\`\`\`
+${
+  executionResults.toolResults &&
+  executionResults.toolResults
+    .map((result) => {
+      return result?.content
+        ?.map((subContent: any) => {
+          if (subContent.text) {
+            return subContent.text;
+          }
+        })
+        .join("\n\n");
+    })
+    .join("\n\n")
+}
+\`\`\`  
+`
         : "no tools used"
     }`;
     this.phase = AIStatePhase.executed;

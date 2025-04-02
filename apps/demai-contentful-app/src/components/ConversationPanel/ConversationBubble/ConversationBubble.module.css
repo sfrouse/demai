@@ -19,9 +19,9 @@
 .conversation-state a  {
     color: var( --gray-500 );
 }
-.conversation-state * {
+/* .conversation-state * {
     color: var(--gray-800);
-}
+} */
 
 .conversation-state pre {
     white-space: pre-wrap;

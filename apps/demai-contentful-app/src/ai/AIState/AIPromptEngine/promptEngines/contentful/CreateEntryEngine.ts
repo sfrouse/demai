@@ -20,6 +20,7 @@ Don't forget to include all the new fields in the function call. This is essenti
 `,
     };
     this.toolType = "Contentful";
+    this.toolFilters = ["create_entry"];
 
     // CONTEXT CONTENT
     this.contextContent = (contentState: ContentState) => [
@@ -27,12 +28,13 @@ Don't forget to include all the new fields in the function call. This is essenti
       {
         id: "numberOfCTypes",
         options: ["1", "2", "3", "4", "5", "6"],
-        defaultValue: "2",
+        defaultValue: "1",
       },
       "entries of content type:",
       {
         id: "ctypeId",
         options: contentState.contentTypes?.map((ctype) => ctype.sys.id) || [],
+        labels: contentState.contentTypes?.map((ctype) => ctype.name) || [],
         defaultValue:
           contentState.contentTypes && contentState.contentTypes.length > 0
             ? contentState.contentTypes[0].sys.id
@@ -56,7 +58,13 @@ That content types full definition is:
 ${JSON.stringify(ctype)}
 \`\`\`
 
+Create an example for each.
 `;
     };
+
+    this.responseContent = (response: string) =>
+      `${response}
+    
+Make sure to take these suggestions and pass them to the tool in full!`;
   }
 }

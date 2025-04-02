@@ -50,7 +50,8 @@ export type AIStateResponseContent = (
 
 export type AIStateContentPrefixSelect = {
   id: string;
-  options: (string | { label: string; value: string })[];
+  options: string[];
+  labels?: string[];
   defaultValue: string;
   paths?: AIStateContentPrefix[];
 };

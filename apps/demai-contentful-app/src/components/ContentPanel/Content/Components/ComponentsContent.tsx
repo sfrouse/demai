@@ -10,6 +10,7 @@ import CompDetailContent, {
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import { AIPromptEngineID } from "../../../../ai/AIState/AIStateTypes";
+import getEntryStatus from "../../../utils/entryStatus";
 
 const ComponentsContent = () => {
   const { contentState, loadProperty, loadingState } = useContentStateSession();
@@ -81,13 +82,7 @@ const ComponentsContent = () => {
                   description={
                     comp.fields.description && comp.fields.description
                   }
-                  status={
-                    comp.sys.archivedAt
-                      ? "archived"
-                      : comp.sys.publishedAt
-                      ? "published"
-                      : "draft"
-                  }
+                  status={getEntryStatus(comp)}
                   badges={[
                     {
                       text: "Definition",

@@ -24,6 +24,13 @@ const ContentTypeDetailContent = () => {
   const contentType = contentState.contentTypes?.find(
     (ctype) => ctype.sys.id === route?.contentTypeId
   );
+  if (!contentType) {
+    setRoute({
+      navigation: "content_model",
+      aiStateEngines: NAVIGATION["content_model"].aiStateEngines,
+      aiStateEngineFocus: 0,
+    });
+  }
   const isLoading = loadingState.contentTypes === true || !contentType;
 
   return (

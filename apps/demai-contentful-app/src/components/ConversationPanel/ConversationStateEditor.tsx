@@ -2,6 +2,7 @@ import React from "react";
 import tokens from "@contentful/f36-tokens";
 import {
   Button,
+  Checkbox,
   Flex,
   IconButton,
   Select,
@@ -24,7 +25,7 @@ interface ConversationStateEditorProps {}
 
 const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
   const { contentState, loadingState, spaceStatus } = useContentStateSession();
-  const { aiState, aiStateStatus } = useAIState();
+  const { aiState, aiStateStatus, autoExecute, setAutoExecute } = useAIState();
 
   const isLoading =
     Object.values(loadingState).includes(true) ||
@@ -65,8 +66,18 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
             alignItems="center"
             gap={tokens.spacing2Xs}
           >
-            {aiStateStatus.isRunning ? <LoadingIcon /> : null}
+            <Checkbox
+              name="newsletter-subscribe-controlled"
+              id="newsletter-subscribe-controlled"
+              isChecked={autoExecute}
+              onChange={() => {
+                setAutoExecute((prevVal: boolean) => !prevVal);
+              }}
+            >
+              auto-execute
+            </Checkbox>
             <div style={{ flex: 1 }}></div>
+            {aiStateStatus.isRunning ? <LoadingIcon /> : null}
             <Button
               onClick={() => {
                 aiState.updateStatus({
@@ -80,7 +91,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
             </Button>
             <Button
               startIcon={<icons.StarIcon />}
-              onClick={() => aiState?.run(contentState)}
+              onClick={() => aiState?.run(contentState, false, autoExecute)}
               variant="primary"
             >
               Ask
@@ -212,11 +223,20 @@ const renderContextContentRow = (
             });
           }}
         >
-          {item.options.map((option, optionIndex) => (
-            <Select.Option value={option as any} key={`${key}-${optionIndex}`}>
-              {option as string}
-            </Select.Option>
-          ))}
+          {item.options.map((option, optionIndex) => {
+            let name = `${option}`;
+            if (item.labels && item.labels[optionIndex]) {
+              name = `${item.labels[optionIndex]}`;
+            }
+            return (
+              <Select.Option
+                value={option as any}
+                key={`${key}-${optionIndex}`}
+              >
+                {name}
+              </Select.Option>
+            );
+          })}
         </Select>
       </div>
     );

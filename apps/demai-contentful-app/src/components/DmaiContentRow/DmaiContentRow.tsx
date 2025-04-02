@@ -1,5 +1,6 @@
 import {
   Badge,
+  EntityStatus,
   EntityStatusBadge,
   Flex,
   IconButton,
@@ -13,7 +14,7 @@ import * as icons from "@contentful/f36-icons";
 interface DmaiContentRowProps {
   title: string;
   id?: string;
-  status?: "archived" | "published" | "draft" | "none";
+  status?: EntityStatus | "none";
   description?: string;
   onClick?: () => void;
   badges?: { text: string; variant: "primary" | "secondary" }[];
@@ -38,19 +39,32 @@ export default function DmaiContentRow({
     >
       <Flex
         flexDirection="column"
-        className={styles.content}
+        className={`${styles.content} ${onClick ? styles.isClick : ""}`}
         style={{
           padding: `${tokens.spacingS}`,
         }}
       >
-        <Flex flexDirection="row" alignItems="center">
-          <Text
-            fontSize="fontSizeL"
-            style={{
-              color: tokens.gray800,
-            }}
-          >
-            {title}
+        <Flex flexDirection="row">
+          <Flex flexDirection="column" style={{ flex: 1 }}>
+            <Flex flexDirection="row" alignItems="center">
+              <Text
+                fontSize="fontSizeL"
+                style={{
+                  color: tokens.gray800,
+                }}
+              >
+                {title}
+                {status && status !== "none" && (
+                  <EntityStatusBadge
+                    key={`comp-badge-${id}`}
+                    size="small"
+                    style={{ marginLeft: 6 }}
+                    entityStatus={status}
+                  />
+                )}
+              </Text>
+              <div style={{ flex: 1 }}></div>
+            </Flex>
             {id && (
               <span
                 key={`comp-id-${id}`}
@@ -63,47 +77,40 @@ export default function DmaiContentRow({
                 {id}
               </span>
             )}{" "}
-            {status && status !== "none" && (
-              <EntityStatusBadge
-                key={`comp-badge-${id}`}
-                size="small"
-                entityStatus={status}
-              />
+            {description && (
+              <Text
+                fontSize="fontSizeS"
+                style={{
+                  color: tokens.gray700,
+                  marginBottom: 4,
+                }}
+              >
+                {description}
+              </Text>
             )}
-          </Text>
-          <div style={{ flex: 1 }}></div>
+            {badges && (
+              <Flex gap={tokens.spacingXs}>
+                {badges.map((badge) => (
+                  <Badge key={`${badge.text}-${id}`} variant={badge.variant}>
+                    {badge.text}
+                  </Badge>
+                ))}
+              </Flex>
+            )}
+          </Flex>
           {editOnClick && (
             <IconButton
               variant="transparent"
               aria-label="Open"
               size="small"
-              onClick={() => {
+              onClick={(e: React.MouseEvent) => {
                 editOnClick();
+                e.stopPropagation();
               }}
               icon={<icons.EditIcon />}
             />
           )}
         </Flex>
-        {description && (
-          <Text
-            fontSize="fontSizeS"
-            style={{
-              color: tokens.gray700,
-              marginBottom: 4,
-            }}
-          >
-            {description}
-          </Text>
-        )}
-        {badges && (
-          <Flex gap={tokens.spacingXs}>
-            {badges.map((badge) => (
-              <Badge key={`${badge.text}-${id}`} variant={badge.variant}>
-                {badge.text}
-              </Badge>
-            ))}
-          </Flex>
-        )}
       </Flex>
       <Divider />
     </Flex>
