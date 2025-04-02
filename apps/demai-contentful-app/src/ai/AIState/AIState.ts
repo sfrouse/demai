@@ -105,7 +105,7 @@ export default class AIState {
       case AIPromptEngineID.RESEARCH_STYLES: {
         return new StylesFromWebSiteEngine(aiState);
       }
-      case AIPromptEngineID.SAVE_BRAND_COLORS: {
+      case AIPromptEngineID.UPDATE_BRAND_COLORS: {
         return new SaveBrandColorsEngine(aiState);
       }
       default: {
@@ -140,7 +140,10 @@ export default class AIState {
     if (forceExecution === true || this.phase === AIStatePhase.describing) {
       await this.runExecute(contentState);
     } else {
-      await this.runAnswerOrDescribe(contentState, autoExecute);
+      // Throw it to another bubble...
+      const userState = this.clone();
+      this.aiSessionManager.deref()!.addAndActivateAIState(userState);
+      await userState.runAnswerOrDescribe(contentState, autoExecute);
     }
   }
 
@@ -154,30 +157,30 @@ export default class AIState {
     const startRunTime = Date.now();
 
     // SHOW USER PROMPT
-    const userState = this.clone();
-    userState.request = this.createPrompt(contentState);
-    userState.isRunning = true;
-    userState.phase =
+    this.processContextSelections(contentState);
+    this.request = createPrompt(this, contentState);
+    this.isRunning = true;
+    this.phase =
       this.promptEngine.toolType === "none"
         ? AIStatePhase.answered
         : AIStatePhase.describing;
-    this.aiSessionManager.deref()!.addAndActivateAIState(userState);
+    this.updateStatus();
 
     // RUN
-    const description = await userState.promptEngine.run(userState);
+    const description = await this.promptEngine.run(this);
 
     // FINISH
-    userState.isRunning = false;
-    userState.response = userState.promptEngine.responseContent(
+    this.isRunning = false;
+    this.response = this.promptEngine.responseContent(
       `${description}`,
       this,
       contentState
     );
-    userState.updateStatus();
-    userState.suggestionRunTime = Date.now() - startRunTime;
+    this.updateStatus();
+    this.suggestionRunTime = Date.now() - startRunTime;
 
     if (autoExecute) {
-      return userState.runExecute(contentState);
+      return this.runExecute(contentState);
     }
   }
 
@@ -196,7 +199,7 @@ export default class AIState {
 
     // FINISH
     this.executeRunTime = Date.now() - this.startRunTime;
-    this.executionResponse = `Successfully executed. ${
+    this.executionResponse = `Executed. ${
       executionResults?.toolCalls && executionResults.toolCalls.length > 0
         ? `Used tools: ${executionResults.toolCalls.join(", ")}.
 \`\`\`
@@ -226,7 +229,7 @@ ${
     this.contentChangeEvent && this.contentChangeEvent();
   }
 
-  createPrompt(contentState: ContentState): string {
+  processContextSelections(contentState: ContentState) {
     const defaultSelections = createContextContentSelectionsDefaults(
       this.promptEngine.contextContent(contentState)
     );
@@ -235,8 +238,6 @@ ${
       ...this.contextContentSelections,
     };
     this.updateStatus();
-
-    return createPrompt(this, contentState);
   }
 
   updateStatus(updates?: Partial<AIStateStatus>) {

@@ -103,7 +103,7 @@ const Page = () => {
           marginRight: tokens.spacingL,
         }}
       >
-        {configReady === false || !spaceStatus?.valid ? (
+        {configReady === false ? (
           <Flex
             style={{ width: "100%", height: "100%" }}
             alignItems="center"

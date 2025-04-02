@@ -1,7 +1,9 @@
 const createEntryTool = {
   name: "create_entry",
-  description:
-    "Create a new entry in Contentful, before executing this function, you need to know the contentTypeId (not the content type NAME) and the fields of that contentType, you can get the fields definition by using the GET_CONTENT_TYPE tool. ",
+  description: `
+Create a new entry in Contentful, you will need to know the content type information 
+which may be given to you or by using the GET_CONTENT_TYPE tool. Either way, you 
+need to make sure to have as many of the fields filled out as possible.`,
   inputSchema: {
     type: "object",
     properties: {

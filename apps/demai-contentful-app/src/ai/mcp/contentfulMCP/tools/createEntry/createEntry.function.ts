@@ -14,6 +14,18 @@ export default async function createEntryFunction(
   const isObject = (value: unknown): value is Record<string, unknown> => {
     return value !== null && typeof value === "object" && !Array.isArray(value);
   };
+
+  if (!params.fields) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: "error: no fields sent...try again.",
+        },
+      ],
+    };
+  }
+
   Object.entries(params.fields).map(([key, value]) => {
     finalFields[key] = isObject(value) ? value : { ["en-US"]: value };
   });

@@ -34,7 +34,7 @@ export enum AIPromptEngineID {
   OPEN = "open",
   CONTENTFUL_OPEN_TOOL = "contentful",
   RESEARCH_STYLES = "research_styles",
-  SAVE_BRAND_COLORS = "save_brand_colors",
+  UPDATE_BRAND_COLORS = "update_brand_colors",
 }
 
 export type AIStateContent = (

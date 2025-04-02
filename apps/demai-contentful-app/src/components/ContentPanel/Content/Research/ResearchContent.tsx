@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Flex } from "@contentful/f36-components";
+import { Flex, Paragraph } from "@contentful/f36-components";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import tokens from "@contentful/f36-tokens";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
@@ -47,6 +47,14 @@ const ResearchContent = () => {
               {renderColor("Primary", research.fields.primaryColor)}
               {renderColor("Secondary", research.fields.secondaryColor)}
               {renderColor("Tertiary", research.fields.tertiaryColor)}
+              {propHeader(`Description`)}
+              <Paragraph>{research.fields.description}</Paragraph>
+              {propHeader(`Products`)}
+              <Paragraph>{research.fields.products}</Paragraph>
+              {propHeader(`Style`)}
+              <Paragraph>{research.fields.style}</Paragraph>
+              {propHeader(`Tone`)}
+              <Paragraph>{research.fields.tone}</Paragraph>
             </>
           )
         )}

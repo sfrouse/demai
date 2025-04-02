@@ -1,19 +1,27 @@
 import { ChatCompletionTool } from "openai/resources/index.mjs";
 import { MCPClient, IMCPClientValidation } from "../MCPClient";
-import udpateBrandColorsTool from "./functions/updateBrandColorsTool";
 import validateResearchMCP from "./validate/validateResearchMCP";
+import udpateBrandColors from "./tools/updateBrandColors/";
+import updateResearch from "./tools/updateResearch";
 
 export const UPDATE_BRAND_COLORS = "update_brand_colors";
 
 export class ResearchMCP extends MCPClient {
   async getToolsForOpenAI(): Promise<ChatCompletionTool[]> {
-    return [udpateBrandColorsTool.tool];
+    const tools = [udpateBrandColors.tool, updateResearch.tool];
+    console.log("ResearchMCP:getToolsForOpenAI", tools);
+    return tools;
   }
 
   async callFunction(toolName: string, params: any): Promise<void> {
+    console.log("ResearchMCP:callFunction", toolName, params);
     switch (toolName) {
-      case udpateBrandColorsTool.toolName: {
-        await udpateBrandColorsTool.functionCall(this, params);
+      case udpateBrandColors.toolName: {
+        await udpateBrandColors.functionCall(this, params);
+        break;
+      }
+      case updateResearch.toolName: {
+        await updateResearch.functionCall(this, params);
         break;
       }
       default: {

@@ -185,6 +185,11 @@ const renderContextContentRow = (
       index,
     ].join("-")}`;
 
+    if (item === "[BREAK]") {
+      output.push(<div style={{ width: "100%" }} key={key} />);
+      return;
+    }
+
     if (typeof item === "string") {
       const words = item.split(" ");
       words.map((word, index) => {

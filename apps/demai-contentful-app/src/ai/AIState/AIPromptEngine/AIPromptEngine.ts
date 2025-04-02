@@ -123,9 +123,9 @@ export class AIPromptEngine {
       }
 
       // RUN
-      console.log("run[start]:", aiArg);
+      console.log(`run[start][${this.toolType}]:`, aiArg);
       const result = await openAIChatCompletions(aiArg);
-      console.log("run[end]:", result);
+      console.log(`run[end][${this.toolType}]:`, result);
 
       return result.description;
     } catch (err) {
@@ -138,6 +138,14 @@ export class AIPromptEngine {
     aiState: AIState,
     chain: boolean = true
   ): Promise<{ toolCalls: string[]; toolResults: any[] }> {
+    // There are no tools in web search...
+    if (this.toolType === "WebSearch") {
+      return {
+        toolCalls: [],
+        toolResults: [],
+      };
+    }
+
     try {
       // const prevState = aiState.getStateHistory();
 
@@ -148,8 +156,8 @@ export class AIPromptEngine {
         openAIClient: this.openAIClient,
         systemPrompt: this.system,
         userPrompt: {
-          role: "assistant",
-          content: `${aiState.response}`,
+          role: "user",
+          content: `Please figure out a tool and all the appropriate properties that fulfills this: ${aiState.response}`,
         },
         prevMessages: [
           {
@@ -160,25 +168,20 @@ export class AIPromptEngine {
         // prevMessages: prevState,
         max_tokens: OPEN_AI_MAX_TOKENS,
       };
-      if (this.toolType !== "WebSearch") {
-        aiArg = {
-          ...aiArg,
-          top_p: OPEN_AI_TOP_P,
-          temperature: OPEN_AI_TEMPERATURE,
-          tools,
-          tool_choice: tools ? "required" : undefined,
-        };
-      } else {
-        aiArg = {
-          ...aiArg,
-          web_search_options: {},
-        };
-      }
+
+      // TOOL DECISIONS
+      aiArg = {
+        ...aiArg,
+        top_p: OPEN_AI_TOP_P,
+        temperature: OPEN_AI_TEMPERATURE,
+        tools,
+        tool_choice: tools ? "required" : undefined,
+      };
 
       // RUN
-      console.log("runExe[start]:", aiArg);
+      console.log(`runExe[start][${this.toolType}]:`, aiArg);
       const result = await openAIChatCompletions(aiArg);
-      console.log("runExe[end]:", result);
+      console.log(`runExe[end][${this.toolType}]:`, result);
 
       const toolResults = [];
       if (result.toolCalls) {
@@ -195,15 +198,7 @@ export class AIPromptEngine {
             toolCall.function.name,
             JSON.parse(toolCall.function.arguments)
           );
-          console.log("AIPromptEngin toolCall, exeResult", toolCall, exeResult);
           toolResults.push(exeResult);
-          // if (exeResult?.isError === true) {
-          //   return exeResult.content &&
-          //     Array.isArray(exeResult.content) &&
-          //     exeResult.content.length > 0
-          //     ? exeResult.content[0].text
-          //     : ["error"];
-          // }
         }
       }
       return {
@@ -251,22 +246,4 @@ export class AIPromptEngine {
     }
     return tools;
   }
-
-  // async getToolsForResponses(toolFilters?: string[]) {
-  //   let tools;
-  //   if (this.toolType === "DemAIDesignSystem") {
-  //     tools = await this.designSystemCMPClient!.getToolsForOpenAIResponses();
-  //   } else {
-  //     tools = await this.contentfulMCP!.getToolsForOpenAIResponses();
-  //   }
-
-  //   if (toolFilters && toolFilters.length > 0) {
-  //     tools = tools.filter((tool) =>
-  //       tool.type === "function" && this.toolFilters.includes(tool.name)
-  //         ? true
-  //         : false
-  //     );
-  //   }
-  //   return tools;
-  // }
 }

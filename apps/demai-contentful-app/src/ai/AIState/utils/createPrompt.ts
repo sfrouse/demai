@@ -30,7 +30,9 @@ function _processContextContent(
 ): string[] {
   contextContent?.map((item) => {
     if (typeof item === "string") {
-      output.push(item);
+      if (item !== "[BREAK]") {
+        output.push(item);
+      }
     } else {
       const val =
         contextContentSelections[item.id] ||

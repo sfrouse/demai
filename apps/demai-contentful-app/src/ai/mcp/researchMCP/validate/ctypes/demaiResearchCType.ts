@@ -37,4 +37,32 @@ export const DEMAI_RESEARCH_EXPECTED_FIELDS = [
     required: false,
     localized: false,
   },
+  {
+    id: "description",
+    name: "Brand Description",
+    type: "Text",
+    required: false,
+    localized: false,
+  },
+  {
+    id: "products",
+    name: "Brand Products",
+    type: "Text",
+    required: false,
+    localized: false,
+  },
+  {
+    id: "tone",
+    name: "Tone and Style",
+    type: "Text",
+    required: false,
+    localized: false,
+  },
+  {
+    id: "style",
+    name: "Style",
+    type: "Text",
+    required: false,
+    localized: false,
+  },
 ];

@@ -2,6 +2,12 @@ import { ContentState } from "../../../../../contexts/ContentStateContext/Conten
 import AIState from "../../../AIState";
 import { AIPromptEngine } from "../../AIPromptEngine";
 
+const CONTEXT_NUMBER_OF_TYPES = "numberOfCTypes";
+const CONTEXT_CTYPE_ID = "ctypeId";
+const CONTEXT_TONE_AND_STYLE = "toneAndStyle";
+const CONTEXT_TONE_AND_STYLE_BRAND = "the brand";
+const CONTEXT_TONE_AND_STYLE_DESCRIPTION = "my description";
+
 export class CreateEntryEngine extends AIPromptEngine {
   constructor(aiState: AIState) {
     super(aiState);
@@ -26,13 +32,13 @@ Don't forget to include all the new fields in the function call. This is essenti
     this.contextContent = (contentState: ContentState) => [
       "Create",
       {
-        id: "numberOfCTypes",
+        id: CONTEXT_NUMBER_OF_TYPES,
         options: ["1", "2", "3", "4", "5", "6"],
         defaultValue: "1",
       },
       "entries of content type:",
       {
-        id: "ctypeId",
+        id: CONTEXT_CTYPE_ID,
         options: contentState.contentTypes?.map((ctype) => ctype.sys.id) || [],
         labels: contentState.contentTypes?.map((ctype) => ctype.name) || [],
         defaultValue:
@@ -40,14 +46,27 @@ Don't forget to include all the new fields in the function call. This is essenti
             ? contentState.contentTypes[0].sys.id
             : "",
       },
-      ".",
+      "[BREAK]",
+      "Use style and tone from",
+      {
+        id: CONTEXT_TONE_AND_STYLE,
+        options: [
+          CONTEXT_TONE_AND_STYLE_BRAND,
+          CONTEXT_TONE_AND_STYLE_DESCRIPTION,
+        ],
+        defaultValue: CONTEXT_TONE_AND_STYLE_BRAND,
+      },
     ];
 
     // CONTENT
     this.content = (aiState: AIState, contentState: ContentState) => {
       const ctype = contentState.contentTypes?.find(
-        (comp) => comp.sys.id === aiState.contextContentSelections["ctypeId"]
+        (comp) =>
+          comp.sys.id === aiState.contextContentSelections[CONTEXT_CTYPE_ID]
       );
+      const useBrand =
+        aiState.contextContentSelections[CONTEXT_TONE_AND_STYLE] ===
+        CONTEXT_TONE_AND_STYLE_BRAND;
 
       return `
 ${aiState.userContent}.
@@ -59,12 +78,40 @@ ${JSON.stringify(ctype)}
 \`\`\`
 
 Create an example for each.
+
+${
+  useBrand &&
+  `
+The brand description is:
+
+\`\`\`
+${contentState.research?.fields.description}
+\`\`\`
+
+The brand product is:
+
+\`\`\`
+${contentState.research?.fields.products}
+\`\`\`
+
+
+The brand style is:
+
+\`\`\`
+${contentState.research?.fields.style}
+\`\`\`
+
+The brand tone is:
+
+\`\`\`
+${contentState.research?.fields.tone}
+\`\`\`
+  
+`
+}
 `;
     };
 
-    this.responseContent = (response: string) =>
-      `${response}
-    
-Make sure to take these suggestions and pass them to the tool in full!`;
+    this.responseContent = (response: string) => `${response}`;
   }
 }

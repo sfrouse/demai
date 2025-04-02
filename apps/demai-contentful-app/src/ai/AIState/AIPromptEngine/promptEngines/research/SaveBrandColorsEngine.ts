@@ -1,4 +1,6 @@
 import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
+import updateBrandColors from "../../../../mcp/researchMCP/tools/updateBrandColors";
+import updateResearch from "../../../../mcp/researchMCP/tools/updateResearch";
 import { AIModels } from "../../../../openAI/openAIConfig";
 import AIState from "../../../AIState";
 import { AIPromptEngine } from "../../AIPromptEngine";
@@ -14,12 +16,22 @@ export class SaveBrandColorsEngine extends AIPromptEngine {
     this.system = {
       role: "system",
       content: `
-You are an expert in design system colors and can figure out what a website's brand design system colors are from investigating the site and the relavant websites that talk about the colors for that brand.
-You are looking to find the primary, secondary, and tertiary colors of this design system to save to research.
+You are an expert in figuring out how to save information gathered about a website's brand and
+how it should fit into the tools provided.
+
+You will be asked to store information about colors, tone, style, description, products, 
+and possibly more for that brand.
+
+Your only goal is to put the information in the rigth spot in the tool.
+
+Only send the information that you recieve in the prompt.
+
+For instance, if you get a brand description, don't try to update the colors or tone, etc.
 
 `,
     };
     this.toolType = "Research";
+    this.toolFilters = [updateBrandColors.toolName, updateResearch.toolName];
 
     // CONTEXT CONTENT
     this.contextContent = (contentState: ContentState) => [];

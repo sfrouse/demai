@@ -4,6 +4,13 @@ import AIState from "../../../AIState";
 import { AIPromptEngineID } from "../../../AIStateTypes";
 import { AIPromptEngine } from "../../AIPromptEngine";
 
+const ACTION_ID = "action";
+const ACTION_HEX_COLORS = "Three Brand Hex Colors";
+const ACTION_BRAND_TONE = "Brand Tone";
+const ACTION_BRAND_STYLE = "Brand Style";
+const ACTION_BRAND_DESCRIPTION = "Brand Description";
+const ACTION_BRAND_PRODUCT = "Brand Product";
+
 export class StylesFromWebSiteEngine extends AIPromptEngine {
   constructor(aiState: AIState) {
     super(aiState);
@@ -15,9 +22,15 @@ export class StylesFromWebSiteEngine extends AIPromptEngine {
     this.system = {
       role: "system",
       content: `
-You are an expert in design system colors and can figure out what a website's brand design system colors are from investigating the site and the relavant websites that talk about the colors for that brand.
-Make sure to get the exact *hex* color for the various brand colors that can fit into a "primary", "secondary", or "tertiary" schema.
-Double check your work to see if you got a hex color and if you got enough colors to satisfy the request.
+You are an expert in figuring out a website's brand from investigating the site 
+and the relavant websites that talk about the colors or tone for that brand.
+
+If you are asked about colors, make sure to get the exact *hex* color for the 
+various brand colors that can fit into a "primary", "secondary", or "tertiary" 
+schema and then double check your work to see if you got a hex color and if you got 
+enough colors to satisfy the request.
+
+If you are asked to summarize anything, keep it to a paragraph or two at most.
 
 `,
     };
@@ -27,15 +40,15 @@ Double check your work to see if you got a hex color and if you got enough color
     this.contextContent = (contentState: ContentState) => [
       "Find",
       {
-        id: "styleTarget",
+        id: ACTION_ID,
         options: [
-          // "The Primary Hex Color",
-          // "The Secondary Hex Color",
-          // "The Tertiary Hex Color",
-          // "The Semantic Hex Colors",
-          "Three Brand Hex Colors",
+          ACTION_HEX_COLORS,
+          ACTION_BRAND_DESCRIPTION,
+          ACTION_BRAND_PRODUCT,
+          ACTION_BRAND_STYLE,
+          ACTION_BRAND_TONE,
         ],
-        defaultValue: "Three Brand Hex Colors",
+        defaultValue: ACTION_HEX_COLORS,
       },
       "from",
     ];
@@ -49,13 +62,31 @@ Double check your work to see if you got a hex color and if you got enough color
   async runExe(aiState: AIState, chain: boolean = true) {
     const results = await super.runExe(aiState);
 
-    if (chain) {
+    await this.saveColors(aiState, chain, results);
+    await this.saveToneOrStyle(aiState, chain, results);
+
+    return results;
+  }
+
+  async saveColors(
+    aiState: AIState,
+    chain: boolean = true,
+    results: {
+      toolCalls: string[];
+      toolResults: any[];
+    }
+  ) {
+    if (
+      aiState.contextContentSelections[ACTION_ID] === ACTION_HEX_COLORS &&
+      chain
+    ) {
       // add stuff...
       const otherEngine = AIState.createAIPromptEngine(
-        AIPromptEngineID.SAVE_BRAND_COLORS,
+        AIPromptEngineID.UPDATE_BRAND_COLORS,
         aiState
       );
       const aiStateClone = aiState.clone();
+      console.log("aiStateClone", aiStateClone);
       aiStateClone.response = `
 The research below should have definitions for primary, secondary, or tertiary colors.
 Find them and save to research:
@@ -63,27 +94,46 @@ Find them and save to research:
 ${aiState.response}
 `;
       const otherResults = await otherEngine.runExe(aiStateClone, false);
-      console.log("otherResults", otherResults);
 
-      return {
-        toolCalls: [...results.toolCalls, ...otherResults.toolCalls],
-        toolResults: [...results.toolResults, ...otherResults.toolResults],
-      };
+      results.toolCalls = [...results.toolCalls, ...otherResults.toolCalls];
+      results.toolResults = [
+        ...results.toolResults,
+        ...otherResults.toolResults,
+      ];
     }
-    return results;
+  }
+
+  async saveToneOrStyle(
+    aiState: AIState,
+    chain: boolean = true,
+    results: {
+      toolCalls: string[];
+      toolResults: any[];
+    }
+  ) {
+    if (
+      aiState.contextContentSelections[ACTION_ID] !== ACTION_HEX_COLORS &&
+      chain
+    ) {
+      // add stuff...
+      const otherEngine = AIState.createAIPromptEngine(
+        AIPromptEngineID.UPDATE_BRAND_COLORS,
+        aiState
+      );
+      const aiStateClone = aiState.clone();
+      // otherEngine.toolFilters = [updateResearch.toolName];
+      aiStateClone.response = `
+The research below defines the ${aiState.contextContentSelections[ACTION_ID]} of this brand. Use the \`update_brand\` tool and update.
+
+${aiState.response}
+`;
+      const otherResults = await otherEngine.runExe(aiStateClone, false);
+
+      results.toolCalls = [...results.toolCalls, ...otherResults.toolCalls];
+      results.toolResults = [
+        ...results.toolResults,
+        ...otherResults.toolResults,
+      ];
+    }
   }
 }
-
-/*
-\`\`\`
-{
-    "colors" : {
-        "primary": "#ff0000",
-        "secondary": "#ff0000",
-        "tertiary": "#ff0000",
-    }
-}
-\`\`\`
-
-Only answer the questions that you researched. For instance do not even include "secondary" or "tertiary" if you were not asked to show them.
-*/

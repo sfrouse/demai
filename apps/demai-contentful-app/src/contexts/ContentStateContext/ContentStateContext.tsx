@@ -27,6 +27,10 @@ export interface ContentState {
       primaryColor: string;
       secondaryColor: string;
       tertiaryColor: string;
+      description: string;
+      products: string;
+      style: string;
+      tone: string;
     };
     contentTypeId: string;
   };

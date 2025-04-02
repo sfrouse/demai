@@ -6,6 +6,10 @@ type ResearchUpdateData = {
   primaryColor?: string;
   secondaryColor?: string;
   tertiaryColor?: string;
+  tone?: string;
+  style?: string;
+  description?: string;
+  products?: string;
 };
 
 export async function updateResearchSingleton(
