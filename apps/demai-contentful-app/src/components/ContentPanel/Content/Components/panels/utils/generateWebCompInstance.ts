@@ -22,8 +22,11 @@ type Schema = {
 
 export default function generateWebCompInstance(
   schema: Schema,
+  params: Record<string, any> | undefined,
   toString: boolean = false
 ): string {
+  if (!schema) return "";
+
   const tag = schema["x-cdef"].tag;
   const properties = schema.properties;
 
@@ -37,23 +40,26 @@ export default function generateWebCompInstance(
     )
     .map(([key, value]) => {
       const attrName = value["x-cdef"]!.output!.webComponent!.attribute!;
-      let placeholderValue: string = "";
+      let attrValue: string = "";
 
       if (value.type === "string") {
         if (key.includes("image")) {
-          placeholderValue = "https://picsum.photos/600/400";
+          attrValue = "https://picsum.photos/600/400";
         } else {
-          placeholderValue =
+          attrValue =
             value["x-cdef"]?.input?.defaultValue ||
             Object.values(value["x-cdef"]?.input?.options ?? {})[0] ||
             `Example ${value.title}`;
         }
       } else if (Array.isArray(value.enum) && value.enum.length > 0) {
-        placeholderValue =
-          value["x-cdef"]?.input?.defaultValue || value.enum[0];
+        attrValue = value["x-cdef"]?.input?.defaultValue || value.enum[0];
       }
 
-      return `${attrName}="${placeholderValue}"`;
+      if (params && params[key]) {
+        attrValue = params[key];
+      }
+
+      return `${attrName}="${attrValue}"`;
     })
     .join("\n    ");
 

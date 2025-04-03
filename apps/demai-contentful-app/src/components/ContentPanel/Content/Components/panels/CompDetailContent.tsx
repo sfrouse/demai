@@ -10,10 +10,15 @@ import transformExports from "./utils/transformExports";
 import generateWebCompInstance from "./utils/generateWebCompInstance";
 import EditablePage from "./EditablePage";
 import { useEffect, useState } from "react";
-import { Entry } from "contentful-management";
 import useAIState from "../../../../../contexts/AIStateContext/useAIState";
 import { AIPromptEngineID } from "../../../../../ai/AIState/AIStateTypes";
 import LoadingPage from "../../../../Loading/LoadingPage";
+import LoadingIcon from "../../../../Loading/LoadingIcon";
+import Divider from "../../../../Divider";
+import saveComponent from "./utils/saveComponent";
+import validateComponent, { ValidationResult } from "./utils/validateComponent";
+import { PageAppSDK } from "@contentful/app-sdk";
+import PreviewPanel from "./tabPanels/PreviewPanel";
 
 export enum COMP_DETAIL_NAVIGATION {
   DEFINITION = "definition",
@@ -23,13 +28,16 @@ export enum COMP_DETAIL_NAVIGATION {
 }
 
 export default function CompDetailContent() {
-  const sdk = useSDK();
+  const sdk = useSDK<PageAppSDK>();
   const { contentState, loadingState } = useContentStateSession();
-  const { setRoute, route } = useAIState();
-  const [comp, setComp] = useState<Entry | undefined>();
+  const { setRoute, route, setInvalidated } = useAIState();
+  const [comp, setComp] = useState<any>(); // typings are getting CMA and Contentful confused...
   const [localCDef, setLocalCDef] = useState<string>("");
   const [localJavaScript, setLocalJavaScript] = useState<string>("");
   const [localBindings, setLocalBindings] = useState<string>("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [validationResults, setValidationResults] =
+    useState<ValidationResult>();
 
   const isLoading =
     loadingState.components === true ||
@@ -41,7 +49,7 @@ export default function CompDetailContent() {
       const newComp = contentState.components?.find(
         (comp) => comp.sys.id === route?.componentId
       );
-      setComp(newComp);
+      setComp(newComp as any);
       if (newComp) {
         setLocalCDef(
           newComp.fields.componentDefinition &&
@@ -68,10 +76,30 @@ export default function CompDetailContent() {
     return null;
   }
 
+  const cancel = () => {
+    // just revert everything...
+    if (!comp) return;
+    setLocalCDef(
+      comp.fields.componentDefinition &&
+        JSON.stringify(comp.fields.componentDefinition, null, 2)
+    );
+    setLocalJavaScript((comp.fields.javascript as unknown as string) || "");
+    setLocalBindings(
+      comp.fields.bindings && JSON.stringify(comp.fields.bindings, null, 2)
+    );
+    setIsSaving(false);
+
+    validate();
+  };
+
+  const validate = () => {
+    return validateComponent(localCDef, localBindings, localJavaScript);
+  };
+
   return (
     <Flex flexDirection="column" style={{ flex: 1 }}>
       <ContentPanelHeader
-        title={comp.fields.title || "Loading"}
+        title={(comp?.fields?.title as unknown as string) || "Loading"}
         invalidate
         goBack={() => {
           setRoute({
@@ -151,77 +179,16 @@ export default function CompDetailContent() {
               >
                 <div style={{ flex: 1 }}>
                   <EditablePage
+                    language="json"
                     value={localCDef}
                     onChange={(e: string) => {
                       setLocalCDef(e);
                     }}
                   />
                 </div>
-                <Flex
-                  flexDirection="row"
-                  justifyContent="flex-end"
-                  gap={tokens.spacingXs}
-                  style={{
-                    borderTop: `1px solid ${tokens.gray100}`,
-                    padding: `${tokens.spacingS} ${tokens.spacingM}`,
-                    backgroundColor: tokens.colorWhite,
-                  }}
-                >
-                  <Button variant="secondary">Cancel</Button>
-                  <Button variant="primary">Save</Button>
-                </Flex>
               </Flex>
             </Tabs.Panel>
-            <Tabs.Panel
-              id={COMP_DETAIL_NAVIGATION.PREVIEW}
-              forceMount
-              style={{
-                flex: 1,
-                position: `relative`,
-                overflow: "hidden",
-                display:
-                  route?.componentFocusId === COMP_DETAIL_NAVIGATION.PREVIEW
-                    ? "block"
-                    : "none",
-              }}
-            >
-              <iframe
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  border: "none",
-                }}
-                srcDoc={`
-<html>
-  <head>
-    <script type='module'>
-      ${transformExports(
-        new TextDecoder().decode(
-          Uint8Array.from(atob(precompiledCode), (c) => c.charCodeAt(0))
-        )
-      )}
-      ${
-        comp.fields.javascript &&
-        comp.fields.javascript.replace(/import/g, "// import")
-      }
-    </script>
-    <style>
-      html, body { padding: 0; margin: 0; }
-      ${contentState.css}
-    </style>
-  </head>
-  <body>
-    ${generateWebCompInstance(
-      comp.fields.componentDefinition && comp.fields.componentDefinition
-    )}
-    <pre style="white-space: pre-wrap;">${generateWebCompInstance(
-      comp.fields.componentDefinition && comp.fields.componentDefinition,
-      true
-    )}</pre>
-  </body>
-</html>`}
-              />
-            </Tabs.Panel>
+
             <Tabs.Panel
               id={COMP_DETAIL_NAVIGATION.WEB_COMP}
               forceMount
@@ -249,25 +216,13 @@ export default function CompDetailContent() {
               >
                 <div style={{ flex: 1 }}>
                   <EditablePage
+                    language="javascript"
                     value={localJavaScript}
                     onChange={(e: string) => {
                       setLocalJavaScript(e);
                     }}
                   />
                 </div>
-                <Flex
-                  flexDirection="row"
-                  justifyContent="flex-end"
-                  gap={tokens.spacingXs}
-                  style={{
-                    borderTop: `1px solid ${tokens.gray100}`,
-                    padding: `${tokens.spacingS} ${tokens.spacingM}`,
-                    backgroundColor: tokens.colorWhite,
-                  }}
-                >
-                  <Button variant="secondary">Cancel</Button>
-                  <Button variant="primary">Save</Button>
-                </Flex>
               </Flex>
             </Tabs.Panel>
             <Tabs.Panel
@@ -297,29 +252,98 @@ export default function CompDetailContent() {
               >
                 <div style={{ flex: 1 }}>
                   <EditablePage
+                    language="json"
                     value={localBindings}
                     onChange={(e: string) => {
                       setLocalBindings(e);
                     }}
                   />
                 </div>
-                <Flex
-                  flexDirection="row"
-                  justifyContent="flex-end"
-                  gap={tokens.spacingXs}
-                  style={{
-                    borderTop: `1px solid ${tokens.gray100}`,
-                    padding: `${tokens.spacingS} ${tokens.spacingM}`,
-                    backgroundColor: tokens.colorWhite,
-                  }}
-                >
-                  <Button variant="secondary">Cancel</Button>
-                  <Button variant="primary">Save</Button>
-                </Flex>
               </Flex>
             </Tabs.Panel>
+            <PreviewPanel comp={comp} />
           </Tabs>
         )}
+      </Flex>
+      {validationResults && (
+        <Flex flexDirection="column">
+          <Flex
+            flexDirection="column"
+            style={{
+              padding: `${tokens.spacingXs} ${tokens.spacingL}`,
+              color: tokens.colorNegative,
+              fontSize: tokens.fontSizeSHigh,
+            }}
+          >
+            {!validationResults.cdef.success && (
+              <div>
+                <b>Component Definition</b> error: $
+                {validationResults.cdef.error}
+              </div>
+            )}
+            {!validationResults.javascript.success && (
+              <div>
+                <b>Javascript</b> error: ${validationResults.javascript.error}
+              </div>
+            )}
+            {!validationResults.bindings.success && (
+              <div>
+                <b>Bindings</b> error: ${validationResults.bindings.error}
+              </div>
+            )}
+            {validationResults.valid && (
+              <div style={{ color: tokens.colorPositive }}>
+                Component is valid
+              </div>
+            )}
+          </Flex>
+          <Divider style={{ margin: 0 }} />
+        </Flex>
+      )}
+      <Flex
+        flexDirection="row"
+        justifyContent="flex-end"
+        gap={tokens.spacingXs}
+        style={{
+          borderTop: `1px solid ${tokens.gray100}`,
+          padding: `${tokens.spacingS} ${tokens.spacingM}`,
+          backgroundColor: tokens.colorWhite,
+        }}
+      >
+        {isSaving && <LoadingIcon />}
+        <div style={{ flex: 1 }}></div>
+        <Button variant="secondary" onClick={cancel}>
+          Revert
+        </Button>
+        <Button
+          variant="primary"
+          onClick={() => {
+            setValidationResults(validate());
+          }}
+        >
+          Validate
+        </Button>
+        <Button
+          variant="primary"
+          onClick={async () => {
+            const validation = validate();
+            setValidationResults(validation);
+            if (validation.valid) {
+              setIsSaving(true);
+              await saveComponent(
+                sdk,
+                comp,
+                localCDef,
+                localBindings,
+                localJavaScript
+              );
+              setIsSaving(false);
+              setInvalidated((p) => p + 1);
+            }
+          }}
+        >
+          Save
+        </Button>
       </Flex>
     </Flex>
   );
