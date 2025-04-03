@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Flex } from "@contentful/f36-components";
-import LoadingIcon from "../../../LoadingIcon";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
@@ -11,6 +10,7 @@ import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import { AIPromptEngineID } from "../../../../ai/AIState/AIStateTypes";
 import getEntryStatus from "../../../utils/entryStatus";
+import LoadingPage from "../../../Loading/LoadingPage";
 
 const ComponentsContent = () => {
   const { contentState, loadProperty, loadingState } = useContentStateSession();
@@ -52,12 +52,17 @@ const ComponentsContent = () => {
       <ContentPanelHeader title="Components" invalidate />
       <Flex
         flexDirection="column"
-        style={{ overflowY: "auto", padding: `0 ${tokens.spacingM}` }}
+        style={{
+          overflowY: "auto",
+          padding: `0 ${tokens.spacingM}`,
+          position: "relative",
+          flex: 1,
+        }}
       >
         {isLoading ? (
-          <LoadingIcon />
+          <LoadingPage />
         ) : (
-          <Flex flexDirection="column">
+          <Flex flexDirection="column" style={{ paddingTop: tokens.spacingM }}>
             {contentState.components
               ?.slice() // Make a shallow copy to avoid mutating the original array
               .sort((a, b) => {

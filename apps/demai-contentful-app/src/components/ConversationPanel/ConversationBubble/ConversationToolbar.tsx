@@ -7,8 +7,8 @@ import {
 } from "../../../contexts/ContentStateContext/ContentStateContext";
 import ButtonXs from "../../ButtonXs/ButtonXs";
 import tokens from "@contentful/f36-tokens";
-import LoadingIcon from "../../LoadingIcon";
-import { DoneIcon } from "@contentful/f36-icons";
+import LoadingIcon from "../../Loading/LoadingIcon";
+import { DoneIcon, IconVariant } from "@contentful/f36-icons";
 import Divider from "../../Divider";
 import { Dispatch, SetStateAction } from "react";
 import useAIState from "../../../contexts/AIStateContext/useAIState";
@@ -24,6 +24,8 @@ const ConversationToolbar = ({
   const { aiSessionManager } = useAIState();
 
   let bgColor = tokens.gray100;
+  let foreColor = tokens.gray800;
+  let iconVariant: IconVariant = "muted";
 
   switch (aiState.phase) {
     case AIStatePhase.describing: {
@@ -39,7 +41,9 @@ const ConversationToolbar = ({
       break;
     }
     case AIStatePhase.executed: {
-      bgColor = tokens.gray100;
+      bgColor = tokens.gray500;
+      foreColor = tokens.colorWhite;
+      iconVariant = "white";
       break;
     }
   }
@@ -51,13 +55,16 @@ const ConversationToolbar = ({
         alignContent="center"
         style={{
           backgroundColor: bgColor,
+          color: foreColor,
           padding: `${tokens.spacingM} ${tokens.spacingL}`,
-          // borderRadius: `0 0 ${tokens.borderRadiusMedium} ${tokens.borderRadiusMedium}`,
         }}
       >
-        {getStats(aiState)}
+        {getStats(aiState, foreColor, iconVariant)}
         <div style={{ flex: 1, minWidth: 30 }}></div>
         <ButtonXs
+          style={{
+            color: foreColor,
+          }}
           onClick={() => {
             aiSessionManager?.deleteAIState(aiState);
           }}
@@ -65,24 +72,31 @@ const ConversationToolbar = ({
           Delete
         </ButtonXs>
         <ButtonXs
+          style={{
+            color: foreColor,
+          }}
           onClick={() => {
             setShowSystem((val: boolean) => !val);
           }}
         >
           System
         </ButtonXs>
-        {!aiState.isRunning && getAction(aiState, contentState)}
+        {!aiState.isRunning && getAction(aiState, contentState, foreColor)}
       </Flex>
       <Divider style={{ margin: 0 }} />
     </div>
   );
 };
 
-const getStats = (aiState: AIState) => {
+const getStats = (
+  aiState: AIState,
+  foreColor: string,
+  iconVariant: IconVariant
+) => {
   return (
     <Flex
       style={{
-        color: tokens.gray500,
+        color: foreColor,
         font: tokens.fontStackPrimary,
         fontSize: 10,
       }}
@@ -90,7 +104,7 @@ const getStats = (aiState: AIState) => {
       alignItems="center"
       gap={tokens.spacing2Xs}
     >
-      {aiState.isRunning ? <LoadingIcon /> : <DoneIcon variant="muted" />}
+      {aiState.isRunning ? <LoadingIcon /> : <DoneIcon variant={iconVariant} />}
       <span>
         {aiState.promptEngineId}, "{aiState.phase}",{" "}
         {aiState.isRunning ? "running" : "stopped"}
@@ -103,7 +117,11 @@ const getStats = (aiState: AIState) => {
   );
 };
 
-const getAction = (aiState: AIState, contentState: ContentState) => {
+const getAction = (
+  aiState: AIState,
+  contentState: ContentState,
+  foreColor: string
+) => {
   switch (aiState.phase) {
     case AIStatePhase.executing:
       return null;
@@ -111,26 +129,47 @@ const getAction = (aiState: AIState, contentState: ContentState) => {
     case AIStatePhase.executed:
       return (
         <ButtonXs
+          style={{
+            color: foreColor,
+          }}
           onClick={async () => {
             await aiState.run(contentState, true);
           }}
         >
-          Execute
+          Try Again
         </ButtonXs>
       );
 
     case AIStatePhase.describing:
       return (
         <ButtonXs
+          style={{
+            color: foreColor,
+          }}
           onClick={async () => {
             await aiState.run(contentState);
           }}
         >
-          Execute
+          Create
         </ButtonXs>
       );
 
     case AIStatePhase.prompting:
+      return null;
+
+    case AIStatePhase.answered:
+      return (
+        <ButtonXs
+          style={{
+            color: foreColor,
+          }}
+          onClick={async () => {
+            await aiState.run(contentState);
+          }}
+        >
+          Try Again
+        </ButtonXs>
+      );
       return null;
 
     default:

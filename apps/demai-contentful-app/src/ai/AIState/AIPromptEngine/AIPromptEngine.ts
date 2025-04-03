@@ -41,11 +41,10 @@ export class AIPromptEngine {
 
   // UI CONTENT
   introMessage: string = "Let's do something";
-  placeholder: string =
-    "This is an open ended prompt that uses tools...ask me something about Contentful.";
+  placeholder: string = "This is an open ended prompt...ask me anything.";
   prompts: AIStatePrompts = {
     cancel: "Nope, Let's Rethink",
-    run: "Yes, Let's Do This",
+    run: "Yes, Create This",
     cancelIcon: icons.DeleteIcon,
     runIcon: icons.StarIcon,
   };

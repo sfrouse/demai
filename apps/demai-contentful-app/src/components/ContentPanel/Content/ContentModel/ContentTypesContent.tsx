@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Flex } from "@contentful/f36-components";
 import { ContentType } from "contentful-management";
 import { PageAppSDK } from "@contentful/app-sdk";
-import LoadingIcon from "../../../LoadingIcon";
+import LoadingIcon from "../../../Loading/LoadingIcon";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
@@ -10,6 +10,7 @@ import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import { AIPromptEngineID } from "../../../../ai/AIState/AIStateTypes";
+import LoadingPage from "../../../Loading/LoadingPage";
 
 const ContentTypesContent = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -33,10 +34,15 @@ const ContentTypesContent = () => {
       <ContentPanelHeader title="Content Types" invalidate />
       <Flex
         flexDirection="column"
-        style={{ overflowY: "auto", padding: `0 ${tokens.spacingM}` }}
+        style={{
+          overflowY: "auto",
+          padding: `0 ${tokens.spacingM}`,
+          flex: 1,
+          position: "relative",
+        }}
       >
         {isLoading ? (
-          <LoadingIcon />
+          <LoadingPage />
         ) : (
           <>
             {contentState.contentTypes?.map((contentType: ContentType) => (

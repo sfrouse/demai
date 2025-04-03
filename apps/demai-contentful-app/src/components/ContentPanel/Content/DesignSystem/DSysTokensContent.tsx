@@ -3,7 +3,7 @@ import { Button, Flex, IconButton, Text } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
 import * as icons from "@contentful/f36-icons";
 import { AppInstallationParameters } from "../../../../locations/config/ConfigScreen";
-import LoadingIcon from "../../../LoadingIcon";
+import LoadingIcon from "../../../Loading/LoadingIcon";
 import Divider from "../../../Divider";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import revertDemAITokensSingletonEntry from "../../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/revertDemAITokensSingletonEntry";
@@ -12,6 +12,7 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../../ai/mcp/designSystemMCP/validate/ctypes/demaiTokensCType";
+import LoadingPage from "../../../Loading/LoadingPage";
 
 export const COLOR_SET_ALLOW_LIST = [
   "primary",
@@ -89,10 +90,12 @@ const DSysTokensContent = () => {
         style={{
           overflowY: "auto",
           padding: `${tokens.spacingM} ${tokens.spacingL}`,
+          flex: 1,
+          position: "relative",
         }}
       >
         {isLoading ? (
-          <LoadingIcon />
+          <LoadingPage />
         ) : (
           <Flex flexDirection="column">
             {renderTokens(contentState.tokens)}

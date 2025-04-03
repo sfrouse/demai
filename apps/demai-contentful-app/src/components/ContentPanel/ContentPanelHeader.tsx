@@ -85,7 +85,7 @@ const ContentPanelHeader = ({
           />
         ) : null}
       </Flex>
-      <Divider style={{ marginTop: 0 }} />
+      <Divider style={{ marginTop: 0, marginBottom: 0 }} />
     </Flex>
   );
 };

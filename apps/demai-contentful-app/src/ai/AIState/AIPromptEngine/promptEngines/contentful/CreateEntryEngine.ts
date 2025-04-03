@@ -1,11 +1,12 @@
 import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import AIState from "../../../AIState";
+import contentTypeToAI from "../../../utils/contentTypeToAI";
 import { AIPromptEngine } from "../../AIPromptEngine";
 
 const CONTEXT_NUMBER_OF_TYPES = "numberOfCTypes";
 const CONTEXT_CTYPE_ID = "ctypeId";
 const CONTEXT_TONE_AND_STYLE = "toneAndStyle";
-const CONTEXT_TONE_AND_STYLE_BRAND = "the brand";
+const CONTEXT_TONE_AND_STYLE_BRAND = "the prospect";
 const CONTEXT_TONE_AND_STYLE_DESCRIPTION = "my description";
 
 export class CreateEntryEngine extends AIPromptEngine {
@@ -46,6 +47,7 @@ Don't forget to include all the new fields in the function call. This is essenti
             ? contentState.contentTypes[0].sys.id
             : "",
       },
+      ".",
       "[BREAK]",
       "Use style and tone from",
       {
@@ -74,7 +76,7 @@ ${aiState.userContent}.
 That content types full definition is:
 
 \`\`\`
-${JSON.stringify(ctype)}
+${JSON.stringify(contentTypeToAI(ctype))}
 \`\`\`
 
 Create an example for each.

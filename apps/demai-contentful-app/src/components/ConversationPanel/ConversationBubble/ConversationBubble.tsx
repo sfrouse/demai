@@ -70,7 +70,7 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
         <div
           style={{
             alignSelf: "flex-start",
-            backgroundColor: tokens.colorWhite,
+            backgroundColor: "rgba(0,0,0,0)",
             maxWidth: "100%",
             width: "100%",
             fontSize: tokens.fontSizeM,
@@ -106,6 +106,7 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
         fontSize: 12,
         // padding: `${tokens.spacingM} 0 0 0`,
         gap: tokens.spacingM,
+        backgroundColor: "rgba(0,0,0,0)",
       }}
     >
       <Divider style={{ margin: 0 }} />

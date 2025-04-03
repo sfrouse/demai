@@ -13,7 +13,7 @@ import useAIState from "../../contexts/AIStateContext/useAIState";
 import ConversationBubble from "./ConversationBubble/ConversationBubble";
 
 const ConversationPanel = () => {
-  const { contentState, spaceStatus } = useContentStateSession();
+  const { contentState, spaceStatus, loadingState } = useContentStateSession();
   const {
     aiState,
     aiSession,
@@ -33,7 +33,7 @@ const ConversationPanel = () => {
   useEffect(() => {
     setTimeout(() => {
       chatLastBubbleRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+    }, 200);
   }, [aiStateStatus?.isRunning]);
 
   useEffect(() => {
@@ -45,7 +45,10 @@ const ConversationPanel = () => {
     }
   }, [route]);
 
-  const useNav = route && route.aiStateEngines?.length > 1;
+  const isLoading =
+    Object.values(loadingState).includes(true) || !spaceStatus?.valid;
+
+  const useNav = route && route.aiStateEngines?.length > 1 && !isLoading;
 
   return (
     <Flex
@@ -79,20 +82,22 @@ const ConversationPanel = () => {
           display: "flex",
           flexDirection: "column",
           overflowY: "scroll",
+          backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
         }}
       >
         {aiSession.map((aiState: AIState) => {
           return <ConversationBubble key={aiState.key} aiState={aiState} />;
         })}
-        {/* {aiStateStatus?.isRunning ? <LoadingIcon /> : null} */}
         <div ref={chatLastBubbleRef}></div>
       </div>
-      <Divider style={{ marginTop: 0 }} />
+      <Divider style={{ marginTop: 0, marginBottom: 0 }} />
       {useNav ? (
         <Flex flexDirection="column" justifyContent="flex-end">
           <Tabs
             currentTab={`${route?.aiStateEngineFocus}`}
-            style={{ marginLeft: tokens.spacingS }}
+            style={{
+              marginLeft: tokens.spacingS,
+            }}
             onTabChange={(tab: string) => {
               const index = parseInt(tab);
               setRoute({

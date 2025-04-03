@@ -11,6 +11,7 @@ const updateResearchTool: ChatCompletionTool = {
     parameters: {
       type: "object",
       properties: {
+        // Don't put "prospect" or "solutionEngineerDescription" here...those should remain manual...
         description: {
           description:
             "This a several paragraphs describing the brand itself which is a concise summary that captures the essence of a brand — what it is, what it does, and what makes it distinct.",

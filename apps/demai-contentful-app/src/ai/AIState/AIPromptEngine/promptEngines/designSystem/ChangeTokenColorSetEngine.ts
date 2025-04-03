@@ -96,12 +96,5 @@ The brand colors are primary ${contentState.research?.fields.primaryColor}, seco
     this.executionPrompt = "Updating your colors...";
     this.placeholder =
       "Add the hex and any details about the color stepping...";
-
-    this.prompts = {
-      cancel: "Nope, Let's Rethink",
-      run: "Yes, Let's Update",
-      cancelIcon: icons.DeleteIcon,
-      runIcon: icons.StarIcon,
-    };
   }
 }

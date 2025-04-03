@@ -3,7 +3,6 @@ import { useContentStateSession } from "../../../../../contexts/ContentStateCont
 import ContentPanelHeader from "../../../ContentPanelHeader";
 import { NAVIGATION } from "../../../../MainNav";
 import tokens from "@contentful/f36-tokens";
-import LoadingIcon from "../../../../LoadingIcon";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import * as icons from "@contentful/f36-icons";
 import precompiledCode from "../../../../../precompiled/packages";
@@ -14,6 +13,7 @@ import { useEffect, useState } from "react";
 import { Entry } from "contentful-management";
 import useAIState from "../../../../../contexts/AIStateContext/useAIState";
 import { AIPromptEngineID } from "../../../../../ai/AIState/AIStateTypes";
+import LoadingPage from "../../../../Loading/LoadingPage";
 
 export enum COMP_DETAIL_NAVIGATION {
   DEFINITION = "definition",
@@ -69,7 +69,7 @@ export default function CompDetailContent() {
   }
 
   return (
-    <>
+    <Flex flexDirection="column" style={{ flex: 1 }}>
       <ContentPanelHeader
         title={comp.fields.title || "Loading"}
         invalidate
@@ -93,104 +93,105 @@ export default function CompDetailContent() {
           icon={<icons.EditIcon />}
         />
       </ContentPanelHeader>
-      {isLoading ? (
-        <LoadingIcon />
-      ) : (
-        <Tabs
-          currentTab={`${route?.componentFocusId}`}
-          style={{ flex: 1, display: "flex", flexDirection: "column" }}
-          onTabChange={(tab: string) => {
-            // const index = parseInt(tab);
-            setRoute({
-              navigation: "components",
-              componentId: comp.sys.id,
-              componentFocusId: tab as COMP_DETAIL_NAVIGATION,
-              aiStateEngines: [AIPromptEngineID.OPEN],
-            });
-          }}
-        >
-          <Tabs.List>
-            <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.DEFINITION}>
-              Definition
-            </Tabs.Tab>
-            <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.WEB_COMP}>
-              Web Comp
-            </Tabs.Tab>
-            <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.BINDINGS}>
-              Bindings
-            </Tabs.Tab>
-            <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.PREVIEW}>
-              Preview
-            </Tabs.Tab>
-          </Tabs.List>
-          <Tabs.Panel
-            id={COMP_DETAIL_NAVIGATION.DEFINITION}
-            forceMount
-            style={{
-              flex: 1,
-              position: `relative`,
-              display:
-                route?.componentFocusId === COMP_DETAIL_NAVIGATION.DEFINITION
-                  ? "block"
-                  : "none",
+      <Flex style={{ flex: 1, position: "relative" }}>
+        {isLoading ? (
+          <LoadingPage />
+        ) : (
+          <Tabs
+            currentTab={`${route?.componentFocusId}`}
+            style={{ flex: 1, display: "flex", flexDirection: "column" }}
+            onTabChange={(tab: string) => {
+              // const index = parseInt(tab);
+              setRoute({
+                navigation: "components",
+                componentId: comp.sys.id,
+                componentFocusId: tab as COMP_DETAIL_NAVIGATION,
+                aiStateEngines: [AIPromptEngineID.OPEN],
+              });
             }}
           >
-            <Flex
-              flexDirection="column"
+            <Tabs.List>
+              <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.DEFINITION}>
+                Definition
+              </Tabs.Tab>
+              <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.WEB_COMP}>
+                Web Comp
+              </Tabs.Tab>
+              <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.BINDINGS}>
+                Bindings
+              </Tabs.Tab>
+              <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.PREVIEW}>
+                Preview
+              </Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panel
+              id={COMP_DETAIL_NAVIGATION.DEFINITION}
+              forceMount
               style={{
-                backgroundColor: tokens.gray900,
-                color: tokens.colorWhite,
-                fontSize: tokens.fontSizeS,
-                position: `absolute`,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
+                flex: 1,
+                position: `relative`,
+                display:
+                  route?.componentFocusId === COMP_DETAIL_NAVIGATION.DEFINITION
+                    ? "block"
+                    : "none",
               }}
             >
-              <div style={{ flex: 1 }}>
-                <EditablePage
-                  value={localCDef}
-                  onChange={(e: string) => {
-                    setLocalCDef(e);
-                  }}
-                />
-              </div>
               <Flex
-                flexDirection="row"
-                justifyContent="flex-end"
-                gap={tokens.spacingXs}
+                flexDirection="column"
                 style={{
-                  borderTop: `1px solid ${tokens.gray100}`,
-                  padding: `${tokens.spacingS} ${tokens.spacingM}`,
-                  backgroundColor: tokens.colorWhite,
+                  backgroundColor: tokens.gray900,
+                  color: tokens.colorWhite,
+                  fontSize: tokens.fontSizeS,
+                  position: `absolute`,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
                 }}
               >
-                <Button variant="secondary">Cancel</Button>
-                <Button variant="primary">Save</Button>
+                <div style={{ flex: 1 }}>
+                  <EditablePage
+                    value={localCDef}
+                    onChange={(e: string) => {
+                      setLocalCDef(e);
+                    }}
+                  />
+                </div>
+                <Flex
+                  flexDirection="row"
+                  justifyContent="flex-end"
+                  gap={tokens.spacingXs}
+                  style={{
+                    borderTop: `1px solid ${tokens.gray100}`,
+                    padding: `${tokens.spacingS} ${tokens.spacingM}`,
+                    backgroundColor: tokens.colorWhite,
+                  }}
+                >
+                  <Button variant="secondary">Cancel</Button>
+                  <Button variant="primary">Save</Button>
+                </Flex>
               </Flex>
-            </Flex>
-          </Tabs.Panel>
-          <Tabs.Panel
-            id={COMP_DETAIL_NAVIGATION.PREVIEW}
-            forceMount
-            style={{
-              flex: 1,
-              position: `relative`,
-              overflow: "hidden",
-              display:
-                route?.componentFocusId === COMP_DETAIL_NAVIGATION.PREVIEW
-                  ? "block"
-                  : "none",
-            }}
-          >
-            <iframe
+            </Tabs.Panel>
+            <Tabs.Panel
+              id={COMP_DETAIL_NAVIGATION.PREVIEW}
+              forceMount
               style={{
-                width: "100%",
-                height: "100%",
-                border: "none",
+                flex: 1,
+                position: `relative`,
+                overflow: "hidden",
+                display:
+                  route?.componentFocusId === COMP_DETAIL_NAVIGATION.PREVIEW
+                    ? "block"
+                    : "none",
               }}
-              srcDoc={`
+            >
+              <iframe
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  border: "none",
+                }}
+                srcDoc={`
 <html>
   <head>
     <script type='module'>
@@ -219,106 +220,107 @@ export default function CompDetailContent() {
     )}</pre>
   </body>
 </html>`}
-            />
-          </Tabs.Panel>
-          <Tabs.Panel
-            id={COMP_DETAIL_NAVIGATION.WEB_COMP}
-            forceMount
-            style={{
-              flex: 1,
-              position: `relative`,
-              display:
-                route?.componentFocusId === COMP_DETAIL_NAVIGATION.WEB_COMP
-                  ? "block"
-                  : "none",
-            }}
-          >
-            <Flex
-              flexDirection="column"
+              />
+            </Tabs.Panel>
+            <Tabs.Panel
+              id={COMP_DETAIL_NAVIGATION.WEB_COMP}
+              forceMount
               style={{
-                backgroundColor: tokens.gray900,
-                color: tokens.colorWhite,
-                fontSize: tokens.fontSizeS,
-                position: `absolute`,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
+                flex: 1,
+                position: `relative`,
+                display:
+                  route?.componentFocusId === COMP_DETAIL_NAVIGATION.WEB_COMP
+                    ? "block"
+                    : "none",
               }}
             >
-              <div style={{ flex: 1 }}>
-                <EditablePage
-                  value={localJavaScript}
-                  onChange={(e: string) => {
-                    setLocalJavaScript(e);
-                  }}
-                />
-              </div>
               <Flex
-                flexDirection="row"
-                justifyContent="flex-end"
-                gap={tokens.spacingXs}
+                flexDirection="column"
                 style={{
-                  borderTop: `1px solid ${tokens.gray100}`,
-                  padding: `${tokens.spacingS} ${tokens.spacingM}`,
-                  backgroundColor: tokens.colorWhite,
+                  backgroundColor: tokens.gray900,
+                  color: tokens.colorWhite,
+                  fontSize: tokens.fontSizeS,
+                  position: `absolute`,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
                 }}
               >
-                <Button variant="secondary">Cancel</Button>
-                <Button variant="primary">Save</Button>
+                <div style={{ flex: 1 }}>
+                  <EditablePage
+                    value={localJavaScript}
+                    onChange={(e: string) => {
+                      setLocalJavaScript(e);
+                    }}
+                  />
+                </div>
+                <Flex
+                  flexDirection="row"
+                  justifyContent="flex-end"
+                  gap={tokens.spacingXs}
+                  style={{
+                    borderTop: `1px solid ${tokens.gray100}`,
+                    padding: `${tokens.spacingS} ${tokens.spacingM}`,
+                    backgroundColor: tokens.colorWhite,
+                  }}
+                >
+                  <Button variant="secondary">Cancel</Button>
+                  <Button variant="primary">Save</Button>
+                </Flex>
               </Flex>
-            </Flex>
-          </Tabs.Panel>
-          <Tabs.Panel
-            id={COMP_DETAIL_NAVIGATION.BINDINGS}
-            forceMount
-            style={{
-              flex: 1,
-              position: `relative`,
-              display:
-                route?.componentFocusId === COMP_DETAIL_NAVIGATION.BINDINGS
-                  ? "block"
-                  : "none",
-            }}
-          >
-            <Flex
-              flexDirection="column"
+            </Tabs.Panel>
+            <Tabs.Panel
+              id={COMP_DETAIL_NAVIGATION.BINDINGS}
+              forceMount
               style={{
-                backgroundColor: tokens.gray900,
-                color: tokens.colorWhite,
-                fontSize: tokens.fontSizeS,
-                position: `absolute`,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
+                flex: 1,
+                position: `relative`,
+                display:
+                  route?.componentFocusId === COMP_DETAIL_NAVIGATION.BINDINGS
+                    ? "block"
+                    : "none",
               }}
             >
-              <div style={{ flex: 1 }}>
-                <EditablePage
-                  value={localBindings}
-                  onChange={(e: string) => {
-                    setLocalBindings(e);
-                  }}
-                />
-              </div>
               <Flex
-                flexDirection="row"
-                justifyContent="flex-end"
-                gap={tokens.spacingXs}
+                flexDirection="column"
                 style={{
-                  borderTop: `1px solid ${tokens.gray100}`,
-                  padding: `${tokens.spacingS} ${tokens.spacingM}`,
-                  backgroundColor: tokens.colorWhite,
+                  backgroundColor: tokens.gray900,
+                  color: tokens.colorWhite,
+                  fontSize: tokens.fontSizeS,
+                  position: `absolute`,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
                 }}
               >
-                <Button variant="secondary">Cancel</Button>
-                <Button variant="primary">Save</Button>
+                <div style={{ flex: 1 }}>
+                  <EditablePage
+                    value={localBindings}
+                    onChange={(e: string) => {
+                      setLocalBindings(e);
+                    }}
+                  />
+                </div>
+                <Flex
+                  flexDirection="row"
+                  justifyContent="flex-end"
+                  gap={tokens.spacingXs}
+                  style={{
+                    borderTop: `1px solid ${tokens.gray100}`,
+                    padding: `${tokens.spacingS} ${tokens.spacingM}`,
+                    backgroundColor: tokens.colorWhite,
+                  }}
+                >
+                  <Button variant="secondary">Cancel</Button>
+                  <Button variant="primary">Save</Button>
+                </Flex>
               </Flex>
-            </Flex>
-          </Tabs.Panel>
-        </Tabs>
-      )}
-    </>
+            </Tabs.Panel>
+          </Tabs>
+        )}
+      </Flex>
+    </Flex>
   );
 }

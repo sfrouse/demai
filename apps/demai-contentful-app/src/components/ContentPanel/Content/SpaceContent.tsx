@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Button, Flex, Text } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { AppInstallationParameters } from "../../../locations/config/ConfigScreen";
-import LoadingIcon from "../../LoadingIcon";
 import ContentPanelHeader from "../ContentPanelHeader";
 import tokens from "@contentful/f36-tokens";
 import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/revertDemAITokensSingletonEntry";
@@ -12,6 +11,7 @@ import useAIState from "../../../contexts/AIStateContext/useAIState";
 import updateDesignSystemMCP from "../../../ai/mcp/designSystemMCP/validate/updateDesignSystemMCP";
 import { IMCPClientValidation } from "../../../ai/mcp/MCPClient";
 import updateResearchMCP from "../../../ai/mcp/researchMCP/validate/updateResearchMCP";
+import LoadingPage from "../../Loading/LoadingPage";
 
 function generateErrorMessage(
   validationResult: IMCPClientValidation
@@ -62,7 +62,12 @@ const SpaceContent = () => {
       <ContentPanelHeader title="Settings"></ContentPanelHeader>
       <Flex
         flexDirection="column"
-        style={{ overflowY: "auto", flex: 1, padding: tokens.spacingL }}
+        style={{
+          overflowY: "auto",
+          flex: 1,
+          padding: tokens.spacingL,
+          position: "relative",
+        }}
         alignContent="stretch"
       >
         <Flex flexDirection="column" gap={tokens.spacingM}>
@@ -129,7 +134,7 @@ const SpaceContent = () => {
             <Text fontColor="blue500">Space is valid</Text>
           ) : null}
 
-          {isLoading ? <LoadingIcon /> : null}
+          {isLoading ? <LoadingPage /> : null}
         </Flex>
       </Flex>
     </>

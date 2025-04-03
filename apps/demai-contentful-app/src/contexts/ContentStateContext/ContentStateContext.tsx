@@ -24,6 +24,8 @@ export interface ContentState {
   entries?: Entry[];
   research?: {
     fields: {
+      prospect: string;
+      solutionEngineerDescription: string;
       primaryColor: string;
       secondaryColor: string;
       tertiaryColor: string;

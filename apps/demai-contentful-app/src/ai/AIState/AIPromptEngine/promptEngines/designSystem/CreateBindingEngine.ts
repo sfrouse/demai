@@ -98,12 +98,5 @@ ${component ? JSON.stringify(cDefToAI(cDef)) : ""}
 
     this.executionPrompt = "Creating a binding...";
     this.placeholder = "Describe any adjustments you'd like to make...";
-
-    this.prompts = {
-      cancel: "Nope, Let's Rethink",
-      run: "Yes, Let's Create This",
-      cancelIcon: icons.DeleteIcon,
-      runIcon: icons.StarIcon,
-    };
   }
 }

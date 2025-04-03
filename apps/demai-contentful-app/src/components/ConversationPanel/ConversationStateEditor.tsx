@@ -10,6 +10,7 @@ import {
 } from "@contentful/f36-components";
 import * as icons from "@contentful/f36-icons";
 import {
+  AIPromptEngineID,
   AIStateContentPrefix,
   AIStateStatus,
 } from "../../ai/AIState/AIStateTypes";
@@ -18,8 +19,9 @@ import {
   ContentState,
   useContentStateSession,
 } from "../../contexts/ContentStateContext/ContentStateContext";
-import LoadingIcon from "../LoadingIcon";
+import LoadingIcon from "../Loading/LoadingIcon";
 import useAIState from "../../contexts/AIStateContext/useAIState";
+import LoadingPage from "../Loading/LoadingPage";
 
 interface ConversationStateEditorProps {}
 
@@ -43,10 +45,11 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
         paddingBottom: tokens.spacingM,
         minHeight: isLoading ? 200 : 0,
         position: "relative",
+        backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
       }}
     >
       {isLoading ? (
-        <LoadingIcon />
+        <LoadingPage />
       ) : (
         <>
           {renderContextContent(aiState, aiStateStatus, contentState)}
@@ -66,16 +69,19 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
             alignItems="center"
             gap={tokens.spacing2Xs}
           >
-            <Checkbox
-              name="newsletter-subscribe-controlled"
-              id="newsletter-subscribe-controlled"
-              isChecked={autoExecute}
-              onChange={() => {
-                setAutoExecute((prevVal: boolean) => !prevVal);
-              }}
-            >
-              auto-execute
-            </Checkbox>
+            {aiState.promptEngineId !== AIPromptEngineID.OPEN && (
+              <Checkbox
+                name="newsletter-subscribe-controlled"
+                id="newsletter-subscribe-controlled"
+                isChecked={autoExecute}
+                onChange={() => {
+                  setAutoExecute((prevVal: boolean) => !prevVal);
+                }}
+              >
+                auto-execute
+              </Checkbox>
+            )}
+
             <div style={{ flex: 1 }}></div>
             {aiStateStatus.isRunning ? <LoadingIcon /> : null}
             <Button
@@ -100,17 +106,18 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
         </>
       )}
       {aiStateStatus?.isRunning ? (
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            backgroundColor: "rgba(255,255,255,.5)",
-            zIndex: 1000,
-          }}
-        ></div>
+        // <div
+        //   style={{
+        //     position: "absolute",
+        //     top: 0,
+        //     bottom: 0,
+        //     left: 0,
+        //     right: 0,
+        //     backgroundColor: "rgba(255,255,255,.5)",
+        //     zIndex: 1000,
+        //   }}
+        // ></div>
+        <LoadingPage />
       ) : null}
     </Flex>
   );

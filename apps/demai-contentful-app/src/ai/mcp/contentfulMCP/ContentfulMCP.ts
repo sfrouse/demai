@@ -34,6 +34,9 @@ export class ContentfulMCP extends MCPClient {
       if (tool.name === "publish_content_type") {
         finalTool = publishContentType.tool;
       }
+      if (tool.name === "create_entry") {
+        finalTool = createEntry.tool;
+      }
       return {
         type: "function" as const,
         function: {

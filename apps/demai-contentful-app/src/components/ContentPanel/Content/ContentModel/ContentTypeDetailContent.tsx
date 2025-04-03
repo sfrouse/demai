@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Caption, Flex, Text } from "@contentful/f36-components";
-import LoadingIcon from "../../../LoadingIcon";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import tokens from "@contentful/f36-tokens";
 import Divider from "../../../Divider";
 import { NAVIGATION } from "../../../MainNav";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
+import LoadingPage from "../../../Loading/LoadingPage";
 
 const ContentTypeDetailContent = () => {
   const { contentState, loadProperty, loadingState } = useContentStateSession();
@@ -50,10 +50,15 @@ const ContentTypeDetailContent = () => {
       />
       <Flex
         flexDirection="column"
-        style={{ overflowY: "auto", padding: tokens.spacingM }}
+        style={{
+          overflowY: "auto",
+          padding: tokens.spacingM,
+          position: "relative",
+          flex: 1,
+        }}
       >
         {isLoading ? (
-          <LoadingIcon />
+          <LoadingPage />
         ) : (
           <>
             {contentState.contentType?.fields

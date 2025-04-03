@@ -25,12 +25,6 @@ Do not create another component definition, create ONLY a web component using th
       "Let's create a web component, what would you like to create?";
     this.executionPrompt = "Creating a component definition...";
     this.placeholder = "Describe what you want this component to do...";
-    this.prompts = {
-      cancel: "Nope, Let's Rethink",
-      run: "Yes, Let's Create This",
-      cancelIcon: icons.DeleteIcon,
-      runIcon: icons.StarIcon,
-    };
 
     // ======= CONTENT CONTEXT ========
     this.contextContent = (contentState: ContentState) => {

@@ -37,13 +37,6 @@ If you find that a tool would be useful, render that tool name in the output.
     this.executionPrompt = "Creating your Content Types...";
     this.placeholder =
       "Describe the kind of content type you would like. Try to be descriptive...";
-
-    this.prompts = {
-      cancel: "Nope, Let's Rethink",
-      run: "Yes, Let's Create These",
-      cancelIcon: icons.DeleteIcon,
-      runIcon: icons.StarIcon,
-    };
   }
 
   async runExe(

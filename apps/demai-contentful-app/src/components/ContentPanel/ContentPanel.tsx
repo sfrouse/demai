@@ -8,9 +8,44 @@ import EntriesContent from "./Content/Entries/EntriesContent";
 import DSysTokensContent from "./Content/DesignSystem/DSysTokensContent";
 import ResearchContent from "./Content/Research/ResearchContent";
 import ContentTypeDetailContent from "./Content/ContentModel/ContentTypeDetailContent";
+import ProspectContent from "./Content/Research/ProspectContent";
 
 const ContentPanel = () => {
   const { route } = useAIState();
+
+  const renderContent = () => {
+    switch (route?.navigation) {
+      case "content_model":
+        return route?.contentTypeId ? (
+          <ContentTypeDetailContent />
+        ) : (
+          <ContentTypesContent />
+        );
+      case "design_tokens":
+        return <DSysTokensContent />;
+      case "components":
+        return <ComponentsContent />;
+      case "space":
+        return <SpaceContent />;
+      case "entries":
+        return <EntriesContent />;
+      case "research":
+        return <ResearchContent />;
+      case "prospect":
+        return <ProspectContent />;
+      default:
+        return (
+          <Flex
+            style={{ width: "100%", height: "100%" }}
+            justifyContent="center"
+            alignItems="center"
+          >
+            no content found
+          </Flex>
+        );
+    }
+  };
+
   return (
     <Flex
       aria-label="Content Panel"
@@ -21,18 +56,7 @@ const ContentPanel = () => {
         borderRight: `1px solid ${tokens.gray200}`,
       }}
     >
-      {route?.navigation === "content_model" ? (
-        route?.contentTypeId ? (
-          <ContentTypeDetailContent />
-        ) : (
-          <ContentTypesContent />
-        )
-      ) : null}
-      {route?.navigation === "design_tokens" ? <DSysTokensContent /> : null}
-      {route?.navigation === "components" ? <ComponentsContent /> : null}
-      {route?.navigation === "space" ? <SpaceContent /> : null}
-      {route?.navigation === "entries" ? <EntriesContent /> : null}
-      {route?.navigation === "research" ? <ResearchContent /> : null}
+      {renderContent()}
     </Flex>
   );
 };

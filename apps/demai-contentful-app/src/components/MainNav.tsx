@@ -16,9 +16,13 @@ type NAVIGATION_ENTRY = {
 };
 
 export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
+  prospect: {
+    label: "Prospect",
+    section_header: "Prospect Research",
+    aiStateEngines: [AIPromptEngineID.OPEN],
+  },
   research: {
     label: "Research",
-    section_header: "Prospect Research",
     end: true,
     aiStateEngines: [AIPromptEngineID.RESEARCH_STYLES],
   },

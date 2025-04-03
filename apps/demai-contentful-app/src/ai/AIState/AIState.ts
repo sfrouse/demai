@@ -199,26 +199,29 @@ export default class AIState {
 
     // FINISH
     this.executeRunTime = Date.now() - this.startRunTime;
+    const toolSummary = executionResults.toolResults
+      ?.map((result) => {
+        return result?.content
+          ?.map((subContent: any) => {
+            if (subContent.text) {
+              return subContent.text;
+            }
+          })
+          .join("\n\n");
+      })
+      .join("\n\n");
     this.executionResponse = `Executed. ${
       executionResults?.toolCalls && executionResults.toolCalls.length > 0
         ? `Used tools: ${executionResults.toolCalls.join(", ")}.
-\`\`\`
+        
 ${
-  executionResults.toolResults &&
-  executionResults.toolResults
-    .map((result) => {
-      return result?.content
-        ?.map((subContent: any) => {
-          if (subContent.text) {
-            return subContent.text;
-          }
-        })
-        .join("\n\n");
-    })
-    .join("\n\n")
-}
-\`\`\`  
+  toolSummary &&
+  `
+\`\`\`
+${toolSummary}
+\`\`\`
 `
+}`
         : "no tools used"
     }`;
     this.phase = AIStatePhase.executed;

@@ -4,11 +4,13 @@ import ContentPanelHeader from "../../ContentPanelHeader";
 import tokens from "@contentful/f36-tokens";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
-import LoadingIcon from "../../../LoadingIcon";
+import LoadingIcon from "../../../Loading/LoadingIcon";
 import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
 import getEntryStatus from "../../../utils/entryStatus";
+import LoadingPage from "../../../Loading/LoadingPage";
+import Divider from "../../../Divider";
 
 const EntriesContent = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -47,7 +49,7 @@ const EntriesContent = () => {
       <ContentPanelHeader title="Entries" invalidate />
       <Flex flexDirection="column" style={{ position: "relative", flex: 1 }}>
         {isLoading ? (
-          <LoadingIcon />
+          <LoadingPage />
         ) : (
           <Flex
             flexDirection="column"
@@ -61,7 +63,7 @@ const EntriesContent = () => {
           >
             <Flex
               style={{
-                padding: `0 ${tokens.spacingL} ${tokens.spacingM} ${tokens.spacingL}`,
+                padding: `${tokens.spacingM} ${tokens.spacingL} ${tokens.spacingM} ${tokens.spacingL}`,
               }}
               flexDirection="row"
               alignItems="baseline"
@@ -88,6 +90,7 @@ const EntriesContent = () => {
                 })}
               </Select>
             </Flex>
+            <Divider style={{ margin: 0 }} />
             <Flex
               flexDirection="column"
               style={{

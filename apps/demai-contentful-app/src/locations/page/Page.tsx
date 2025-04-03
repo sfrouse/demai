@@ -11,7 +11,7 @@ import { AIStateConfig } from "../../ai/AIState/AIStateTypes";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import { createClient } from "contentful-management";
-import LoadingIcon from "../../components/LoadingIcon";
+import LoadingIcon from "../../components/Loading/LoadingIcon";
 
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -58,8 +58,8 @@ const Page = () => {
       setAIStateConfig(newAIConfig);
       validateSpace();
       setRoute({
-        navigation: "research",
-        aiStateEngines: NAVIGATION["research"].aiStateEngines,
+        navigation: "prospect",
+        aiStateEngines: NAVIGATION["prospect"].aiStateEngines,
         aiStateEngineFocus: 0,
       });
 

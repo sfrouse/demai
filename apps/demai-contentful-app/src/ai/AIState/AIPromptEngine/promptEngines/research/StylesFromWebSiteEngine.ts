@@ -11,6 +11,10 @@ const ACTION_BRAND_STYLE = "Brand Style";
 const ACTION_BRAND_DESCRIPTION = "Brand Description";
 const ACTION_BRAND_PRODUCT = "Brand Product";
 
+const SOURCE_ID = "source";
+const SOURCE_PROSPECT = "the prospect";
+const SOURCE_DESCRIPTION = "following description";
+
 export class StylesFromWebSiteEngine extends AIPromptEngine {
   constructor(aiState: AIState) {
     super(aiState);
@@ -51,11 +55,28 @@ If you are asked to summarize anything, keep it to a paragraph or two at most.
         defaultValue: ACTION_HEX_COLORS,
       },
       "from",
+      {
+        id: SOURCE_ID,
+        options: [SOURCE_PROSPECT, SOURCE_DESCRIPTION],
+        defaultValue: SOURCE_PROSPECT,
+      },
+      ".",
     ];
 
     // CONTENT
     this.content = (aiState: AIState, contentState: ContentState) => {
-      return `${aiState.userContent}`;
+      const prospect = contentState.research?.fields.prospect;
+      const seDescription =
+        contentState.research?.fields.solutionEngineerDescription;
+      const useProspect =
+        aiState.contextContentSelections[SOURCE_ID] === SOURCE_PROSPECT;
+
+      const extra = useProspect
+        ? `The prospect is ${prospect} -- ${seDescription}.`
+        : "";
+
+      const userContent = aiState.userContent;
+      return `${userContent ? `${userContent}. ` : ""}${extra}`;
     };
   }
 
