@@ -316,7 +316,7 @@ export default function CompDetailContent() {
           Revert
         </Button>
         <Button
-          variant="primary"
+          variant="secondary"
           onClick={() => {
             setValidationResults(validate());
           }}

@@ -1,6 +1,5 @@
-import { Select, TextInput } from "@contentful/f36-components";
-import tokens from "@contentful/f36-tokens";
 import React, { useEffect, useState } from "react";
+import { Select, TextInput } from "@contentful/f36-components";
 
 type Schema = {
   "x-cdef": { tag: string };
@@ -35,9 +34,7 @@ export function WebCompEditor(props: {
     const input = value["x-cdef"]?.input;
     const defaultVal = input?.defaultValue;
     defaultParams[key] = defaultVal || `Example ${key}`;
-    console.log("value", key, value);
   });
-  console.log("defaultParams", defaultParams);
   const [params, setParams] = useState<Record<string, any>>(defaultParams);
 
   if (!schema) return null;

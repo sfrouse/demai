@@ -4,9 +4,10 @@ import { AIStateContentPrefix } from "../AIStateTypes";
 
 export default function createPrompt(
   aiState: AIState,
-  contentState: ContentState
+  contentState: ContentState,
+  ignoreContextContent: boolean = false
 ): string {
-  if (aiState.ignoreContextContent) {
+  if (ignoreContextContent) {
     return aiState.promptEngine.content
       ? aiState.promptEngine.content(aiState, contentState)
       : "";

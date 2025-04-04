@@ -1,6 +1,7 @@
 import { marked } from "marked";
+import styles from "./convertMarkdown.module.css";
 
-export default function convertMarkdown(markdown: string, styles: any) {
+export default function convertMarkdown(markdown: string) {
   const renderer = {
     codespan(code: any) {
       return `<code class="${styles["inline-code"]}">${escapeHTML(
@@ -24,7 +25,10 @@ export default function convertMarkdown(markdown: string, styles: any) {
 
   // Configure marked with the custom renderer
   marked.use({ renderer });
-  return marked.parse(addHTMLColorChips(markdown), { async: false });
+  return `<div class="${styles["markdown"]}">${marked.parse(
+    addHTMLColorChips(markdown),
+    { async: false }
+  )}</div>`;
 }
 
 function escapeHTML(html: string) {

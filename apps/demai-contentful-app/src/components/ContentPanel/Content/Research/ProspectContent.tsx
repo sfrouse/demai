@@ -79,6 +79,12 @@ const ProspectContent = () => {
     setInvalidated((p) => p + 1);
   };
 
+  const handleCancel = () => {
+    const research = contentState.research;
+    setPropsectName(research?.fields.prospect || "");
+    setSEDescription(research?.fields.solutionEngineerDescription || "");
+  };
+
   const isLoading = loadingState.research === true || !spaceStatus?.valid;
 
   return (
@@ -129,8 +135,18 @@ const ProspectContent = () => {
                 name.
               </FormControl.HelpText>
             </FormControl>
-            <Flex justifyContent="flex-end" style={{ width: "100%" }}>
-              <Button variant="primary" type="submit" isDisabled={submitted}>
+            <Flex
+              justifyContent="flex-end"
+              style={{ width: "100%", gap: tokens.spacingS }}
+            >
+              <Button
+                variant="secondary"
+                onClick={handleCancel}
+                isDisabled={submitted}
+              >
+                Cancel
+              </Button>
+              <Button variant="primary" type="submit" isLoading={submitted}>
                 {submitted ? "Saving" : "Save"}
               </Button>
             </Flex>

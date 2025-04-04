@@ -99,7 +99,23 @@ const EntriesContent = () => {
                 padding: `0 ${tokens.spacingL} 0 ${tokens.spacingL}`,
               }}
             >
-              {filteredEntries?.length === 0 && <div>no entries found</div>}
+              {filteredEntries?.length === 0 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    color: tokens.gray500,
+                  }}
+                >
+                  no entries found
+                </div>
+              )}
               {filteredEntries?.map((entry) => {
                 const contentType = contentState.contentTypes?.find(
                   (ctype) => ctype.sys.id === entry.sys.contentType.sys.id

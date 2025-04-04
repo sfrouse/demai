@@ -23,19 +23,21 @@ export interface ContentState {
   components?: Entry[];
   entries?: Entry[];
   research?: {
-    fields: {
-      prospect: string;
-      solutionEngineerDescription: string;
-      primaryColor: string;
-      secondaryColor: string;
-      tertiaryColor: string;
-      description: string;
-      products: string;
-      style: string;
-      tone: string;
-    };
+    fields: ContentStateResearch;
     contentTypeId: string;
   };
+}
+
+export interface ContentStateResearch {
+  prospect: string;
+  solutionEngineerDescription: string;
+  primaryColor: string;
+  secondaryColor: string;
+  tertiaryColor: string;
+  description: string;
+  products: string;
+  style: string;
+  tone: string;
 }
 
 // Define action types for updating session contentState

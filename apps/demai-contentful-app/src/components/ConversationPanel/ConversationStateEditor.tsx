@@ -27,7 +27,14 @@ interface ConversationStateEditorProps {}
 
 const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
   const { contentState, loadingState, spaceStatus } = useContentStateSession();
-  const { aiState, aiStateStatus, autoExecute, setAutoExecute } = useAIState();
+  const {
+    aiState,
+    aiStateStatus,
+    autoExecute,
+    setAutoExecute,
+    ignoreContextContent,
+    setIgnoreContextContent,
+  } = useAIState();
 
   const isLoading =
     Object.values(loadingState).includes(true) ||
@@ -52,7 +59,12 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
         <LoadingPage />
       ) : (
         <>
-          {renderContextContent(aiState, aiStateStatus, contentState)}
+          {renderContextContent(
+            aiState,
+            contentState,
+            ignoreContextContent,
+            setIgnoreContextContent
+          )}
           <Textarea
             value={aiStateStatus.userContent}
             placeholder={aiStateStatus.placeholder}
@@ -97,7 +109,14 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
             </Button>
             <Button
               startIcon={<icons.StarIcon />}
-              onClick={() => aiState?.run(contentState, false, autoExecute)}
+              onClick={() =>
+                aiState?.run(
+                  contentState,
+                  false,
+                  autoExecute,
+                  ignoreContextContent
+                )
+              }
               variant="primary"
             >
               Ask
@@ -105,28 +124,16 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
           </Flex>
         </>
       )}
-      {aiStateStatus?.isRunning ? (
-        // <div
-        //   style={{
-        //     position: "absolute",
-        //     top: 0,
-        //     bottom: 0,
-        //     left: 0,
-        //     right: 0,
-        //     backgroundColor: "rgba(255,255,255,.5)",
-        //     zIndex: 1000,
-        //   }}
-        // ></div>
-        <LoadingPage />
-      ) : null}
+      {aiStateStatus?.isRunning ? <LoadingPage /> : null}
     </Flex>
   );
 };
 
 const renderContextContent = (
   aiState: AIState,
-  aiStateStatus: AIStateStatus,
-  contentState: ContentState
+  contentState: ContentState,
+  ignoreContextContent: boolean,
+  setIgnoreContextContent: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const contextContent = aiState.promptEngine.contextContent(contentState);
 
@@ -143,7 +150,7 @@ const renderContextContent = (
       <div
         style={{
           flex: 1,
-          opacity: aiStateStatus.ignoreContextContent ? 0.2 : 1.0,
+          opacity: ignoreContextContent ? 0.2 : 1.0,
         }}
       >
         <Flex
@@ -161,7 +168,7 @@ const renderContextContent = (
       <IconButton
         style={{ maxHeight: 40 }}
         icon={
-          aiStateStatus.ignoreContextContent ? (
+          ignoreContextContent ? (
             <icons.PreviewOffIcon />
           ) : (
             <icons.PreviewIcon />
@@ -169,9 +176,7 @@ const renderContextContent = (
         }
         aria-label="Ignore Execution "
         onClick={() => {
-          aiState.updateStatus({
-            ignoreContextContent: !aiStateStatus.ignoreContextContent,
-          });
+          setIgnoreContextContent((prevVal) => !prevVal);
         }}
       />
     </Flex>

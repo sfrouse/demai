@@ -2,9 +2,7 @@ import tokens from "@contentful/f36-tokens";
 import { useEffect, useState } from "react";
 import AIState from "../../../ai/AIState/AIState";
 import Divider from "../../Divider";
-import styles from "./ConversationBubble.module.css";
 import scrollBarStyles from "../../utils/ScrollBarMinimal.module.css";
-import classNames from "../../utils/classNames";
 import convertMarkdown from "../util/convertMarkdown";
 import ConversationToolbar from "./ConversationToolbar";
 import ConversationTitle from "./ConversationTitle";
@@ -22,10 +20,7 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
 
   useEffect(() => {
     (async () => {
-      const newHTML = convertMarkdown(
-        `${aiState.promptEngine.system.content}`,
-        styles
-      );
+      const newHTML = convertMarkdown(`${aiState.promptEngine.system.content}`);
       setSystemHtml(newHTML);
     })();
   }, [aiState.promptEngine.system]);
@@ -45,21 +40,21 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
 
   useEffect(() => {
     (async () => {
-      const newHTML = convertMarkdown(`${aiState.request}`, styles);
+      const newHTML = convertMarkdown(`${aiState.request}`);
       setRequestHTML(newHTML);
     })();
   }, [aiState.request]);
 
   useEffect(() => {
     (async () => {
-      const newHTML = convertMarkdown(`${aiState.response}`, styles);
+      const newHTML = convertMarkdown(`${aiState.response}`);
       setResponseHTML(newHTML);
     })();
   }, [aiState.response]);
 
   useEffect(() => {
     (async () => {
-      const newHTML = convertMarkdown(`${aiState.executionResponse}`, styles);
+      const newHTML = convertMarkdown(`${aiState.executionResponse}`);
       setExecutionResponseHTML(newHTML);
     })();
   }, [aiState.executionResponse]);
@@ -86,10 +81,7 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
   return (
     <Flex
       flexDirection="column"
-      className={classNames(
-        styles["conversation-state"],
-        scrollBarStyles["scrollbar-minimal"]
-      )}
+      className={scrollBarStyles["scrollbar-minimal"]}
       style={{
         alignSelf: "flex-start",
         width: "100%",

@@ -71,14 +71,11 @@ export type AIStatePrompts = {
 
 export type AIStateStatus = {
   isRunning: boolean;
-  // contextContent: AIStateContentPrefix;
   contextContentSelections: { [key: string]: string };
   userContent: string;
   phase: AIStatePhase;
-  ignoreContextContent: boolean;
   placeholder: string;
   prompts: AIStatePrompts;
-  // runTime: number | undefined;
 };
 
 export type AIStateSystemPrompt = {

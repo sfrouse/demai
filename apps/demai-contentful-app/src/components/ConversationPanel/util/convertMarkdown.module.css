@@ -1,0 +1,44 @@
+.markdown code.multi-line-code {
+    color: var(--gray-500);
+    max-height: 100px;
+    padding: 10px;
+    margin: 6px 0;
+    background-color: rgba(240, 240, 240, 0.3);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow-y: scroll;
+    width: 100%;
+    overflow-x: hidden;
+    white-space: pre-line;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    display: block;
+    font-size: 10px;
+}
+
+
+.markdown code.inline-code {
+    color: var(--gray-700);
+    max-height: 100px;
+    padding: 6px;
+    line-height: 34px;
+    background-color: rgba(240, 240, 240, 0.3);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow-y: scroll;
+    width: 100%;
+    overflow-x: hidden;
+    white-space: pre-line;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    display: inline;
+    font-size: 11px;
+}
+
+.markdown a {
+    color: var(--gray-500);
+}
+
+.markdown pre {
+    white-space: pre-wrap;
+}

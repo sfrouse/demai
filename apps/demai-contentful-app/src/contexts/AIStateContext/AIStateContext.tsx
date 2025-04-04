@@ -46,6 +46,9 @@ export interface AIStateContextType {
 
   autoExecute: boolean;
   setAutoExecute: React.Dispatch<React.SetStateAction<boolean>>;
+
+  ignoreContextContent: boolean;
+  setIgnoreContextContent: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -55,6 +58,8 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [aiState, setAIState] = useState<AIState>();
   const [aiStateStatus, setAIStateStatus] = useState<AIStateStatus>();
   const [autoExecute, setAutoExecute] = useState<boolean>(false);
+  const [ignoreContextContent, setIgnoreContextContent] =
+    useState<boolean>(false);
   const [aiSessionManager, setAISessionManager] = useState<AISessionManager>(); // No need to store, just setter
   const [aiSession, setAISession] = useState<AIState[]>([]);
   const [invalidated, setInvalidated] = useState<number>(0);
@@ -119,6 +124,8 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
         setRoute,
         autoExecute,
         setAutoExecute,
+        ignoreContextContent,
+        setIgnoreContextContent,
       }}
     >
       {children}

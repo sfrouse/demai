@@ -44,7 +44,7 @@ export default class AIState {
   // USER CONTENT
   userContent: string = "";
   contextContentSelections: { [key: string]: string } = {};
-  ignoreContextContent: boolean = false; // toggles context content
+  // ignoreContextContent: boolean = false; // toggles context content
 
   // ENGINE
   promptEngineId: AIPromptEngineID = AIPromptEngineID.OPEN;
@@ -134,7 +134,8 @@ export default class AIState {
   async run(
     contentState: ContentState,
     forceExecution: boolean = false,
-    autoExecute: boolean = false
+    autoExecute: boolean = false,
+    ignoreContextContent: boolean = false
   ) {
     this.refreshState();
     if (forceExecution === true || this.phase === AIStatePhase.describing) {
@@ -143,13 +144,18 @@ export default class AIState {
       // Throw it to another bubble...
       const userState = this.clone();
       this.aiSessionManager.deref()!.addAndActivateAIState(userState);
-      await userState.runAnswerOrDescribe(contentState, autoExecute);
+      await userState.runAnswerOrDescribe(
+        contentState,
+        autoExecute,
+        ignoreContextContent
+      );
     }
   }
 
   protected async runAnswerOrDescribe(
     contentState: ContentState,
-    autoExecute: boolean = false
+    autoExecute: boolean = false,
+    ignoreContextContent: boolean = false
   ) {
     const sessionManager = this.aiSessionManager.deref();
     if (!sessionManager) return;
@@ -158,7 +164,7 @@ export default class AIState {
 
     // SHOW USER PROMPT
     this.processContextSelections(contentState);
-    this.request = createPrompt(this, contentState);
+    this.request = createPrompt(this, contentState, ignoreContextContent);
     this.isRunning = true;
     this.phase =
       this.promptEngine.toolType === "none"
@@ -279,7 +285,7 @@ ${toolSummary}
       contextContentSelections: this.contextContentSelections,
       userContent: this.userContent,
       phase: this.phase,
-      ignoreContextContent: this.ignoreContextContent,
+      // ignoreContextContent: this.ignoreContextContent,
       placeholder: this.promptEngine.placeholder,
       prompts: this.promptEngine.prompts,
       // runTime: this.runTime,
