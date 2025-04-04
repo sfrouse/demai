@@ -89,7 +89,11 @@ const ResearchContent = () => {
 
   return (
     <>
-      <ContentPanelHeader title="Research" invalidate></ContentPanelHeader>
+      <ContentPanelHeader
+        title="Research"
+        invalidate
+        showMoney
+      ></ContentPanelHeader>
       <Flex
         flexDirection="column"
         className={scrollBarStyles["scrollbar-minimal"]}

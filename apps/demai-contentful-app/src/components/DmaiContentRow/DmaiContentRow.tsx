@@ -44,26 +44,41 @@ export default function DmaiContentRow({
           padding: `${tokens.spacingS}`,
         }}
       >
-        <Flex flexDirection="row">
+        <Flex flexDirection="row" gap="spacingS">
           <Flex flexDirection="column" style={{ flex: 1 }}>
             <Flex flexDirection="row" alignItems="center">
-              <Text
-                fontSize="fontSizeL"
+              <div
                 style={{
-                  color: tokens.gray800,
+                  flex: 1,
+                  position: "relative",
+                  height: 20, // ick
                 }}
               >
-                {title}
-                {status && status !== "none" && (
-                  <EntityStatusBadge
-                    key={`comp-badge-${id}`}
-                    size="small"
-                    style={{ marginLeft: 6 }}
-                    entityStatus={status}
-                  />
-                )}
-              </Text>
-              <div style={{ flex: 1 }}></div>
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    color: tokens.gray800,
+                    fontSize: tokens.fontSizeL,
+                  }}
+                >
+                  {title}
+                </div>
+              </div>
+              {status && status !== "none" && (
+                <EntityStatusBadge
+                  key={`comp-badge-${id}`}
+                  size="small"
+                  style={{ marginLeft: 6 }}
+                  entityStatus={status}
+                />
+              )}
             </Flex>
             {id && (
               <span

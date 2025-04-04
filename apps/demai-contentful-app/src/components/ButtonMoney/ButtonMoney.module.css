@@ -1,0 +1,9 @@
+.rainbow-button {
+    cursor: pointer;
+    /* transition: all 0.2s ease-in-out; */
+    background-color: var(--color-white);
+}
+
+.rainbow-button:hover {
+    background-color: var( --gray-100 );
+}

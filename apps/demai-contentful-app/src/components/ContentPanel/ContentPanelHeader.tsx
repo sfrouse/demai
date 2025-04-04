@@ -9,6 +9,9 @@ import * as icons from "@contentful/f36-icons";
 import { ReactNode } from "react";
 import Divider from "../Divider";
 import useAIState from "../../contexts/AIStateContext/useAIState";
+import ButtonRainbow from "../ButtonMoney/ButtonMoney";
+import { useSDK } from "@contentful/react-apps-toolkit";
+import { PageAppSDK } from "@contentful/app-sdk";
 
 interface ContentPanelHeaderProps {
   title: string;
@@ -17,6 +20,7 @@ interface ContentPanelHeaderProps {
   invalidate?: boolean;
   goBack?: () => void;
   children?: ReactNode;
+  showMoney?: boolean;
 }
 
 const ContentPanelHeader = ({
@@ -26,7 +30,9 @@ const ContentPanelHeader = ({
   invalidate = false,
   children,
   goBack,
+  showMoney = false,
 }: ContentPanelHeaderProps) => {
+  const sdk = useSDK<PageAppSDK>();
   const { setInvalidated } = useAIState();
   return (
     <Flex
@@ -84,6 +90,16 @@ const ContentPanelHeader = ({
             onClick={() => setInvalidated((p) => p + 1)}
           />
         ) : null}
+        {showMoney && (
+          <ButtonRainbow
+            onClick={() => {
+              sdk.dialogs.openAlert({
+                title: "One Click AI",
+                message: "This feature is coming soon. Stay tuned!",
+              });
+            }}
+          />
+        )}
       </Flex>
       <Divider style={{ marginTop: 0, marginBottom: 0 }} />
     </Flex>
