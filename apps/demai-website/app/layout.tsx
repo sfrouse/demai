@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import React from "react";
-import DesignSystemEmbed from "@/components/DesignSystemEmbed/DesignSystemEmbed";
+// import DesignSystemEmbed from "@/components/DesignSystemEmbed/DesignSystemEmbed";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,7 +13,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body className={inter.className}>
-        <DesignSystemEmbed />
+        {/* <DesignSystemEmbed /> */}
         {children}
       </body>
     </html>

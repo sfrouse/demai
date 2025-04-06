@@ -13,8 +13,7 @@ import TrackPage from "@/components/Client/TrackPage";
 import { StudioServer } from "@/components/Studio/StudioServer";
 import ComponentRenderer from "@/components/ComponentRenderer/ComponentRenderer";
 import { LivePreviewComponentRenderer } from "@/components/ComponentRenderer/LivePreviewComponentRenderer";
-import getContentfulEntryById from "@/lib/getContentfulEntryById";
-// import bindingInjection from "@/controllers/webComponents/bindings/utils/bindingInjection";
+import getDesignSystem from "@/components/DesignSystemEmbed/GetDesignSystem";
 
 export const fetchCache = "force-no-store"; // Prevents caching
 
@@ -83,35 +82,33 @@ export default async function RootPage({
   // only have Web Comp Page right now...
   // but you can put React comps within
   const page = await getContentfulPage(client, params.locale, params.slug);
-  const demaiTokens = (await getContentfulEntryById(
-    client,
-    "demai-tokens-entry",
-    params.locale
-  )) as any;
-  // const bindingStr = bindingInjection(
-  //   website?.fields?.bindings?.bindings,
-  //   website?.fields?.webComponents?.javascript
-  // );
+  const dsys = await getDesignSystem(params);
 
   return (
-    <Providers
-      ninetailed={{ preview: { allExperiences, allAudiences } }}
-      spaceId={params.spaceId}
-      env="master"
-    >
-      <style>{demaiTokens?.fields.css}</style>
-      {/* <style>{website?.fields?.globalStyles?.css}</style>
-      <script type="module">{bindingStr}</script> */}
-      <TrackPage />
-      {page ? (
-        params.preview ? (
-          <LivePreviewComponentRenderer entry={page} params={params} />
-        ) : (
-          <ComponentRenderer entry={page} params={params} />
-        )
-      ) : null}
-      <StudioServer params={params} />
-      <DemoToolbar params={params} />
-    </Providers>
+    <>
+      <Providers
+        ninetailed={{ preview: { allExperiences, allAudiences } }}
+        spaceId={params.spaceId}
+        env="master"
+      >
+        <style>{dsys.css}</style>
+        <script
+          data-id="demai-design-system"
+          dangerouslySetInnerHTML={{
+            __html: `${dsys.precompiledJavascript}\n${dsys.components}`,
+          }}
+        />
+        <TrackPage />
+        {page ? (
+          params.preview ? (
+            <LivePreviewComponentRenderer entry={page} params={params} />
+          ) : (
+            <ComponentRenderer entry={page} params={params} />
+          )
+        ) : null}
+        <StudioServer params={params} />
+        <DemoToolbar params={params} />
+      </Providers>
+    </>
   );
 }
