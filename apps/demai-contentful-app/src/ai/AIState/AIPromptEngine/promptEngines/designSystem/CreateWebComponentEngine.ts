@@ -86,7 +86,7 @@ ${JSON.stringify(compDefSimple)}
       // now add tokens...
       extraPrompt = `${extraPrompt}
 
-Use 'dmai' as the prefix. Use only these css properties ( for example: \`color: var( --dami-text-default );\` ).
+Use 'demai' as the prefix. Use only these css properties ( for example: \`color: var( --dami-text-default );\` ).
 Avoid using any property that is not a css variable, these are all the variable names:
 
 \`\`\`

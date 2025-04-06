@@ -58,4 +58,11 @@ export const DEMAI_TOKENS_EXPECTED_FIELDS = [
     required: false,
     localized: false,
   },
+  {
+    id: "precompiledJavascript",
+    name: "Precompiled Javascript",
+    type: "Text",
+    required: false,
+    localized: false,
+  },
 ];

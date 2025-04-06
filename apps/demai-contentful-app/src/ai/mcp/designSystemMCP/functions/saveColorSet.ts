@@ -6,6 +6,7 @@ import transformTokens from "demai-design-system-core/src/tokens/scripts/transfo
 import updateColorSetInTokens from "./utils/tokens/updateColorSetInTokens";
 import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../validate/ctypes/demaiTokensCType";
 import * as contentful from "contentful";
+import { DESIGN_SYSTEM_PREFIX } from "../../../../constants";
 
 export const SAVE_COLOR_SET_TOOL_NAME = "save_color_set";
 
@@ -101,7 +102,11 @@ const saveColorSet: IMCPTool = {
       ...params,
       name: undefined,
     });
-    const tokenCode = await transformTokens(newTokens, "dmai", "../");
+    const tokenCode = await transformTokens(
+      newTokens,
+      DESIGN_SYSTEM_PREFIX,
+      "../"
+    );
 
     let jsonTokens = {};
     try {

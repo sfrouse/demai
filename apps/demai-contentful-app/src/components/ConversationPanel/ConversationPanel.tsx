@@ -57,6 +57,7 @@ const ConversationPanel = () => {
       style={{
         flex: 1,
         position: "relative",
+        maxWidth: 650,
       }}
     >
       {!spaceStatus?.valid ? (

@@ -3,9 +3,6 @@ import { IMCPClientValidation, MCPClient } from "../MCPClient";
 import saveColorSet, {
   SAVE_COLOR_SET_TOOL_NAME,
 } from "./functions/saveColorSet";
-import createComponentDefinition, {
-  CREATE_COMPONENT_DEFINITION_TOOL_NAME,
-} from "./functions/createComponentDefinition";
 import createWebComponent, {
   CREATE_WEB_COMPONENT_TOOL_NAME,
 } from "./functions/createWebComponent";
@@ -13,6 +10,13 @@ import createBinding, {
   CREATE_BINDING_TOOL_NAME,
 } from "./functions/createBinding";
 import validateDesignSystemMCP from "./validate/validateDesignSystemMCP";
+import updateComponentDefinition, {
+  UPDATE_COMPONENT_DEFINITION_TOOL_NAME,
+} from "./functions/updateComponentDefinition";
+import createComponentDefinitionTool, {
+  CREATE_COMPONENT_DEFINITION_TOOL_NAME,
+} from "./tools/createComponentDefinition/createComponentDefinition.tool";
+import createComponentDefinitionFunction from "./tools/createComponentDefinition/createComponentDefinition.function";
 
 export class DesignSystemMCPClient extends MCPClient {
   async getToolsForOpenAI(): Promise<ChatCompletionTool[]> {
@@ -43,9 +47,10 @@ export class DesignSystemMCPClient extends MCPClient {
         },
       },
       saveColorSet.tool,
-      createComponentDefinition.tool,
+      createComponentDefinitionTool,
       createWebComponent.tool,
       createBinding.tool,
+      updateComponentDefinition.tool,
     ];
   }
 
@@ -55,13 +60,17 @@ export class DesignSystemMCPClient extends MCPClient {
         return saveColorSet.functionCall(this, params);
       }
       case CREATE_COMPONENT_DEFINITION_TOOL_NAME: {
-        return createComponentDefinition.functionCall(this, params);
+        return createComponentDefinitionFunction(this, params);
       }
       case CREATE_WEB_COMPONENT_TOOL_NAME: {
         return createWebComponent.functionCall(this, params);
       }
       case CREATE_BINDING_TOOL_NAME: {
         return createBinding.functionCall(this, params);
+      }
+
+      case UPDATE_COMPONENT_DEFINITION_TOOL_NAME: {
+        return updateComponentDefinition.functionCall(this, params);
       }
       default: {
         return {

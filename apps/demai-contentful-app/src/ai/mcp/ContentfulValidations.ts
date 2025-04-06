@@ -1,4 +1,6 @@
 import { Environment } from "contentful-management";
+import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "./designSystemMCP/validate/ctypes/demaiTokensCType";
+import getPrecompiledCode from "../../components/utils/getPrecompiledCode";
 
 export async function checkSingleton(
   singletonId: string,
@@ -6,6 +8,39 @@ export async function checkSingleton(
 ) {
   try {
     await environment.getEntry(singletonId);
+    return true;
+  } catch (error: any) {
+    return false;
+  }
+}
+
+export async function checkSingletonForPrecompiledJavascript(
+  environment: Environment
+) {
+  try {
+    const entry = await environment.getEntry(DEMAI_TOKENS_SINGLETON_ENTRY_ID);
+    const entryJS = entry.fields.precompiledJavascript;
+    let doUpdate = false;
+    if (entryJS && entryJS["en-US"]) {
+      const targetJS = getPrecompiledCode();
+      if (entryJS["en-US"] !== targetJS) {
+        doUpdate = true;
+      }
+    } else {
+      doUpdate = true;
+    }
+
+    if (doUpdate) {
+      entry.fields.precompiledJavascript = {
+        "en-US": getPrecompiledCode(),
+      };
+      const updatedEntry = await entry.update();
+      await updatedEntry.publish();
+      console.log(
+        `Singleton ${DEMAI_TOKENS_SINGLETON_ENTRY_ID} updated and published.`
+      );
+    }
+
     return true;
   } catch (error: any) {
     return false;

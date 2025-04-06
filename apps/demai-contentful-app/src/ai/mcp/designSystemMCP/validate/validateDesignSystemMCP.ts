@@ -12,7 +12,12 @@ import {
 import {
   checkContentTypeValid,
   checkSingleton,
+  checkSingletonForPrecompiledJavascript,
 } from "../../ContentfulValidations";
+import {
+  DEMAI_CONTROLLER_CTYPE_ID,
+  DEMAI_CONTROLLER_EXPECTED_FIELDS,
+} from "./ctypes/demaiControllerCType";
 
 export default async function validateDesignSystemMCP(
   cmaToken: string,
@@ -37,25 +42,52 @@ export default async function validateDesignSystemMCP(
     environment
   );
 
+  // BINDINGS
+  const bindingsType = await checkContentTypeValid(
+    DEMAI_CONTROLLER_CTYPE_ID,
+    DEMAI_CONTROLLER_EXPECTED_FIELDS,
+    environment
+  );
+
+  // CONTROLLER
+  const controllerType = await checkContentTypeValid(
+    DEMAI_CONTROLLER_CTYPE_ID,
+    DEMAI_CONTROLLER_EXPECTED_FIELDS,
+    environment
+  );
+
   const tokensSingleton = await checkSingleton(
     DEMAI_TOKENS_SINGLETON_ENTRY_ID,
     environment
   );
 
-  // PAGE
-
-  // WEBSITE ?
+  // Component Precompiled JS is stored here for convience...check if it is latest
+  const precompiledJavascript = await checkSingletonForPrecompiledJavascript(
+    environment
+  );
 
   return {
     valid:
-      tokensContentType.valid && componentContentType.valid && tokensSingleton,
+      tokensContentType.valid &&
+      componentContentType.valid &&
+      controllerType.valid &&
+      bindingsType.valid &&
+      tokensSingleton &&
+      precompiledJavascript,
     details: {
       componentContentType,
       tokensContentType,
+      controllerType,
+      bindingsType,
       tokensSingleton: {
         exists: tokensSingleton,
         fieldsValid: true,
         valid: tokensSingleton,
+      },
+      precompiledJavascript: {
+        exists: precompiledJavascript,
+        fieldsValid: true,
+        valid: precompiledJavascript,
       },
     },
   };

@@ -1,24 +1,26 @@
 interface SimplifiedContentType {
   id: string;
   class: string;
+  description: string;
   properties: {
     [key: string]: string | string[];
   };
 }
 
-export default function cDefToAI(contentType: any): SimplifiedContentType {
+export default function cDefToAI(cDef: any): SimplifiedContentType {
   const simplified: SimplifiedContentType = {
-    id: contentType["x-cdef"]?.tag || "",
-    class: contentType["x-cdef"]?.className || "",
+    id: cDef["x-cdef"]?.tag || "",
+    class: cDef["x-cdef"]?.className || "",
+    description: cDef["x-cdef"]?.description || "",
     properties: {},
   };
 
-  if (contentType.properties && typeof contentType.properties === "object") {
-    for (const prop in contentType.properties) {
+  if (cDef.properties && typeof cDef.properties === "object") {
+    for (const prop in cDef.properties) {
       // Skip meta properties that start with '$'
       if (prop.startsWith("$")) continue;
 
-      const property = contentType.properties[prop];
+      const property = cDef.properties[prop];
       // If the property has an "enum" array, use that.
       if (property.enum && Array.isArray(property.enum)) {
         simplified.properties[prop] = property.enum;

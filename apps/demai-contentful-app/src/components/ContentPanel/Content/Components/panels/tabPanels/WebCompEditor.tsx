@@ -39,7 +39,7 @@ export function WebCompEditor(props: {
 
   if (!schema) return null;
   const properties = schema.properties;
-  const filterOutProps = ["disabled"];
+  const filterOutProps: string[] = []; // ["disabled"];
 
   useEffect(() => {
     onChange(params);
@@ -57,14 +57,53 @@ export function WebCompEditor(props: {
       if (!attrName) return null;
 
       const input = value["x-cdef"]?.input;
-      // const defaultVal = input?.defaultValue;
       const options = input?.options;
       const label = value.title || key;
 
       let field: JSX.Element;
 
-      // <select> for options
+      // <select> for enum
       if (options && Object.keys(options).length > 0) {
+        field = (
+          <Select
+            value={params[key]}
+            onChange={(e) => {
+              setParams({
+                ...params,
+                [key]: e.target.value,
+              });
+              console.log(key, e.target.value);
+            }}
+          >
+            {Object.entries(options).map(([optLabel, optValue]) => (
+              <Select.Option key={`${label}-${optValue}`} value={optValue}>
+                {optLabel}
+              </Select.Option>
+            ))}
+          </Select>
+        );
+      }
+
+      // <input> for string
+      else if (value.type === "string") {
+        const value = params[key];
+        field = (
+          <TextInput
+            value={value}
+            name={attrName}
+            onChange={(e) => {
+              setParams({
+                ...params,
+                [key]: e.target.value,
+              });
+              console.log(key, e.target.value);
+            }}
+          />
+        );
+      }
+
+      // <input> for string
+      else if (value.type === "boolean") {
         field = (
           <Select
             name="optionSelect-controlled"
@@ -77,35 +116,13 @@ export function WebCompEditor(props: {
               console.log(key, e.target.value);
             }}
           >
-            {Object.entries(options).map(([optLabel, optValue]) => (
-              <Select.Option key={optValue} value={optValue}>
-                {optLabel}
-              </Select.Option>
-            ))}
+            <Select.Option key={`${label}-true`} value={"true"}>
+              true
+            </Select.Option>
+            <Select.Option key={`${label}-false`} value={"false"}>
+              false
+            </Select.Option>
           </Select>
-        );
-      }
-
-      // <input> for string
-      else if (value.type === "string") {
-        // const placeholder =
-        //   defaultVal ||
-        //   (key.includes("image")
-        //     ? "https://picsum.photos/600/400"
-        //     : `Example ${label}`);
-
-        field = (
-          <TextInput
-            value={params[key]}
-            name={attrName}
-            onChange={(e) => {
-              setParams({
-                ...params,
-                [key]: e.target.value,
-              });
-              console.log(key, e.target.value);
-            }}
-          />
         );
       }
 

@@ -13,7 +13,8 @@ import getEntryStatus from "../../../utils/entryStatus";
 import LoadingPage from "../../../Loading/LoadingPage";
 
 const ComponentsContent = () => {
-  const { contentState, loadProperty, loadingState } = useContentStateSession();
+  const { contentState, loadProperty, loadingState, setComponent } =
+    useContentStateSession();
   const { invalidated, setRoute, route } = useAIState();
   const [localInvalidated, setLocalInvalidated] = useState<number>(invalidated);
 
@@ -74,12 +75,13 @@ const ComponentsContent = () => {
               .map((comp: any) => (
                 <DmaiContentRow
                   key={`comp-${comp.sys.id}`}
-                  onClick={() => {
+                  onClick={async () => {
+                    await setComponent(comp.sys.id);
                     setRoute({
                       navigation: "components",
                       componentId: comp.sys.id,
                       componentFocusId: COMP_DETAIL_NAVIGATION.DEFINITION,
-                      aiStateEngines: [AIPromptEngineID.OPEN],
+                      aiStateEngines: [AIPromptEngineID.EDIT_COMPONENT],
                     });
                   }}
                   title={comp.fields.title && comp.fields.title}

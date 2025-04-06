@@ -12,7 +12,7 @@ export default function transform() {
         }
         const fileInfo = await transformTokens(
             demoTokens,
-            'dmai',
+            'demai',
             _relativeToAbsolutPath('../../../dist/tokens')
         );
 

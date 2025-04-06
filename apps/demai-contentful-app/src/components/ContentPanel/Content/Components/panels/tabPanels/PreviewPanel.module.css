@@ -1,0 +1,9 @@
+
+
+
+
+@media (min-width: 1800px) {
+  .previewPanel {
+    display: block !important;
+  }
+}

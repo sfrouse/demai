@@ -21,6 +21,7 @@ import { StylesFromWebSiteEngine } from "./AIPromptEngine/promptEngines/research
 import { ContentfulOpenToolingEngine } from "./AIPromptEngine/promptEngines/contentful/ContentfulOpenToolingEngine";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import { SaveBrandColorsEngine } from "./AIPromptEngine/promptEngines/research/SaveBrandColorsEngine";
+import { EditComponentEngine } from "./AIPromptEngine/promptEngines/designSystem/EditComponentEngine";
 
 export default class AIState {
   key: string; // Unique key for React lists
@@ -107,6 +108,9 @@ export default class AIState {
       }
       case AIPromptEngineID.UPDATE_BRAND_COLORS: {
         return new SaveBrandColorsEngine(aiState);
+      }
+      case AIPromptEngineID.EDIT_COMPONENT: {
+        return new EditComponentEngine(aiState);
       }
       default: {
         return new AIPromptEngine(aiState); // OpenEndedAIAction;

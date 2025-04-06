@@ -21,7 +21,7 @@ export default function validateComponent(
   const cdefResults = safeParseJSON(localCDef);
   const bindingsResults = safeParseJSON(localBindings);
   const jsResults = validateJavaScript(
-    localJavaScript.replace("import", "// import")
+    localJavaScript?.replace("import", "// import")
   );
 
   return {

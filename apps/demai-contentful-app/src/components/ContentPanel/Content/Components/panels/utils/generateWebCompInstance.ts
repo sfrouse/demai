@@ -30,7 +30,7 @@ export default function generateWebCompInstance(
   const tag = schema["x-cdef"].tag;
   const properties = schema.properties;
 
-  const filterOutProps = ["disabled"]; // Add keys to ignore here
+  const filterOutProps: string[] = []; //["disabled"]; // Add keys to ignore here
 
   const attributes = Object.entries(properties)
     .filter(
@@ -43,14 +43,13 @@ export default function generateWebCompInstance(
       let attrValue: string = "";
 
       if (value.type === "string") {
-        if (key.includes("image")) {
-          attrValue = "https://picsum.photos/600/400";
-        } else {
-          attrValue =
-            value["x-cdef"]?.input?.defaultValue ||
-            Object.values(value["x-cdef"]?.input?.options ?? {})[0] ||
-            `Example ${value.title}`;
-        }
+        attrValue =
+          value["x-cdef"]?.input?.defaultValue ||
+          Object.values(value["x-cdef"]?.input?.options ?? {})[0];
+      } else if (value.type === "boolean") {
+        attrValue = value["x-cdef"]?.input?.defaultValue
+          ? value["x-cdef"]?.input?.defaultValue.toString()
+          : "false";
       } else if (Array.isArray(value.enum) && value.enum.length > 0) {
         attrValue = value["x-cdef"]?.input?.defaultValue || value.enum[0];
       }
@@ -59,10 +58,13 @@ export default function generateWebCompInstance(
         attrValue = params[key];
       }
 
+      if (value.type === "boolean") {
+        return attrValue === "true" ? `${attrName}` : null;
+      }
       return `${attrName}="${attrValue}"`;
     })
+    .filter(Boolean)
     .join("\n    ");
-
   if (toString) {
     return `&lt;${tag}\n    ${attributes}\n&gt;&lt;/${tag}&gt;`;
   }

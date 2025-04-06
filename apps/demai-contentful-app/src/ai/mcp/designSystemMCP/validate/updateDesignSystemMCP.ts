@@ -11,6 +11,16 @@ import {
 } from "./ctypes/demaiComponentCType";
 import ensureDemAITokensSingletonEntry from "../functions/utils/demaiTokensSingleton/ensureDemAITokensSingletonEntry";
 import { updateContenType } from "../../ContentfulValidations";
+import {
+  DEMAI_CONTROLLER_CTYPE_ID,
+  DEMAI_CONTROLLER_DISPLAY_FIELD,
+  DEMAI_CONTROLLER_EXPECTED_FIELDS,
+} from "./ctypes/demaiControllerCType";
+import {
+  DEMAI_BINDING_CTYPE_ID,
+  DEMAI_BINDING_DISPLAY_FIELD,
+  DEMAI_BINDING_EXPECTED_FIELDS,
+} from "./ctypes/demaiBindingsCType";
 
 export default async function updateDesignSystemMCP(
   cmaToken: string,
@@ -35,6 +45,23 @@ export default async function updateDesignSystemMCP(
     DEMAI_COMPONENT_CTYPE_ID,
     DEMAI_COMPONENT_EXPECTED_FIELDS,
     DEMAI_COMPONENT_DISPLAY_FIELD,
+    environment,
+    errors
+  );
+
+  // BEFORE CONTROLLER
+  await updateContenType(
+    DEMAI_BINDING_CTYPE_ID,
+    DEMAI_BINDING_EXPECTED_FIELDS,
+    DEMAI_BINDING_DISPLAY_FIELD,
+    environment,
+    errors
+  );
+
+  await updateContenType(
+    DEMAI_CONTROLLER_CTYPE_ID,
+    DEMAI_CONTROLLER_EXPECTED_FIELDS,
+    DEMAI_CONTROLLER_DISPLAY_FIELD,
     environment,
     errors
   );

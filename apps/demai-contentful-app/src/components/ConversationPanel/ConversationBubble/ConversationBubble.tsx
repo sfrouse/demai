@@ -12,6 +12,7 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
   if (!aiState) return null;
   const [showSystem, setShowSystem] = useState<boolean>(false);
   const [systemHtml, setSystemHtml] = useState<string>("");
+  const [userContentHTML, setUserContentHTML] = useState<string>("");
   const [requestHtml, setRequestHTML] = useState<string>("");
   const [responseHtml, setResponseHTML] = useState<string>("");
   const [toolsHtml, setToolsHTML] = useState<string>("");
@@ -37,6 +38,13 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
       setToolsHTML(toolNames || "");
     })();
   }, [aiState.promptEngine, showSystem]);
+
+  useEffect(() => {
+    (async () => {
+      const newHTML = convertMarkdown(`${aiState.userContent}`);
+      setUserContentHTML(newHTML);
+    })();
+  }, [aiState.userContent]);
 
   useEffect(() => {
     (async () => {
@@ -102,6 +110,14 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
       }}
     >
       <Divider style={{ margin: 0 }} />
+      <div
+        style={{
+          padding: `0 ${tokens.spacingL}`,
+        }}
+      >
+        <ConversationTitle title="User Prompt" />
+        <span dangerouslySetInnerHTML={{ __html: aiState.userContent }}></span>
+      </div>
       <div
         style={{
           padding: `0 ${tokens.spacingL}`,

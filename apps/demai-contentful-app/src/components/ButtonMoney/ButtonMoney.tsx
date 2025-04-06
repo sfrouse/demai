@@ -24,6 +24,7 @@ const ButtonRainbow: React.FC<{ label?: string; onClick?: () => void }> = ({
         padding: `${tokens.spacingXs} ${tokens.spacingM}`,
         borderRadius: tokens.borderRadiusMedium,
         border: `1px solid ${tokens.gray300}`,
+        fontWeight: tokens.fontWeightMedium,
       }}
       onClick={onClick}
     >

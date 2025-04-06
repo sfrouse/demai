@@ -2,7 +2,7 @@ import { NavList } from "@contentful/f36-navlist";
 import React from "react";
 import Divider from "./Divider";
 import tokens from "@contentful/f36-tokens";
-import { Flex, Heading, SectionHeading } from "@contentful/f36-components";
+import { Flex, SectionHeading } from "@contentful/f36-components";
 import { useContentStateSession } from "../contexts/ContentStateContext/ContentStateContext";
 import ContentPanelHeader from "./ContentPanel/ContentPanelHeader";
 import useAIState from "../contexts/AIStateContext/useAIState";

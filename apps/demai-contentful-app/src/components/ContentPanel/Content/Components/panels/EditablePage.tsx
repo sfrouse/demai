@@ -1,54 +1,57 @@
-import tokens from "@contentful/f36-tokens";
-
-import Editor from "@monaco-editor/react";
+import Editor, { OnMount } from "@monaco-editor/react";
+import * as monacoEditor from "monaco-editor";
+import { useEffect, useRef } from "react";
 
 interface EditablePageProps {
   value: any;
   language: string;
   onChange: (value: any) => void;
+  onSave?: () => void;
 }
 
 const EditablePage: React.FC<EditablePageProps> = ({
   value,
   language,
   onChange,
+  onSave,
 }) => {
-  const handleChange = (e: { target: { value: any } }) => {
-    try {
-      //   const parsed = JSON.parse(e.target.value);
-      onChange(e.target.value);
-    } catch {
-      // Ignore errors to prevent breaking input while typing
-    }
+  const onSaveRef = useRef<() => void>();
+
+  // Keep ref updated
+  useEffect(() => {
+    onSaveRef.current = onSave;
+  }, [onSave]);
+
+  useEffect(() => {
+    const preventDefaultSave = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("keydown", preventDefaultSave);
+    return () => window.removeEventListener("keydown", preventDefaultSave);
+  }, []);
+
+  const handleEditorWillMount = (monaco: typeof monacoEditor) => {
+    // Optional: configure monaco here
+  };
+
+  const handleEditorDidMount: OnMount = (
+    editor: monacoEditor.editor.IStandaloneCodeEditor,
+    monaco: typeof monacoEditor
+  ) => {
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+      onSaveRef.current?.(); // ✅ Always the latest
+    });
   };
 
   return (
-    // <textarea
-    //   value={value}
-    //   onChange={handleChange}
-    //   style={{
-    //     width: "100%",
-    //     height: "100%",
-    //     whiteSpace: "pre",
-    //     fontFamily: "monospace",
-    //     border: "1px solid #ccc",
-    //     padding: "10px",
-    //     background: tokens.gray900,
-    //     color: tokens.colorWhite,
-    //     resize: "vertical",
-    //     outline: "none",
-    //     caretColor: tokens.blue400,
-    //     cursor: "text",
-    //   }}
-    //   spellCheck={false}
-    //   autoCorrect="off"
-    //   autoCapitalize="off"
-    //   autoComplete="off"
-    // />
     <Editor
       defaultLanguage={language}
       value={value}
       onChange={(value) => onChange(value || "")}
+      onMount={handleEditorDidMount}
+      beforeMount={handleEditorWillMount}
       theme="vs-dark"
       options={{
         fontSize: 12,

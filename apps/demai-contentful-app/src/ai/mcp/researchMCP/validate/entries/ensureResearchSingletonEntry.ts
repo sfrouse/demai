@@ -5,6 +5,7 @@ import {
   DEMAI_RESEARCH_CTYPE_ID,
   DEMAI_RESEARCH_SINGLETON_ENTRY_ID,
 } from "../ctypes/demaiResearchCType";
+import { DESIGN_SYSTEM_PREFIX } from "../../../../../constants";
 
 export default async function ensureResearchSingletonEntry(
   cmaToken: string,
@@ -42,7 +43,11 @@ export default async function ensureResearchSingletonEntry(
     }
 
     // Create the singleton entry with a fixed ID with default tokens...
-    const tokenCode = await transformTokens(tokens, "dmai", "../");
+    const tokenCode = await transformTokens(
+      tokens,
+      DESIGN_SYSTEM_PREFIX,
+      "../"
+    );
     let jsonTokens = {};
     try {
       jsonTokens = JSON.parse(

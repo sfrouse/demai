@@ -21,6 +21,7 @@ export interface ContentState {
   css?: string;
   ai?: string;
   components?: Entry[];
+  component?: Entry;
   entries?: Entry[];
   research?: {
     fields: ContentStateResearch;
@@ -68,6 +69,7 @@ const ContentStateContext = createContext<
       spaceStatus: IMCPClientValidation | undefined;
       validateSpace: () => Promise<void>;
       setContentType: (ctypeId: string | undefined) => Promise<void>;
+      setComponent: (compId: string | undefined) => Promise<void>;
       cpa: string;
       setCPA: (val: string) => void;
     }
@@ -178,6 +180,26 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const setComponent = async (compId: string | undefined) => {
+    if (!compId) {
+      dispatch({
+        type: "SET_PROPERTY",
+        key: "component",
+        payload: undefined,
+      });
+    }
+    let components = contentState.components;
+    if (!components) {
+      components = await loadProperty("components");
+    }
+    const component = components?.find((comp) => comp.sys.id === compId);
+    dispatch({
+      type: "SET_PROPERTY",
+      key: "component",
+      payload: component,
+    });
+  };
+
   // Separate function to validate space model
   const validateSpace = async () => {
     try {
@@ -220,6 +242,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         spaceStatus,
         validateSpace,
         setContentType,
+        setComponent,
         cpa,
         setCPA,
       }}
