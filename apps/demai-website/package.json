@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm run build:updatedsys && next dev",
+    "dev": "npm run build:updatedsys && next dev -p 4000",
     "build": "npm run build:updatedsys && npm run build:cdefs && npm run build:next",
     "build:next": "next build",
     "build:updatedsys": "node ./scripts/updateDesignSystem.mjs",

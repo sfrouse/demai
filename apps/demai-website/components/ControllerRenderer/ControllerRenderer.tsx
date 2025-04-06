@@ -5,22 +5,36 @@ export default function ControllerRenderer({
 }: {
   controller: any;
 }) {
+  const isObject = (value: any): boolean => {
+    return value !== null && typeof value === "object" && !Array.isArray(value);
+  };
+  const camelToKebab = (str: string): string => {
+    return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+  };
+
   const view = controller?.fields?.["view"];
   if (!view) return null;
   const tagName = view.sys.contentType.sys.id;
   const attrs = { ...view.fields };
   const bindings = controller.fields.bindings;
   const children = controller.fields.children;
-
+  console.log("attrs", attrs, controller);
   if (bindings) {
     bindings.map((binding: any) => {
       const model = binding.fields.model;
       const bindings = binding.fields.bindings;
       if (model && bindings) {
         bindings.map((bindingInfo: any) => {
-          const modelValue = model.fields[bindingInfo.model];
-          if (modelValue) {
-            attrs[bindingInfo.view] = modelValue;
+          if (isObject(bindingInfo.model)) {
+            const modelValue = model.fields[bindingInfo.model.property];
+            if (modelValue) {
+              attrs[bindingInfo.view.property] = modelValue;
+            }
+          } else {
+            const modelValue = model.fields[bindingInfo.model];
+            if (modelValue) {
+              attrs[bindingInfo.view] = modelValue;
+            }
           }
         });
       }
@@ -34,5 +48,8 @@ export default function ControllerRenderer({
     ));
   }
 
-  return createElement(tagName, attrs, childrenArray);
+  const finalAttrs = Object.fromEntries(
+    Object.entries(attrs).map(([key, value]) => [camelToKebab(key), value])
+  );
+  return createElement(tagName, finalAttrs, childrenArray);
 }

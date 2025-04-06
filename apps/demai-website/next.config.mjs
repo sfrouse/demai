@@ -5,6 +5,7 @@
 const nextConfig = {
   // reactStrictMode: true,
   // swcMinify: true,
+  port: "4321",
   images: {
     remotePatterns: [
       {
