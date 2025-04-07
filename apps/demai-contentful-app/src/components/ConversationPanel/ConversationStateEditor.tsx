@@ -12,7 +12,6 @@ import * as icons from "@contentful/f36-icons";
 import {
   AIPromptEngineID,
   AIStateContentPrefix,
-  AIStateStatus,
 } from "../../ai/AIState/AIStateTypes";
 import AIState from "../../ai/AIState/AIState";
 import {

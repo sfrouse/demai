@@ -4,14 +4,13 @@ import { PageAppSDK } from "@contentful/app-sdk";
 import { AppInstallationParameters } from "../../../locations/config/ConfigScreen";
 import ContentPanelHeader from "../ContentPanelHeader";
 import tokens from "@contentful/f36-tokens";
-import revertDemAITokensSingletonEntry from "../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/revertDemAITokensSingletonEntry";
 import { useContentStateSession } from "../../../contexts/ContentStateContext/ContentStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import useAIState from "../../../contexts/AIStateContext/useAIState";
 import updateDesignSystemMCP from "../../../ai/mcp/designSystemMCP/validate/updateDesignSystemMCP";
 import { IMCPClientValidation } from "../../../ai/mcp/MCPClient";
 import updateResearchMCP from "../../../ai/mcp/researchMCP/validate/updateResearchMCP";
-import LoadingPage from "../../Loading/LoadingPage";
+import LoadingIcon from "../../Loading/LoadingIcon";
 
 function generateErrorMessage(
   validationResult: IMCPClientValidation
@@ -36,7 +35,7 @@ function generateErrorMessage(
 const SpaceContent = () => {
   const sdk = useSDK<PageAppSDK>();
   const { validateSpace, spaceStatus } = useContentStateSession();
-  const { invalidated, setInvalidated } = useAIState();
+  const { invalidated } = useAIState();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<(string | null)[]>([]);
 
@@ -75,10 +74,12 @@ const SpaceContent = () => {
             onClick={async () => {
               await localValidateSpace();
             }}
+            isDisabled={isLoading}
           >
             Validate Content Model
           </Button>
           <Button
+            isDisabled={isLoading}
             onClick={async () => {
               setIsLoading(true);
               setErrors([]);
@@ -101,9 +102,9 @@ const SpaceContent = () => {
               }
             }}
           >
-            Create Content Model
+            Install DemAI
           </Button>
-          <Button
+          {/* <Button
             onClick={async () => {
               const userInput = await sdk.dialogs.openConfirm({
                 title: "Confirm Revert",
@@ -124,7 +125,7 @@ const SpaceContent = () => {
             }}
           >
             Revert Tokens
-          </Button>
+          </Button> */}
           {errors.map((error) => (
             <Text fontColor="red500" key={error}>
               {error}
@@ -133,8 +134,7 @@ const SpaceContent = () => {
           {!isLoading && errors.length === 0 ? (
             <Text fontColor="blue500">Space is valid</Text>
           ) : null}
-
-          {isLoading ? <LoadingPage /> : null}
+          {isLoading ? <LoadingIcon /> : null}
         </Flex>
       </Flex>
     </>

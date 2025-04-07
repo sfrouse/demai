@@ -167,9 +167,9 @@ export class AIPromptEngine {
     // There are no tools in web search...
     if (this.toolType === "WebSearch") {
       return {
-        success: false,
-        errors: ["Web search engine has no tool features."],
-
+        success: true,
+        result: "Ran web search",
+        // errors: ["Web search engine has no tool features."],
         toolCalls: [],
         toolResults: [],
       };
@@ -295,5 +295,3 @@ export class AIPromptEngine {
     return tools;
   }
 }
-
-// function processExeResults() {}

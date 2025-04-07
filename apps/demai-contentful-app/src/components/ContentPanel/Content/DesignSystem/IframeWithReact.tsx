@@ -11,6 +11,7 @@ const IframeWithReact = ({ children }: { children: React.ReactNode }) => {
       setIframeDoc(iframe.contentDocument);
     }
   }, []);
+
   useEffect(() => {
     if (!iframeDoc) return;
 
@@ -20,6 +21,40 @@ const IframeWithReact = ({ children }: { children: React.ReactNode }) => {
       .forEach((styleNode) => {
         iframeDoc.head.appendChild(styleNode.cloneNode(true));
       });
+
+    // Add your own custom <style> tag
+    const customStyle = iframeDoc.createElement("style");
+    customStyle.textContent = `
+html, body {
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 100, 100, 0.4) transparent;
+}
+
+/* WebKit Browsers (Chrome, Safari, Edge) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+    background: rgba(100, 100, 100, 0.4);
+    border-radius: 3px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 100, 100, 0.6);
+}
+  `;
+    iframeDoc.head.appendChild(customStyle);
   }, [iframeDoc]);
 
   return (

@@ -87,6 +87,7 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
           // true
         );
         // newAIStackManager.addAndActivateAIState(newAIState);
+        newAIStackManager.reset();
         setAIState(newAIState);
         newAIState.refreshState();
       } else {

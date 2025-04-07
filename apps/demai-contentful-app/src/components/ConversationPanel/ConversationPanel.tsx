@@ -1,5 +1,5 @@
 import tokens from "@contentful/f36-tokens";
-import { Flex, Tabs } from "@contentful/f36-components";
+import { Button, Flex, Tabs } from "@contentful/f36-components";
 import Divider from "../Divider";
 import { useEffect, useRef, useState } from "react";
 import ConversationConfirm from "./ConversationConfirm";
@@ -12,6 +12,7 @@ import classNames from "../utils/classNames";
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import ConversationBubble from "./ConversationBubble/ConversationBubble";
 import ConversationToolbar from "./ConversationBubble/ConversationToolbar";
+import * as icons from "@contentful/f36-icons";
 
 const ConversationPanel = () => {
   const { contentState, spaceStatus, loadingState } = useContentStateSession();
@@ -24,6 +25,7 @@ const ConversationPanel = () => {
     findAndSetAISessionManager,
     aiSessionManager,
   } = useAIState();
+  const [showWorkBench, setShowWorkBench] = useState<boolean>(false);
   const chatLastBubbleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -75,82 +77,96 @@ const ConversationPanel = () => {
           }}
         ></div>
       ) : null}
-      <div
-        className={classNames(scrollBarStyles["scrollbar-minimal"])}
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflowY: "scroll",
-          backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
-        }}
-      >
-        {aiSession.map((aiState: AIState) => {
-          return <ConversationBubble key={aiState.key} aiState={aiState} />;
-        })}
-        <div ref={chatLastBubbleRef}></div>
-      </div>
-      {aiState && aiSession.length > 0 && (
-        <ConversationToolbar aiState={aiSession[0]} />
-      )}
-      <Divider style={{ marginTop: 0, marginBottom: 0 }} />
-      {useNav ? (
-        <Flex flexDirection="column" justifyContent="flex-end">
-          <Tabs
-            currentTab={`${route?.aiStateEngineFocus}`}
+      {!showWorkBench ? (
+        <div>
+          <Button
+            startIcon={<icons.DiamondIcon />}
+            variant="transparent"
+            onClick={() => setShowWorkBench((prev) => !prev)}
+          >
+            Workbench
+          </Button>
+        </div>
+      ) : (
+        <>
+          <div
+            className={classNames(scrollBarStyles["scrollbar-minimal"])}
             style={{
-              marginLeft: tokens.spacingS,
-            }}
-            onTabChange={(tab: string) => {
-              const index = parseInt(tab);
-              setRoute({
-                ...route,
-                aiStateEngineFocus: index,
-              });
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              overflowY: "scroll",
+              backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
             }}
           >
-            <Tabs.List>
-              {route?.aiStateEngines.map((engine, index) => (
-                <Tabs.Tab panelId={`${index}`} key={`${index}`}>
-                  {engineIDToSentence(engine)}
-                </Tabs.Tab>
-              ))}
-            </Tabs.List>
-          </Tabs>
-          <Divider style={{ marginBottom: 0, marginTop: 0 }} />
-        </Flex>
-      ) : null}
-      <div style={{ position: "relative" }}>
-        {aiState && aiStateStatus ? (
-          <>
-            <ConversationConfirm
-              style={{
-                position: "absolute",
-                top: 0,
-                bottom: 0,
-                right: 0,
-                left: 0,
-                zIndex: 1000,
-              }}
-              onCancel={() => {
-                console.log("CAN", aiSessionManager);
-                aiSessionManager?.reset();
+            {aiSession.map((aiState: AIState) => {
+              return <ConversationBubble key={aiState.key} aiState={aiState} />;
+            })}
+            <div ref={chatLastBubbleRef}></div>
+          </div>
+          {aiState && aiSession.length > 0 && (
+            <ConversationToolbar aiState={aiSession[0]} />
+          )}
+          <Divider style={{ marginTop: 0, marginBottom: 0 }} />
+          {useNav ? (
+            <Flex flexDirection="column" justifyContent="flex-end">
+              <Tabs
+                currentTab={`${route?.aiStateEngineFocus}`}
+                style={{
+                  marginLeft: tokens.spacingS,
+                }}
+                onTabChange={(tab: string) => {
+                  const index = parseInt(tab);
+                  setRoute({
+                    ...route,
+                    aiStateEngineFocus: index,
+                  });
+                }}
+              >
+                <Tabs.List>
+                  {route?.aiStateEngines.map((engine, index) => (
+                    <Tabs.Tab panelId={`${index}`} key={`${index}`}>
+                      {engineIDToSentence(engine)}
+                    </Tabs.Tab>
+                  ))}
+                </Tabs.List>
+              </Tabs>
+              <Divider style={{ marginBottom: 0, marginTop: 0 }} />
+            </Flex>
+          ) : null}
+          <div style={{ position: "relative" }}>
+            {aiState && aiStateStatus ? (
+              <>
+                <ConversationConfirm
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    zIndex: 1000,
+                  }}
+                  onCancel={() => {
+                    console.log("CAN", aiSessionManager);
+                    aiSessionManager?.reset();
 
-                aiState?.updateStatus({
-                  phase: AIStatePhase.answered,
-                  userContent: aiState.userContent,
-                });
-              }}
-              onConfirm={async () => {
-                await aiState?.run(contentState);
-              }}
-              prompts={aiState?.promptEngine.prompts}
-              visible={aiStateStatus?.phase === AIStatePhase.describing}
-            />
-            <ConversationStateEditor />
-          </>
-        ) : null}
-      </div>
+                    aiState?.updateStatus({
+                      phase: AIStatePhase.answered,
+                      userContent: aiState.userContent,
+                    });
+                  }}
+                  onConfirm={async () => {
+                    await aiState?.run(contentState);
+                  }}
+                  prompts={aiState?.promptEngine.prompts}
+                  visible={aiStateStatus?.phase === AIStatePhase.describing}
+                />
+                <ConversationStateEditor />
+              </>
+            ) : null}
+          </div>
+        </>
+      )}
     </Flex>
   );
 };

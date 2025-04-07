@@ -73,7 +73,7 @@ If you are asked to summarize anything, keep it to a paragraph or two at most.
         aiState.contextContentSelections[SOURCE_ID] === SOURCE_PROSPECT;
 
       const extra = useProspect
-        ? `The prospect is \`${prospect}\` -- \` ${mainWebsite}\` -- ${seDescription}.`
+        ? `The prospect is \`${prospect}\` -- \` ${mainWebsite}\` -- ${seDescription}. Don't pull anymore than a couple paragraphs.`
         : "";
 
       const userContent = aiState.userContent;
