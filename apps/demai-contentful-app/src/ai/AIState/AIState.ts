@@ -42,18 +42,25 @@ export default class AIState {
   suggestionRunTime: number | undefined;
   executeRunTime: number | undefined;
 
-  // USER CONTENT
-  userContent: string = "";
-  contextContentSelections: { [key: string]: string } = {};
-  // ignoreContextContent: boolean = false; // toggles context content
-
   // ENGINE
   promptEngineId: AIPromptEngineID = AIPromptEngineID.OPEN;
   promptEngine: AIPromptEngine;
 
-  // STATE
+  // STATE (Handed off to State Editor...)
   isRunning: boolean = false;
   phase: AIStatePhase = AIStatePhase.prompting;
+  errors: string[] = [];
+  userContent: string = "";
+  contextContentSelections: { [key: string]: string } = {};
+
+  // TODO: migrated status into a local object that triggers change events.
+  // status: AIStateStatus = {
+  //   userContent: "",
+  //   contextContentSelections: {},
+  //   phase: AIStatePhase.prompting,
+  //   isRunning: false,
+  //   errors: [],
+  // };
 
   // ==== CONSTRUCTOR ====
   constructor(
@@ -147,7 +154,8 @@ export default class AIState {
     } else {
       // Throw it to another bubble...
       const userState = this.clone();
-      this.aiSessionManager.deref()!.addAndActivateAIState(userState);
+      // this.aiSessionManager.deref()!.addAndActivateAIState(userState);
+      this.aiSessionManager.deref()!.resetAndActivateAIState(userState);
       await userState.runAnswerOrDescribe(
         contentState,
         autoExecute,
@@ -177,15 +185,26 @@ export default class AIState {
     this.updateStatus();
 
     // RUN
-    const description = await this.promptEngine.run(this);
+    const runResults = await this.promptEngine.run(this);
 
     // FINISH
     this.isRunning = false;
-    this.response = this.promptEngine.responseContent(
-      `${description}`,
-      this,
-      contentState
-    );
+    if (runResults.success === true) {
+      this.response = this.promptEngine.responseContent(
+        `${runResults.result}`,
+        this,
+        contentState
+      );
+      this.errors = [];
+    } else {
+      this.response = this.promptEngine.responseContent(
+        `Error.`,
+        this,
+        contentState
+      );
+      this.errors = runResults.errors;
+    }
+
     this.updateStatus();
     this.suggestionRunTime = Date.now() - startRunTime;
 
@@ -209,20 +228,21 @@ export default class AIState {
 
     // FINISH
     this.executeRunTime = Date.now() - this.startRunTime;
-    const toolSummary = executionResults.toolResults
-      ?.map((result) => {
-        return result?.content
-          ?.map((subContent: any) => {
-            if (subContent.text) {
-              return subContent.text;
-            }
-          })
-          .join("\n\n");
-      })
-      .join("\n\n");
-    this.executionResponse = `Executed. ${
-      executionResults?.toolCalls && executionResults.toolCalls.length > 0
-        ? `Used tools: ${executionResults.toolCalls.join(", ")}.
+    if (executionResults.success === true) {
+      const toolSummary = executionResults.toolResults
+        ?.map((result) => {
+          return result?.content
+            ?.map((subContent: any) => {
+              if (subContent.text) {
+                return subContent.text;
+              }
+            })
+            .join("\n\n");
+        })
+        .join("\n\n");
+      this.executionResponse = `Executed. ${
+        executionResults?.toolCalls && executionResults.toolCalls.length > 0
+          ? `Used tools: ${executionResults.toolCalls.join(", ")}.
         
 ${
   toolSummary &&
@@ -232,8 +252,12 @@ ${toolSummary}
 \`\`\`
 `
 }`
-        : "no tools used"
-    }`;
+          : "no tools used"
+      }`;
+      this.errors = [];
+    } else {
+      this.errors = executionResults.errors;
+    }
     this.phase = AIStatePhase.executed;
     this.isRunning = false;
     this.userContent = ""; // we are done...move on.
@@ -289,10 +313,7 @@ ${toolSummary}
       contextContentSelections: this.contextContentSelections,
       userContent: this.userContent,
       phase: this.phase,
-      // ignoreContextContent: this.ignoreContextContent,
-      placeholder: this.promptEngine.placeholder,
-      prompts: this.promptEngine.prompts,
-      // runTime: this.runTime,
+      errors: this.errors,
     });
   }
 }

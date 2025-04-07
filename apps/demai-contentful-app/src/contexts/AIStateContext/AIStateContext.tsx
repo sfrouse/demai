@@ -86,7 +86,9 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
           () => setInvalidated((prev) => prev + 1)
           // true
         );
-        newAIStackManager.addAndActivateAIState(newAIState);
+        // newAIStackManager.addAndActivateAIState(newAIState);
+        setAIState(newAIState);
+        newAIState.refreshState();
       } else {
         // if (newFocusedAIState) {
         newAIStackManager.refreshState();

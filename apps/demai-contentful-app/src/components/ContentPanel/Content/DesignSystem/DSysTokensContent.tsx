@@ -110,20 +110,32 @@ const DSysTokensContent = () => {
             <Flex
               flexDirection="column"
               gap={tokens.spacingL}
+              alignItems="center"
               style={{ padding: `${tokens.spacingM} ${tokens.spacingL}` }}
             >
-              <Flex flexDirection="column">
-                <ContentSectionHeader title="Color" />
-                <ColorTokensContent dsysTokens={contentState.tokens} />
+              <Flex
+                flexDirection="column"
+                style={{ maxWidth: 800, width: "100%" }}
+              >
+                <Flex
+                  flexDirection="column"
+                  style={{ marginBottom: tokens.spacingL }}
+                >
+                  <ContentSectionHeader title="Color" />
+                  <ColorTokensContent dsysTokens={contentState.tokens} />
+                </Flex>
+                <Flex
+                  flexDirection="column"
+                  style={{ marginBottom: tokens.spacingL }}
+                >
+                  <ContentSectionHeader title="Typography" />
+                  <TypographyTokensContent dsysTokens={contentState.tokens} />
+                </Flex>
+                <ContentSectionHeader title="Spacing (Padding, Margin, Gap)" />
+                <ContentSectionHeader title="Page Widths" />
+                <ContentSectionHeader title="Border Radius" />
+                <ContentSectionHeader title="Icons" />
               </Flex>
-              <Flex flexDirection="column">
-                <ContentSectionHeader title="Typography" />
-                <TypographyTokensContent dsysTokens={contentState.tokens} />
-              </Flex>
-              <ContentSectionHeader title="Spacing (Padding, Margin, Gap)" />
-              <ContentSectionHeader title="Page Widths" />
-              <ContentSectionHeader title="Border Radius" />
-              <ContentSectionHeader title="Icons" />
             </Flex>
           </IframeWithReact>
         )}

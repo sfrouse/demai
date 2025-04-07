@@ -2,7 +2,7 @@ import { ContentState } from "../../../../../contexts/ContentStateContext/Conten
 import { AIModels } from "../../../../openAI/openAIConfig";
 import AIState from "../../../AIState";
 import { AIPromptEngineID } from "../../../AIStateTypes";
-import { AIPromptEngine } from "../../AIPromptEngine";
+import { AIPromptEngine, PromptExecuteResults } from "../../AIPromptEngine";
 
 const ACTION_ID = "action";
 const ACTION_HEX_COLORS = "Three Brand Hex Colors";
@@ -66,13 +66,14 @@ If you are asked to summarize anything, keep it to a paragraph or two at most.
     // CONTENT
     this.content = (aiState: AIState, contentState: ContentState) => {
       const prospect = contentState.research?.fields.prospect;
+      const mainWebsite = contentState.research?.fields.mainWebsite;
       const seDescription =
         contentState.research?.fields.solutionEngineerDescription;
       const useProspect =
         aiState.contextContentSelections[SOURCE_ID] === SOURCE_PROSPECT;
 
       const extra = useProspect
-        ? `The prospect is ${prospect} -- ${seDescription}.`
+        ? `The prospect is \`${prospect}\` -- \` ${mainWebsite}\` -- ${seDescription}.`
         : "";
 
       const userContent = aiState.userContent;
@@ -92,10 +93,7 @@ If you are asked to summarize anything, keep it to a paragraph or two at most.
   async saveColors(
     aiState: AIState,
     chain: boolean = true,
-    results: {
-      toolCalls: string[];
-      toolResults: any[];
-    }
+    results: PromptExecuteResults
   ) {
     if (
       aiState.contextContentSelections[ACTION_ID] === ACTION_HEX_COLORS &&
@@ -116,6 +114,7 @@ ${aiState.response}
 `;
       const otherResults = await otherEngine.runExe(aiStateClone, false);
 
+      if (otherResults.success === false) results.success = false;
       results.toolCalls = [...results.toolCalls, ...otherResults.toolCalls];
       results.toolResults = [
         ...results.toolResults,
@@ -127,10 +126,7 @@ ${aiState.response}
   async saveToneOrStyle(
     aiState: AIState,
     chain: boolean = true,
-    results: {
-      toolCalls: string[];
-      toolResults: any[];
-    }
+    results: PromptExecuteResults
   ) {
     if (
       aiState.contextContentSelections[ACTION_ID] !== ACTION_HEX_COLORS &&
@@ -150,6 +146,7 @@ ${aiState.response}
 `;
       const otherResults = await otherEngine.runExe(aiStateClone, false);
 
+      if (otherResults.success === false) results.success = false;
       results.toolCalls = [...results.toolCalls, ...otherResults.toolCalls];
       results.toolResults = [
         ...results.toolResults,

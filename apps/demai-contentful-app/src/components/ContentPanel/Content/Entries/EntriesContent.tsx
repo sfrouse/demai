@@ -63,7 +63,7 @@ const EntriesContent = () => {
           >
             <Flex
               style={{
-                padding: `${tokens.spacingM} ${tokens.spacingL} ${tokens.spacingM} ${tokens.spacingL}`,
+                padding: `${tokens.spacingM} ${tokens.spacingL}`,
               }}
               flexDirection="row"
               alignItems="baseline"
@@ -93,10 +93,12 @@ const EntriesContent = () => {
             <Divider style={{ margin: 0 }} />
             <Flex
               flexDirection="column"
+              alignItems="center"
               style={{
                 overflowY: "auto",
                 flex: 1,
-                padding: `0 ${tokens.spacingL} 0 ${tokens.spacingL}`,
+                position: "relative",
+                padding: `${tokens.spacingM} ${tokens.spacingL} 0 ${tokens.spacingL}`,
               }}
             >
               {filteredEntries?.length === 0 && (
@@ -116,26 +118,33 @@ const EntriesContent = () => {
                   no entries found
                 </div>
               )}
-              {filteredEntries?.map((entry) => {
-                const contentType = contentState.contentTypes?.find(
-                  (ctype) => ctype.sys.id === entry.sys.contentType.sys.id
-                );
-                let title = entry.sys.id;
-                if (contentType?.displayField) {
-                  title = entry.fields[contentType.displayField] || title;
-                }
-                return (
-                  <DmaiContentRow
-                    key={`ctype-${entry.sys.id}`}
-                    editOnClick={() => {
-                      sdk.navigator.openEntry(entry.sys.id, { slideIn: true });
-                    }}
-                    title={title}
-                    id={`${contentType?.name} - ${entry.sys.id}`}
-                    status={getEntryStatus(entry)}
-                  />
-                );
-              })}
+              <Flex
+                flexDirection="column"
+                style={{ maxWidth: 800, width: "100%" }}
+              >
+                {filteredEntries?.map((entry) => {
+                  const contentType = contentState.contentTypes?.find(
+                    (ctype) => ctype.sys.id === entry.sys.contentType.sys.id
+                  );
+                  let title = entry.sys.id;
+                  if (contentType?.displayField) {
+                    title = entry.fields[contentType.displayField] || title;
+                  }
+                  return (
+                    <DmaiContentRow
+                      key={`ctype-${entry.sys.id}`}
+                      editOnClick={() => {
+                        sdk.navigator.openEntry(entry.sys.id, {
+                          slideIn: true,
+                        });
+                      }}
+                      title={title}
+                      id={`${contentType?.name} - ${entry.sys.id}`}
+                      status={getEntryStatus(entry)}
+                    />
+                  );
+                })}
+              </Flex>
             </Flex>
           </Flex>
         )}

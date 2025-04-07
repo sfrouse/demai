@@ -1,13 +1,13 @@
 import tokens from "@contentful/f36-tokens";
 import { Flex } from "@contentful/f36-components";
-import ContentTypesContent from "./Content/ContentModel/ContentTypesContent";
+import ContentTypesContent from "./Content/ContentTypes/ContentTypesContent";
 import SpaceContent from "./Content/SpaceContent";
 import ComponentsContent from "./Content/Components/ComponentsContent";
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import EntriesContent from "./Content/Entries/EntriesContent";
 import DSysTokensContent from "./Content/DesignSystem/DSysTokensContent";
 import ResearchContent from "./Content/Research/ResearchContent";
-import ContentTypeDetailContent from "./Content/ContentModel/ContentTypeDetailContent";
+import ContentTypeDetailContent from "./Content/ContentTypes/ContentTypeDetailContent";
 import ProspectContent from "./Content/Research/ProspectContent";
 
 const ContentPanel = () => {

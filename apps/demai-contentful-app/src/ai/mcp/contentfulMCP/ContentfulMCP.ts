@@ -4,6 +4,10 @@ import { createTransport } from "@smithery/sdk/transport.js";
 import { MCPClient } from "../MCPClient";
 import publishContentType from "./tools/publishContentType";
 import createEntry from "./tools/createEntry";
+import createContentType from "./tools/createContentType";
+import { CREATE_CONTENT_TYPE } from "./tools/createContentType/createContentType.tool";
+import { PUBLISH_CONTENT_TYPE } from "./tools/publishContentType/publishContentType.tool";
+import { CREATE_ENTRY } from "./tools/createEntry/createEntry.tool";
 
 export class ContentfulMCP extends MCPClient {
   async connect() {
@@ -31,11 +35,19 @@ export class ContentfulMCP extends MCPClient {
     const results = await client.listTools();
     const tools = results.tools.map((tool: any) => {
       let finalTool = tool;
-      if (tool.name === "publish_content_type") {
-        finalTool = publishContentType.tool;
-      }
-      if (tool.name === "create_entry") {
-        finalTool = createEntry.tool;
+      switch (tool.name) {
+        case PUBLISH_CONTENT_TYPE: {
+          finalTool = publishContentType.tool;
+          break;
+        }
+        case CREATE_ENTRY: {
+          finalTool = createEntry.tool;
+          break;
+        }
+        case CREATE_CONTENT_TYPE: {
+          finalTool = createContentType.tool;
+          break;
+        }
       }
       return {
         type: "function" as const,
@@ -55,25 +67,33 @@ export class ContentfulMCP extends MCPClient {
 
   async callFunction(toolName: string, params: any): Promise<any> {
     console.log(`callFunction[${toolName}]`, params);
-    if (toolName === "publish_content_type") {
-      return publishContentType.function(
-        this.cma,
-        this.spaceId,
-        this.environmentId,
-        params
-      );
+    switch (toolName) {
+      case CREATE_ENTRY: {
+        return createEntry.function(
+          this.cma,
+          this.spaceId,
+          this.environmentId,
+          params
+        );
+      }
+      case PUBLISH_CONTENT_TYPE: {
+        return publishContentType.function(
+          this.cma,
+          this.spaceId,
+          this.environmentId,
+          params
+        );
+      }
+      case CREATE_CONTENT_TYPE: {
+        return createContentType.function(
+          this.cma,
+          this.spaceId,
+          this.environmentId,
+          params
+        );
+      }
     }
-    if (toolName === "create_entry") {
-      return createEntry.function(
-        this.cma,
-        this.spaceId,
-        this.environmentId,
-        params
-      );
-    }
-    // if (toolName === "create_entry") {
-    //   return;
-    // }
+
     const client = await this.connect();
     return await client.callTool({ name: toolName, arguments: params });
   }

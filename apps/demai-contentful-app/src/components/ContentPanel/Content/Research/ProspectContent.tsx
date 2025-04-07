@@ -25,6 +25,7 @@ const ProspectContent = () => {
   const { invalidated, setInvalidated } = useAIState();
   const [localInvalidated, setLocalInvalidated] = useState<number>(invalidated);
   const [prospectName, setPropsectName] = useState<string>("");
+  const [mainWebsite, setMainWebsite] = useState<string>("");
   const [seDescription, setSEDescription] = useState<string>("");
   const [submitted, setSubmitted] = useState(false);
 
@@ -40,6 +41,7 @@ const ProspectContent = () => {
     const research = contentState.research;
     setPropsectName(research?.fields.prospect || "");
     setSEDescription(research?.fields.solutionEngineerDescription || "");
+    setMainWebsite(research?.fields.mainWebsite || "");
   }, [contentState.research]);
 
   const saveResearch = async () => {
@@ -66,6 +68,10 @@ const ProspectContent = () => {
       "en-US": prospectName,
     };
 
+    entry.fields.mainWebsite = {
+      "en-US": mainWebsite,
+    };
+
     entry.fields.solutionEngineerDescription = {
       "en-US": seDescription,
     };
@@ -82,6 +88,7 @@ const ProspectContent = () => {
   const handleCancel = () => {
     const research = contentState.research;
     setPropsectName(research?.fields.prospect || "");
+    setMainWebsite(research?.fields.mainWebsite || "");
     setSEDescription(research?.fields.solutionEngineerDescription || "");
   };
 
@@ -97,22 +104,27 @@ const ProspectContent = () => {
           flex: 1,
           padding: `${tokens.spacingL} ${tokens.spacing2Xl}`,
           backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
+          opacity: isLoading ? 0.6 : 1,
           position: "relative",
         }}
-        alignContent="stretch"
+        alignItems="center"
       >
-        {isLoading ? (
-          <LoadingPage />
-        ) : (
+        <Flex
+          alignItems="stretch"
+          style={{
+            maxWidth: 700,
+            width: "100%",
+          }}
+        >
           <Form
             onSubmit={() => {
               setSubmitted(true);
               saveResearch();
             }}
-            style={{ justifyContent: "flex-end" }}
+            style={{ justifyContent: "flex-end", width: "100%" }}
           >
             <FormControl isRequired isInvalid={!prospectName && submitted}>
-              <FormControl.Label>Propspect</FormControl.Label>
+              <FormControl.Label>Prospect</FormControl.Label>
               <TextInput
                 value={prospectName}
                 placeholder="'Contentful'"
@@ -120,6 +132,17 @@ const ProspectContent = () => {
               />
               <FormControl.HelpText>
                 The full name of the prospect
+              </FormControl.HelpText>
+            </FormControl>
+            <FormControl isRequired isInvalid={!mainWebsite && submitted}>
+              <FormControl.Label>Main Website</FormControl.Label>
+              <TextInput
+                value={mainWebsite}
+                placeholder="'https://www.contentful.com'"
+                onChange={(e) => setMainWebsite(e.target.value)}
+              />
+              <FormControl.HelpText>
+                The prospect’s primary website to reference.
               </FormControl.HelpText>
             </FormControl>
             <FormControl isRequired isInvalid={!seDescription && submitted}>
@@ -151,7 +174,7 @@ const ProspectContent = () => {
               </Button>
             </Flex>
           </Form>
-        )}
+        </Flex>
       </Flex>
     </>
   );

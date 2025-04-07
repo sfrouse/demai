@@ -1,5 +1,7 @@
+export const PUBLISH_CONTENT_TYPE = "publish_content_type";
+
 const publishContentTypeTool = {
-  name: "publish_content_type",
+  name: PUBLISH_CONTENT_TYPE,
   description: "Publish a content type",
   inputSchema: {
     type: "object",

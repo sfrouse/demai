@@ -1,7 +1,7 @@
 import tokens from "@contentful/f36-tokens";
 import { Flex, Tabs } from "@contentful/f36-components";
 import Divider from "../Divider";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ConversationConfirm from "./ConversationConfirm";
 import AIState from "../../ai/AIState/AIState";
 import ConversationStateEditor from "./ConversationStateEditor";
@@ -11,6 +11,7 @@ import scrollBarStyles from "../utils/ScrollBarMinimal.module.css";
 import classNames from "../utils/classNames";
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import ConversationBubble from "./ConversationBubble/ConversationBubble";
+import ConversationToolbar from "./ConversationBubble/ConversationToolbar";
 
 const ConversationPanel = () => {
   const { contentState, spaceStatus, loadingState } = useContentStateSession();
@@ -21,6 +22,7 @@ const ConversationPanel = () => {
     route,
     setRoute,
     findAndSetAISessionManager,
+    aiSessionManager,
   } = useAIState();
   const chatLastBubbleRef = useRef<HTMLDivElement>(null);
 
@@ -77,9 +79,6 @@ const ConversationPanel = () => {
         className={classNames(scrollBarStyles["scrollbar-minimal"])}
         style={{
           flex: 1,
-          paddingTop: tokens.spacingL,
-          // paddingLeft: tokens.spacingL,
-          // paddingRight: tokens.spacingL,
           display: "flex",
           flexDirection: "column",
           overflowY: "scroll",
@@ -91,6 +90,9 @@ const ConversationPanel = () => {
         })}
         <div ref={chatLastBubbleRef}></div>
       </div>
+      {aiState && aiSession.length > 0 && (
+        <ConversationToolbar aiState={aiSession[0]} />
+      )}
       <Divider style={{ marginTop: 0, marginBottom: 0 }} />
       {useNav ? (
         <Flex flexDirection="column" justifyContent="flex-end">
@@ -131,15 +133,18 @@ const ConversationPanel = () => {
                 zIndex: 1000,
               }}
               onCancel={() => {
+                console.log("CAN", aiSessionManager);
+                aiSessionManager?.reset();
+
                 aiState?.updateStatus({
                   phase: AIStatePhase.answered,
                   userContent: aiState.userContent,
                 });
               }}
-              onConfirm={() => {
-                aiState?.run(contentState);
+              onConfirm={async () => {
+                await aiState?.run(contentState);
               }}
-              prompts={aiStateStatus?.prompts}
+              prompts={aiState?.promptEngine.prompts}
               visible={aiStateStatus?.phase === AIStatePhase.describing}
             />
             <ConversationStateEditor />

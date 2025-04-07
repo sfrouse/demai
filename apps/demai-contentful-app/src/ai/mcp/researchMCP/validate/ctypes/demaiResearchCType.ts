@@ -17,6 +17,13 @@ export const DEMAI_RESEARCH_EXPECTED_FIELDS = [
     localized: false,
   },
   {
+    id: "mainWebsite",
+    name: "Main Website",
+    type: "Symbol",
+    required: false,
+    localized: false,
+  },
+  {
     id: "solutionEngineerDescription",
     name: "Solution Engineer Description",
     type: "Text",

@@ -30,6 +30,12 @@ export default class AISessionManager {
     this._setAISession(this._session);
   }
 
+  resetAndActivateAIState(newAIState: AIState) {
+    this._session = [];
+    this._session.push(newAIState);
+    this._setAISession(this._session);
+  }
+
   getSessions() {
     return this._session;
   }
@@ -39,6 +45,11 @@ export default class AISessionManager {
       return;
     }
     return this._session[this._session.length - 1];
+  }
+
+  reset() {
+    this._session = [];
+    this._setAISession(this._session);
   }
 
   deleteAIState(stateToDelete: AIState) {

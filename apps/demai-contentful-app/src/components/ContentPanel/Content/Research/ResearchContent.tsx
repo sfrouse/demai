@@ -97,56 +97,64 @@ const ResearchContent = () => {
       <Flex
         flexDirection="column"
         className={scrollBarStyles["scrollbar-minimal"]}
+        alignItems="center"
         style={{
           overflowY: "auto",
           flex: 1,
           padding: `${tokens.spacingL} ${tokens.spacing2Xl} 400px ${tokens.spacing2Xl}`,
           backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
+          opacity: isLoading ? 0.6 : 1,
           position: "relative",
         }}
         alignContent="stretch"
       >
-        {research && research.fields && (
-          <>
-            {research.fields.prospect && (
-              <Heading>{research.fields.prospect}</Heading>
-            )}
-            {research.fields.solutionEngineerDescription && (
-              <>
-                <ContentSectionHeader title={"Description"} />
-                <Paragraph>
-                  {research.fields.solutionEngineerDescription}
-                </Paragraph>
-              </>
-            )}
-            {(research.fields.primaryColor ||
-              research.fields.secondaryColor ||
-              research.fields.tertiaryColor) && (
-              <ContentSectionHeader title="Brand Colors" />
-            )}
-            <Flex
-              flexDirection="row"
-              style={{ padding: `${tokens.spacingL} 0` }}
-            >
-              {renderColor("primary", research.fields.primaryColor)}
-              {renderColor("secondary", research.fields.secondaryColor)}
-              {renderColor("tertiary", research.fields.tertiaryColor)}
-            </Flex>
-            {["description", "products", "style", "tone"].map((id) => (
-              <EditableResearchField
-                id={id}
-                key={`research-field-${id}`}
-                fieldInEditMode={fieldInEditMode}
-                setFieldInEditMode={setFieldInEditMode}
-                localResearch={localResearch}
-                setLocalResearch={setLocalResearch}
-                research={research.fields}
-                isSaving={isSaving}
-                saveResearch={saveResearch}
-              />
-            ))}
-          </>
-        )}
+        <div
+          style={{
+            maxWidth: 800,
+          }}
+        >
+          {research && research.fields && (
+            <>
+              {research.fields.prospect && (
+                <Heading>{research.fields.prospect}</Heading>
+              )}
+              {research.fields.solutionEngineerDescription && (
+                <>
+                  <ContentSectionHeader title={"Description"} />
+                  <Paragraph>
+                    {research.fields.solutionEngineerDescription}
+                  </Paragraph>
+                </>
+              )}
+              {(research.fields.primaryColor ||
+                research.fields.secondaryColor ||
+                research.fields.tertiaryColor) && (
+                <ContentSectionHeader title="Brand Colors" />
+              )}
+              <Flex
+                flexDirection="row"
+                style={{ paddingBottom: `${tokens.spacingL}` }}
+              >
+                {renderColor("primary", research.fields.primaryColor)}
+                {renderColor("secondary", research.fields.secondaryColor)}
+                {renderColor("tertiary", research.fields.tertiaryColor)}
+              </Flex>
+              {["description", "products", "style", "tone"].map((id) => (
+                <EditableResearchField
+                  id={id}
+                  key={`research-field-${id}`}
+                  fieldInEditMode={fieldInEditMode}
+                  setFieldInEditMode={setFieldInEditMode}
+                  localResearch={localResearch}
+                  setLocalResearch={setLocalResearch}
+                  research={research.fields}
+                  isSaving={isSaving}
+                  saveResearch={saveResearch}
+                />
+              ))}
+            </>
+          )}
+        </div>
       </Flex>
     </>
   );

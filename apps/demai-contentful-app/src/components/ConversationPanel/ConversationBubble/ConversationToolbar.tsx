@@ -11,17 +11,9 @@ import LoadingIcon from "../../Loading/LoadingIcon";
 import { DoneIcon, IconVariant } from "@contentful/f36-icons";
 import Divider from "../../Divider";
 import { Dispatch, SetStateAction } from "react";
-import useAIState from "../../../contexts/AIStateContext/useAIState";
 
-const ConversationToolbar = ({
-  aiState,
-  setShowSystem,
-}: {
-  aiState: AIState;
-  setShowSystem: Dispatch<SetStateAction<boolean>>;
-}) => {
+const ConversationToolbar = ({ aiState }: { aiState: AIState }) => {
   const { contentState } = useContentStateSession();
-  const { aiSessionManager } = useAIState();
 
   let bgColor = tokens.gray100;
   let foreColor = tokens.gray800;
@@ -41,7 +33,8 @@ const ConversationToolbar = ({
       break;
     }
     case AIStatePhase.executed: {
-      bgColor = tokens.gray500;
+      bgColor =
+        aiState.errors.length > 0 ? tokens.colorWarning : tokens.gray500;
       foreColor = tokens.colorWhite;
       iconVariant = "white";
       break;
@@ -61,7 +54,7 @@ const ConversationToolbar = ({
       >
         {getStats(aiState, foreColor, iconVariant)}
         <div style={{ flex: 1, minWidth: 30 }}></div>
-        <ButtonXs
+        {/* <ButtonXs
           style={{
             color: foreColor,
           }}
@@ -70,8 +63,8 @@ const ConversationToolbar = ({
           }}
         >
           Delete
-        </ButtonXs>
-        <ButtonXs
+        </ButtonXs> */}
+        {/* <ButtonXs
           style={{
             color: foreColor,
           }}
@@ -80,7 +73,7 @@ const ConversationToolbar = ({
           }}
         >
           System
-        </ButtonXs>
+        </ButtonXs> */}
         {!aiState.isRunning && getAction(aiState, contentState, foreColor)}
       </Flex>
       <Divider style={{ margin: 0 }} />
@@ -170,7 +163,6 @@ const getAction = (
           Try Again
         </ButtonXs>
       );
-      return null;
 
     default:
       return null;

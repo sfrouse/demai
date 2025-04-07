@@ -23,6 +23,24 @@ import openAIChatCompletions, {
 } from "../../openAI/openAIChatCompletions";
 import { ResearchMCP } from "../../mcp/researchMCP/ResearchMCP";
 
+export type PromptRunResults =
+  | { success: true; result: string }
+  | { success: false; errors: string[] };
+
+export type PromptExecuteResults =
+  | {
+      success: true;
+      result: string;
+      toolCalls: string[];
+      toolResults: any[];
+    }
+  | {
+      success: false;
+      errors: string[];
+      toolCalls: string[];
+      toolResults: any[];
+    };
+
 export class AIPromptEngine {
   label: string = "Open Ended";
 
@@ -89,7 +107,10 @@ export class AIPromptEngine {
     );
   }
 
-  async run(aiState: AIState, chain: boolean = false) {
+  async run(
+    aiState: AIState,
+    chain: boolean = false
+  ): Promise<PromptRunResults> {
     try {
       // const prevState = aiState.getStateHistory();
 
@@ -126,20 +147,29 @@ export class AIPromptEngine {
       const result = await openAIChatCompletions(aiArg);
       console.log(`run[end][${this.toolType}]:`, result);
 
-      return result.description;
+      return {
+        success: true,
+        result: `${result.description}`,
+      };
     } catch (err) {
       console.error(err);
-      return "Error";
+      return {
+        success: false,
+        errors: [`${err}`],
+      };
     }
   }
 
   async runExe(
     aiState: AIState,
     chain: boolean = true
-  ): Promise<{ toolCalls: string[]; toolResults: any[] }> {
+  ): Promise<PromptExecuteResults> {
     // There are no tools in web search...
     if (this.toolType === "WebSearch") {
       return {
+        success: false,
+        errors: ["Web search engine has no tool features."],
+
         toolCalls: [],
         toolResults: [],
       };
@@ -192,15 +222,32 @@ export class AIPromptEngine {
               ? this.researchMCP
               : this.contentfulMCP;
 
-          // API CHAT COMPLETETIONS
-          const exeResult = await mcpClient?.callFunction(
-            toolCall.function.name,
-            JSON.parse(toolCall.function.arguments)
-          );
-          toolResults.push(exeResult);
+          try {
+            // API CHAT COMPLETETIONS
+            const exeResult = await mcpClient?.callFunction(
+              toolCall.function.name,
+              JSON.parse(toolCall.function.arguments)
+            );
+            toolResults.push(exeResult);
+          } catch (err) {
+            return {
+              success: false,
+              errors: [`${err}`],
+              toolCalls: [toolCall.function.name],
+              toolResults: [],
+            };
+          }
         }
       }
       return {
+        success: true,
+        result: `${
+          result.toolCalls
+            ? result.toolCalls
+                .map((toolCall) => toolCall.function.name)
+                .join(", ")
+            : "no tools called"
+        }`,
         toolCalls: result.toolCalls
           ? result.toolCalls.map((toolCall) => toolCall.function.name)
           : [],
@@ -209,6 +256,8 @@ export class AIPromptEngine {
     } catch (err) {
       console.error("AIPromptEngine: ", err);
       return {
+        success: false,
+        errors: [`${err}`],
         toolCalls: [],
         toolResults: [],
       };
@@ -246,3 +295,5 @@ export class AIPromptEngine {
     return tools;
   }
 }
+
+// function processExeResults() {}

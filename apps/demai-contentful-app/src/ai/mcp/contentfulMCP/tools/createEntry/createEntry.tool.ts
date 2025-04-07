@@ -1,5 +1,7 @@
+export const CREATE_ENTRY = "create_entry";
+
 const createEntryTool = {
-  name: "create_entry",
+  name: CREATE_ENTRY,
   description: `
 Create a new entry in Contentful, you will need to know the content type information 
 which may be given to you or by using the GET_CONTENT_TYPE tool.

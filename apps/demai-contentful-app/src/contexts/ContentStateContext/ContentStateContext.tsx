@@ -32,6 +32,7 @@ export interface ContentState {
 export interface ContentStateResearch {
   prospect: string;
   solutionEngineerDescription: string;
+  mainWebsite: string;
   primaryColor: string;
   secondaryColor: string;
   tertiaryColor: string;

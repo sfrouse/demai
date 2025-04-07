@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Flex } from "@contentful/f36-components";
 import { ContentType } from "contentful-management";
 import { PageAppSDK } from "@contentful/app-sdk";
-import LoadingIcon from "../../../Loading/LoadingIcon";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
@@ -10,7 +9,6 @@ import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import { AIPromptEngineID } from "../../../../ai/AIState/AIStateTypes";
-import LoadingPage from "../../../Loading/LoadingPage";
 
 const ContentTypesContent = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -31,47 +29,44 @@ const ContentTypesContent = () => {
 
   return (
     <>
-      <ContentPanelHeader title="Content Types" invalidate />
+      <ContentPanelHeader title="Content Typesss" invalidate />
       <Flex
         flexDirection="column"
+        alignItems="center"
         style={{
           overflowY: "auto",
-          padding: `0 ${tokens.spacingM}`,
+          padding: `${tokens.spacingM} ${tokens.spacingM}`,
           flex: 1,
+          backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
+          opacity: isLoading ? 0.6 : 1,
           position: "relative",
         }}
       >
-        {isLoading ? (
-          <LoadingPage />
-        ) : (
-          <>
-            {contentState.contentTypes?.map((contentType: ContentType) => (
-              <DmaiContentRow
-                key={`ctype-${contentType.sys.id}`}
-                onClick={async () => {
-                  await setContentType(contentType.sys.id);
-                  setRoute({
-                    navigation: "content_model",
-                    contentTypeId: contentType.sys.id,
-                    aiStateEngines: [AIPromptEngineID.EDIT_CONTENT_TYPE],
-                  });
-                }}
-                editOnClick={() => {
-                  window.open(
-                    `https://app.contentful.com/spaces/${sdk.ids.space}/environments/${sdk.ids.environment}/content_types/${contentType.sys.id}/fields`,
-                    "_blank"
-                  );
-                }}
-                title={contentType.name}
-                id={contentType.sys.id}
-                description={contentType.description}
-                status={
-                  contentType.sys.publishedCounter === 0 ? "draft" : "none"
-                }
-              />
-            ))}
-          </>
-        )}
+        <Flex flexDirection="column" style={{ maxWidth: 800, width: "100%" }}>
+          {contentState.contentTypes?.map((contentType: ContentType) => (
+            <DmaiContentRow
+              key={`ctype-${contentType.sys.id}`}
+              onClick={async () => {
+                await setContentType(contentType.sys.id);
+                setRoute({
+                  navigation: "content_model",
+                  contentTypeId: contentType.sys.id,
+                  aiStateEngines: [AIPromptEngineID.EDIT_CONTENT_TYPE],
+                });
+              }}
+              editOnClick={() => {
+                window.open(
+                  `https://app.contentful.com/spaces/${sdk.ids.space}/environments/${sdk.ids.environment}/content_types/${contentType.sys.id}/fields`,
+                  "_blank"
+                );
+              }}
+              title={contentType.name}
+              id={contentType.sys.id}
+              description={contentType.description}
+              status={contentType.sys.publishedCounter === 0 ? "draft" : "none"}
+            />
+          ))}
+        </Flex>
       </Flex>
     </>
   );

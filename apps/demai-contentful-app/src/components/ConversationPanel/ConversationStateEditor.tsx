@@ -36,11 +36,9 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
     setIgnoreContextContent,
   } = useAIState();
 
-  const isLoading =
-    Object.values(loadingState).includes(true) ||
-    !aiState ||
-    !aiStateStatus ||
-    !spaceStatus?.valid;
+  const isLoading = Object.values(loadingState).includes(true);
+
+  const isReady = !aiState || !aiStateStatus || !spaceStatus?.valid;
 
   return (
     <Flex
@@ -53,9 +51,10 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
         minHeight: isLoading ? 200 : 0,
         position: "relative",
         backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
+        opacity: isLoading ? 0.6 : 1,
       }}
     >
-      {isLoading ? (
+      {isReady ? (
         <LoadingPage />
       ) : (
         <>
@@ -67,7 +66,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
           )}
           <Textarea
             value={aiStateStatus.userContent}
-            placeholder={aiStateStatus.placeholder}
+            placeholder={aiState.promptEngine.placeholder}
             rows={3}
             style={{
               marginBottom: tokens.spacingS,

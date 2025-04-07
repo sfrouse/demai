@@ -1,16 +1,16 @@
 import tokens from "@contentful/f36-tokens";
 import { useEffect, useState } from "react";
 import AIState from "../../../ai/AIState/AIState";
-import Divider from "../../Divider";
 import scrollBarStyles from "../../utils/ScrollBarMinimal.module.css";
 import convertMarkdown from "../util/convertMarkdown";
-import ConversationToolbar from "./ConversationToolbar";
 import ConversationTitle from "./ConversationTitle";
 import { Flex } from "@contentful/f36-components";
+import ButtonXs from "../../ButtonXs/ButtonXs";
 
 const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
   if (!aiState) return null;
   const [showSystem, setShowSystem] = useState<boolean>(false);
+  const [showFullPrompt, setShowFullPrompt] = useState<boolean>(false);
   const [systemHtml, setSystemHtml] = useState<string>("");
   const [userContentHTML, setUserContentHTML] = useState<string>("");
   const [requestHtml, setRequestHTML] = useState<string>("");
@@ -86,6 +86,8 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
     );
   }
 
+  const doShowPromptMore = requestHtml?.length > 200;
+
   return (
     <Flex
       flexDirection="column"
@@ -99,53 +101,131 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
         overflowWrap: "break-word",
 
         margin: 0,
-        // marginBottom: tokens.spacingS,
         fontFamily: tokens.fontStackPrimary,
-        // backgroundColor: tokens.gray100,
         borderRadius: tokens.borderRadiusMedium,
         fontSize: 12,
-        // padding: `${tokens.spacingM} 0 0 0`,
         gap: tokens.spacingM,
         backgroundColor: "rgba(0,0,0,0)",
+        paddingTop: tokens.spacingL,
       }}
     >
-      <Divider style={{ margin: 0 }} />
+      {/* <Divider style={{ margin: 0 }} /> */}
       <div
         style={{
           padding: `0 ${tokens.spacingL}`,
         }}
       >
         <ConversationTitle title="User Prompt" />
-        <span dangerouslySetInnerHTML={{ __html: aiState.userContent }}></span>
+        <span
+          dangerouslySetInnerHTML={{
+            __html: aiState.userContent ? userContentHTML : "--",
+          }}
+        ></span>
       </div>
       <div
         style={{
           padding: `0 ${tokens.spacingL}`,
         }}
       >
-        <ConversationTitle title="Prompt" />
-        <span dangerouslySetInnerHTML={{ __html: requestHtml }}></span>
+        <ConversationTitle title="Full Prompt" />
+        <div
+          style={{
+            maxHeight: showFullPrompt ? "initial" : 100,
+            overflow: "hidden",
+            position: "relative",
+            paddingBottom: doShowPromptMore ? 40 : 0,
+          }}
+        >
+          <span dangerouslySetInnerHTML={{ __html: requestHtml }}></span>
+          {doShowPromptMore &&
+            (showFullPrompt ? (
+              <Flex
+                justifyContent="center"
+                alignItems="flex-end"
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: 60,
+                  background: "linear-gradient(to top, white, transparent)",
+                }}
+              >
+                <ButtonXs
+                  onClick={async () => {
+                    setShowFullPrompt((prev) => !prev);
+                  }}
+                >
+                  Hide
+                </ButtonXs>
+              </Flex>
+            ) : (
+              <Flex
+                justifyContent="center"
+                alignItems="flex-end"
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: 60,
+                  background:
+                    "linear-gradient(to top, white 50%, transparent 100%)",
+                }}
+              >
+                <ButtonXs
+                  onClick={async () => {
+                    setShowFullPrompt((prev) => !prev);
+                  }}
+                >
+                  More...
+                </ButtonXs>
+              </Flex>
+            ))}
+        </div>
       </div>
-      {showSystem && (
-        <div
-          style={{
-            padding: `0 ${tokens.spacingL}`,
-          }}
-        >
-          <ConversationTitle title="System" />
-          <span dangerouslySetInnerHTML={{ __html: systemHtml }}></span>
-        </div>
-      )}
-      {showSystem && (
-        <div
-          style={{
-            padding: `0 ${tokens.spacingL}`,
-          }}
-        >
-          <ConversationTitle title="Tools" />
-          <span>{toolsHtml}</span>
-        </div>
-      )}
+
+      <div
+        style={{
+          padding: `0 ${tokens.spacingL}`,
+        }}
+      >
+        <ConversationTitle title="System" />
+        {showSystem ? (
+          <>
+            <div>
+              <span dangerouslySetInnerHTML={{ __html: systemHtml }} />
+            </div>
+            <div
+              style={{
+                padding: ` ${tokens.spacingM} 0`,
+              }}
+            >
+              <ConversationTitle title="Tools" />
+              <span>{toolsHtml}</span>
+            </div>
+            <Flex justifyContent="center" alignItems="flex-end">
+              <ButtonXs
+                onClick={async () => {
+                  setShowSystem((prev) => !prev);
+                }}
+              >
+                Hide
+              </ButtonXs>
+            </Flex>
+          </>
+        ) : (
+          <Flex justifyContent="center" alignItems="flex-end">
+            <ButtonXs
+              onClick={async () => {
+                setShowSystem((prev) => !prev);
+              }}
+            >
+              Show...
+            </ButtonXs>
+          </Flex>
+        )}
+      </div>
       {aiState.response && (
         <div
           style={{
@@ -168,7 +248,19 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
           ></span>
         </div>
       )}
-      <ConversationToolbar aiState={aiState} setShowSystem={setShowSystem} />
+      {aiState.errors.length > 0 && (
+        <div
+          style={{
+            padding: `0 ${tokens.spacingL}`,
+          }}
+        >
+          <ConversationTitle title="Errors" />
+          <span style={{ color: tokens.colorWarning }}>
+            {aiState.errors.join(", ")}
+          </span>
+        </div>
+      )}
+      {/* <ConversationToolbar aiState={aiState} setShowSystem={setShowSystem} /> */}
     </Flex>
   );
 };

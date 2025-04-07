@@ -12,9 +12,6 @@ export default async function createEntryFunction(
   const contentType = await environment.getContentType(params.contentTypeId);
 
   const finalFields: any = {};
-  const isObject = (value: unknown): value is Record<string, unknown> => {
-    return value !== null && typeof value === "object" && !Array.isArray(value);
-  };
 
   if (!params.fields) {
     return {
@@ -31,43 +28,62 @@ export default async function createEntryFunction(
     const fieldDef = contentType.fields.find((f: any) => f.id === key);
     if (!fieldDef) return; // Skip unknown fields
 
-    let transformedValue = value;
-
+    console.log("fieldDef", fieldDef);
     switch (fieldDef.type) {
       case "Number":
-        transformedValue = Number(value);
+        finalFields[key] = { "en-US": Number(value) };
         break;
       case "Boolean":
-        transformedValue = value === "true" || value === true;
+        finalFields[key] = { "en-US": value === "true" || value === true };
         break;
       case "RichText":
-        transformedValue = {
-          nodeType: "document",
-          data: {},
-          content: Array.isArray(value) ? value : [],
-        };
-        break;
-      case "Array":
-        transformedValue = Array.isArray(value) ? value : [value];
-        break;
-      case "Link":
-        transformedValue = {
-          sys: {
-            type: "Link",
-            linkType: fieldDef.linkType,
-            id: value,
+        finalFields[key] = {
+          "en-US": {
+            nodeType: "document",
+            data: {},
+            content: Array.isArray(value) ? value : [],
           },
         };
         break;
+      case "Array":
+        // if (fieldDef.items?.linkType === "Asset") {
+        if (fieldDef.items?.type === "Link") {
+          // nada
+        } else {
+          // assuming they are strings
+          finalFields[key] = {
+            "en-US": Array.isArray(value) ? value : [value],
+          };
+        }
+        break;
+      case "Link":
+        if (fieldDef.linkType !== "Asset") {
+          finalFields[key] = {
+            "en-US": {
+              sys: {
+                type: "Link",
+                linkType: fieldDef.linkType,
+                id: value,
+              },
+            },
+          };
+        }
+        break;
+
+      case "Text":
+      case "Symbol": {
+        finalFields[key] = {
+          "en-US": value,
+        };
+      }
       // Add more types as needed
     }
-
-    finalFields[key] = { "en-US": transformedValue };
   });
 
   const entry = await environment.createEntry(params.contentTypeId, {
     fields: finalFields,
   });
+  await entry.publish();
 
   return {
     content: [

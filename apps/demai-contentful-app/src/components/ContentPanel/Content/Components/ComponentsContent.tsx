@@ -53,6 +53,7 @@ const ComponentsContent = () => {
       <ContentPanelHeader title="Components" invalidate />
       <Flex
         flexDirection="column"
+        alignItems="center"
         style={{
           overflowY: "auto",
           padding: `0 ${tokens.spacingM}`,
@@ -60,60 +61,68 @@ const ComponentsContent = () => {
           flex: 1,
         }}
       >
-        {isLoading ? (
-          <LoadingPage />
-        ) : (
-          <Flex flexDirection="column" style={{ paddingTop: tokens.spacingM }}>
-            {contentState.components
-              ?.slice() // Make a shallow copy to avoid mutating the original array
-              .sort((a, b) => {
-                if (!a.fields?.title || !b.fields?.title) {
-                  return 0;
-                }
-                return a.fields?.title.localeCompare(b.fields?.title);
-              }) // Sort by title
-              .map((comp: any) => (
-                <DmaiContentRow
-                  key={`comp-${comp.sys.id}`}
-                  onClick={async () => {
-                    await setComponent(comp.sys.id);
-                    setRoute({
-                      navigation: "components",
-                      componentId: comp.sys.id,
-                      componentFocusId: COMP_DETAIL_NAVIGATION.DEFINITION,
-                      aiStateEngines: [AIPromptEngineID.EDIT_COMPONENT],
-                    });
-                  }}
-                  title={comp.fields.title && comp.fields.title}
-                  id={comp.sys.id}
-                  description={
-                    comp.fields.description && comp.fields.description
+        {" "}
+        <Flex flexDirection="column" style={{ maxWidth: 800, width: "100%" }}>
+          {isLoading ? (
+            <LoadingPage />
+          ) : (
+            <Flex
+              flexDirection="column"
+              style={{ paddingTop: tokens.spacingM }}
+            >
+              {contentState.components
+                ?.slice() // Make a shallow copy to avoid mutating the original array
+                .sort((a, b) => {
+                  if (!a.fields?.title || !b.fields?.title) {
+                    return 0;
                   }
-                  status={getEntryStatus(comp)}
-                  badges={[
-                    {
-                      text: "Definition",
-                      variant: comp.fields.componentDefinition
-                        ? "primary"
-                        : "secondary",
-                    },
-                    {
-                      text: "C.Type",
-                      variant: "secondary",
-                    },
-                    {
-                      text: "Web Comp",
-                      variant: comp.fields.javascript ? "primary" : "secondary",
-                    },
-                    {
-                      text: "Bindings",
-                      variant: comp.fields.bindings ? "primary" : "secondary",
-                    },
-                  ]}
-                />
-              ))}
-          </Flex>
-        )}
+                  return a.fields?.title.localeCompare(b.fields?.title);
+                }) // Sort by title
+                .map((comp: any) => (
+                  <DmaiContentRow
+                    key={`comp-${comp.sys.id}`}
+                    onClick={async () => {
+                      await setComponent(comp.sys.id);
+                      setRoute({
+                        navigation: "components",
+                        componentId: comp.sys.id,
+                        componentFocusId: COMP_DETAIL_NAVIGATION.DEFINITION,
+                        aiStateEngines: [AIPromptEngineID.EDIT_COMPONENT],
+                      });
+                    }}
+                    title={comp.fields.title && comp.fields.title}
+                    id={comp.sys.id}
+                    description={
+                      comp.fields.description && comp.fields.description
+                    }
+                    status={getEntryStatus(comp)}
+                    badges={[
+                      {
+                        text: "Definition",
+                        variant: comp.fields.componentDefinition
+                          ? "primary"
+                          : "secondary",
+                      },
+                      {
+                        text: "C.Type",
+                        variant: "secondary",
+                      },
+                      {
+                        text: "Web Comp",
+                        variant: comp.fields.javascript
+                          ? "primary"
+                          : "secondary",
+                      },
+                      {
+                        text: "Bindings",
+                        variant: comp.fields.bindings ? "primary" : "secondary",
+                      },
+                    ]}
+                  />
+                ))}
+            </Flex>
+          )}
+        </Flex>
       </Flex>
     </>
   );

@@ -75,8 +75,9 @@ export type AIStateStatus = {
   contextContentSelections: { [key: string]: string };
   userContent: string;
   phase: AIStatePhase;
-  placeholder: string;
-  prompts: AIStatePrompts;
+  errors: string[];
+  // placeholder: string;
+  // prompts: AIStatePrompts;
 };
 
 export type AIStateSystemPrompt = {

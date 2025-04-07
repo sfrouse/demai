@@ -12,6 +12,7 @@ import { useContentStateSession } from "../../contexts/ContentStateContext/Conte
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import { createClient } from "contentful-management";
 import LoadingIcon from "../../components/Loading/LoadingIcon";
+import testCPA from "./utils/testCPA";
 
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -21,8 +22,13 @@ const Page = () => {
 
   useEffect(() => {
     (async () => {
-      // find CPA for Context...
-      const params = sdk.parameters.installation as AppInstallationParameters;
+      const params = {
+        ...(sdk.parameters.installation as AppInstallationParameters),
+      };
+      if (!params.cma) {
+        sdk.notifier.error("No CMA, got to config");
+        return;
+      }
       const client = createClient({
         accessToken: params.cma,
       });
@@ -36,9 +42,19 @@ const Page = () => {
         previewKeys.items[0].accessToken
       ) {
         cpaResult = previewKeys.items[0].accessToken;
-        setCPA(previewKeys.items[0].accessToken);
+        const isValidCPA = await testCPA(cpaResult, sdk);
+        if (isValidCPA) {
+          setCPA(cpaResult);
+        } else {
+          sdk.dialogs.openAlert({
+            title: "CPA is not valid",
+            message:
+              "CPA is not valid for this space double check permissions.",
+            confirmLabel: "OK",
+          });
+          return;
+        }
       } else {
-        console.error("NO CPA KEY");
         sdk.dialogs.openAlert({
           title: "No CPA Key",
           message: "No CPA key found, please create an API key for the space.",
