@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Flex,
-  IconButton,
-  Paragraph,
-  Text,
-  Textarea,
-} from "@contentful/f36-components";
+import { Button, Flex, IconButton, Textarea } from "@contentful/f36-components";
 import tokens from "@contentful/f36-tokens";
 import * as icons from "@contentful/f36-icons";
 import { ContentStateResearch } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import convertMarkdown from "../../../../ConversationPanel/util/convertMarkdown";
-import ResearchHeader from "./ReasearchHeader";
+import ContentSectionHeader from "../../../ContentSectionHeader/ContentSectionHeader";
 
 type Props = {
   id: string;
@@ -63,7 +56,7 @@ const EditableResearchField: React.FC<Props> = ({
   return (
     <Flex flexDirection="column" style={{ marginBottom: tokens.spacingL }}>
       <Flex justifyContent="space-between" alignItems="center">
-        <ResearchHeader title={id} />
+        <ContentSectionHeader title={id} />
         <IconButton
           size="small"
           variant="transparent"

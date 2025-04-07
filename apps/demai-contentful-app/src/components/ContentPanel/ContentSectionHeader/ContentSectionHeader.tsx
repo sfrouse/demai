@@ -6,7 +6,7 @@ type Props = {
   title: string;
 };
 
-const ResearchHeader: React.FC<Props> = ({ title }) => (
+const ContentSectionHeader: React.FC<Props> = ({ title }) => (
   <Text
     fontSize="fontSizeS"
     fontWeight="fontWeightNormal"
@@ -19,4 +19,4 @@ const ResearchHeader: React.FC<Props> = ({ title }) => (
   </Text>
 );
 
-export default ResearchHeader;
+export default ContentSectionHeader;

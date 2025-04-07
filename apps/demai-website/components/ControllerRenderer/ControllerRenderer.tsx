@@ -18,7 +18,6 @@ export default function ControllerRenderer({
   const attrs = { ...view.fields };
   const bindings = controller.fields.bindings;
   const children = controller.fields.children;
-  console.log("attrs", attrs, controller);
   if (bindings) {
     bindings.map((binding: any) => {
       const model = binding.fields.model;

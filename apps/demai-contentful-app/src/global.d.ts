@@ -15,3 +15,8 @@ declare module "@ivotoby/contentful-management-mcp-server" {
     }): Promise<any>;
   }
 }
+
+declare module "*.scss?inline" {
+  const content: string;
+  export default content;
+}

@@ -8,14 +8,14 @@ import {
 } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import scrollBarStyles from "../../../utils/ScrollBarMinimal.module.css";
-import { propHeader, renderChip } from "./../DesignSystem/DSysTokensContent";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { AppInstallationParameters } from "../../../../locations/config/ConfigScreen";
 import { createClient } from "contentful-management";
 import { DEMAI_RESEARCH_SINGLETON_ENTRY_ID } from "../../../../ai/mcp/researchMCP/validate/ctypes/demaiResearchCType";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import EditableResearchField from "./ResearchContent/EditableResearchField";
-import ResearchHeader from "./ResearchContent/ReasearchHeader";
+import ContentSectionHeader from "../../ContentSectionHeader/ContentSectionHeader";
+import ColorTokensContent from "../DesignSystem/sections/ColorTokensContent";
 
 const ResearchContent = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -100,7 +100,7 @@ const ResearchContent = () => {
         style={{
           overflowY: "auto",
           flex: 1,
-          padding: `${tokens.spacingL} ${tokens.spacing2Xl}`,
+          padding: `${tokens.spacingL} ${tokens.spacing2Xl} 400px ${tokens.spacing2Xl}`,
           backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
           position: "relative",
         }}
@@ -113,7 +113,7 @@ const ResearchContent = () => {
             )}
             {research.fields.solutionEngineerDescription && (
               <>
-                <ResearchHeader title={"Description"} />
+                <ContentSectionHeader title={"Description"} />
                 <Paragraph>
                   {research.fields.solutionEngineerDescription}
                 </Paragraph>
@@ -122,15 +122,15 @@ const ResearchContent = () => {
             {(research.fields.primaryColor ||
               research.fields.secondaryColor ||
               research.fields.tertiaryColor) && (
-              <ResearchHeader title="Brand Colors" />
+              <ContentSectionHeader title="Brand Colors" />
             )}
             <Flex
               flexDirection="row"
               style={{ padding: `${tokens.spacingL} 0` }}
             >
-              {renderColor("Primary", research.fields.primaryColor)}
-              {renderColor("Secondary", research.fields.secondaryColor)}
-              {renderColor("Tertiary", research.fields.tertiaryColor)}
+              {renderColor("primary", research.fields.primaryColor)}
+              {renderColor("secondary", research.fields.secondaryColor)}
+              {renderColor("tertiary", research.fields.tertiaryColor)}
             </Flex>
             {["description", "products", "style", "tone"].map((id) => (
               <EditableResearchField
@@ -155,9 +155,11 @@ const ResearchContent = () => {
 function renderColor(name: string, color: string) {
   if (!color) return null;
   return (
-    <Flex gap={tokens.spacingS} flexDirection="row" style={{ flex: 1 }}>
-      {propHeader(`${name}`)}
-      {renderChip(name, color)}
+    <Flex gap={tokens.spacingS} flexDirection="column" style={{ flex: 1 }}>
+      <ColorTokensContent
+        dsysTokens={{ color: { [name]: color } }}
+        useCssVars={false}
+      />
     </Flex>
   );
 }

@@ -3,8 +3,6 @@ import { Button, Flex, IconButton, Text } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
 import * as icons from "@contentful/f36-icons";
 import { AppInstallationParameters } from "../../../../locations/config/ConfigScreen";
-import LoadingIcon from "../../../Loading/LoadingIcon";
-import Divider from "../../../Divider";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import revertDemAITokensSingletonEntry from "../../../../ai/mcp/designSystemMCP/functions/utils/demaiTokensSingleton/revertDemAITokensSingletonEntry";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
@@ -13,6 +11,10 @@ import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import { DEMAI_TOKENS_SINGLETON_ENTRY_ID } from "../../../../ai/mcp/designSystemMCP/validate/ctypes/demaiTokensCType";
 import LoadingPage from "../../../Loading/LoadingPage";
+import ContentSectionHeader from "../../ContentSectionHeader/ContentSectionHeader";
+import ColorTokensContent from "./sections/ColorTokensContent";
+import TypographyTokensContent from "./sections/TypographyTokensContent";
+import IframeWithReact from "./IframeWithReact";
 
 export const COLOR_SET_ALLOW_LIST = [
   "primary",
@@ -25,8 +27,8 @@ export const COLOR_SET_ALLOW_LIST = [
 export const COLOR_SINGLE_ALLOW_LIST = ["white", "black", "success", "danger"];
 
 export const COLOR_ALLOW_LIST = [
-  ...COLOR_SINGLE_ALLOW_LIST,
   ...COLOR_SET_ALLOW_LIST,
+  ...COLOR_SINGLE_ALLOW_LIST,
 ];
 
 const DSysTokensContent = () => {
@@ -41,6 +43,10 @@ const DSysTokensContent = () => {
     if (!contentState.tokens || forceReload) {
       if (!forceReload) setLocalInvalidated(invalidated);
       loadProperty("tokens", forceReload);
+    }
+    if (!contentState.css || forceReload) {
+      if (!forceReload) setLocalInvalidated(invalidated);
+      loadProperty("css", forceReload);
     }
   }, [invalidated]);
 
@@ -88,8 +94,8 @@ const DSysTokensContent = () => {
       <Flex
         flexDirection="column"
         style={{
-          overflowY: "auto",
-          padding: `${tokens.spacingM} ${tokens.spacingL}`,
+          // overflowY: "auto",
+          // padding: `${tokens.spacingM} ${tokens.spacingL}`,
           flex: 1,
           position: "relative",
         }}
@@ -97,79 +103,33 @@ const DSysTokensContent = () => {
         {isLoading ? (
           <LoadingPage />
         ) : (
-          <Flex flexDirection="column">
-            {renderTokens(contentState.tokens)}
-          </Flex>
+          <IframeWithReact>
+            <style
+              dangerouslySetInnerHTML={{ __html: `${contentState.css}` || "" }}
+            ></style>
+            <Flex
+              flexDirection="column"
+              gap={tokens.spacingL}
+              style={{ padding: `${tokens.spacingM} ${tokens.spacingL}` }}
+            >
+              <Flex flexDirection="column">
+                <ContentSectionHeader title="Color" />
+                <ColorTokensContent dsysTokens={contentState.tokens} />
+              </Flex>
+              <Flex flexDirection="column">
+                <ContentSectionHeader title="Typography" />
+                <TypographyTokensContent dsysTokens={contentState.tokens} />
+              </Flex>
+              <ContentSectionHeader title="Spacing (Padding, Margin, Gap)" />
+              <ContentSectionHeader title="Page Widths" />
+              <ContentSectionHeader title="Border Radius" />
+              <ContentSectionHeader title="Icons" />
+            </Flex>
+          </IframeWithReact>
         )}
       </Flex>
     </>
   );
 };
-
-function renderTokens(tokens: any) {
-  const output: any[] = [];
-  if (tokens && tokens.color) {
-    Object.entries(tokens.color).map((colorSet) => {
-      renderColorSet(colorSet[0], colorSet[1], output);
-    });
-  }
-  return output;
-}
-
-function renderColorSet(name: string, colorSet: any, output: any[]) {
-  if (!COLOR_ALLOW_LIST.includes(name)) return;
-  if (typeof colorSet === "string") {
-    output.push(
-      <Flex flexDirection="column" gap="4px" key={`color-token-${name}`}>
-        <Text
-          fontSize="fontSizeM"
-          fontWeight="fontWeightDemiBold"
-          style={{ flex: 1 }}
-        >
-          {name}
-        </Text>
-        <Flex>{renderChip(name, colorSet)}</Flex>
-        <Divider />
-      </Flex>
-    );
-    return;
-  }
-  output.push(
-    <Flex flexDirection="column" gap="4px" key={`color-token-${name}`}>
-      {propHeader(name)}
-      <Flex flexDirection="row" gap="6px">
-        {Object.entries(colorSet).map((set) =>
-          renderChip(`${name}-${set[0]}`, set[1] as string)
-        )}
-      </Flex>
-      <Divider />
-    </Flex>
-  );
-}
-
-export function propHeader(name: string) {
-  return (
-    <Text fontSize="fontSizeM" fontWeight="fontWeightDemiBold">
-      {name}
-    </Text>
-  );
-}
-
-export function renderChip(name: string, colorHex: string | undefined) {
-  if (typeof colorHex !== "string") return;
-  return (
-    <div
-      title={`${name}: ${colorHex}`}
-      key={`color-token-${name}-${colorHex}`}
-      style={{
-        width: 24,
-        height: 24,
-        borderRadius: "50%",
-        backgroundColor: colorHex,
-        border: "1px solid #aaa",
-      }}
-    ></div>
-  );
-}
 
 export default DSysTokensContent;

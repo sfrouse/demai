@@ -84,6 +84,13 @@ export default async function RootPage({
   const page = await getContentfulPage(client, params.locale, params.slug);
   const dsys = await getDesignSystem(params);
 
+  // const css = dsys.css.replace(
+  //   "@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap');",
+  //   "/* @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap'); */"
+  // );
+
+  const css = dsys.css;
+
   return (
     <>
       <Providers
@@ -91,7 +98,7 @@ export default async function RootPage({
         spaceId={params.spaceId}
         env="master"
       >
-        <style>{dsys.css}</style>
+        <style>{css}</style>
         <script
           data-id="demai-design-system"
           dangerouslySetInnerHTML={{
