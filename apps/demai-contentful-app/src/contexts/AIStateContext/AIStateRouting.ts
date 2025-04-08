@@ -1,4 +1,4 @@
-import { AIPromptEngineID } from "../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
+import { AIPromptEngineID } from "../../ai/AIPromptEngine/AIPromptEngineTypes";
 import { COMP_DETAIL_NAVIGATION } from "../../components/ContentPanel/Content/Components/panels/CompDetailContent";
 import { PromptAreas } from "../../components/MainNav";
 

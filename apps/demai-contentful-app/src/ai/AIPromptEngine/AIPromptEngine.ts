@@ -1,19 +1,7 @@
 import OpenAI from "openai";
-import {
-  AIModels,
-  OPEN_AI_MAX_TOKENS,
-  OPEN_AI_TEMPERATURE,
-  OPEN_AI_TOP_P,
-} from "../../openAI/openAIConfig";
+
 import * as icons from "@contentful/f36-icons";
-import { DesignSystemMCPClient } from "../../mcp/designSystemMCP/DesignSystemMCPClient";
-import { ContentfulMCP } from "../../mcp/contentfulMCP/ContentfulMCP";
-import getOpeAIClient from "../../openAI/getOpenAIClient";
-import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
-import openAIChatCompletions, {
-  OpenAIChatCompletionsProps,
-} from "../../openAI/openAIChatCompletions";
-import { ResearchMCP } from "../../mcp/researchMCP/ResearchMCP";
+
 import { processContextContent } from "./AIPromptEngineRequest";
 import {
   AIPromptConfig,
@@ -26,6 +14,20 @@ import {
   PromptExecuteResults,
   PromptRunResults,
 } from "./AIPromptEngineTypes";
+import { ContentState } from "../../contexts/ContentStateContext/ContentStateContext";
+import {
+  AIModels,
+  OPEN_AI_MAX_TOKENS,
+  OPEN_AI_TEMPERATURE,
+  OPEN_AI_TOP_P,
+} from "../openAI/openAIConfig";
+import { ContentfulMCP } from "../mcp/contentfulMCP/ContentfulMCP";
+import { DesignSystemMCPClient } from "../mcp/designSystemMCP/DesignSystemMCPClient";
+import { ResearchMCP } from "../mcp/researchMCP/ResearchMCP";
+import getOpeAIClient from "../openAI/getOpenAIClient";
+import openAIChatCompletions, {
+  OpenAIChatCompletionsProps,
+} from "../openAI/openAIChatCompletions";
 
 export class AIPromptEngine {
   label: string = "Open Ended";

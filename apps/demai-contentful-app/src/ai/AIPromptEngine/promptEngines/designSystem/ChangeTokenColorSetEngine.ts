@@ -1,7 +1,7 @@
-import { COLOR_SET_ALLOW_LIST } from "../../../../../components/ContentPanel/Content/DesignSystem/DSysTokensContent";
-import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
-import { SAVE_COLOR_SET_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/saveColorSet";
-import rgbaToHex from "../../../utils/rgbaToHex";
+import { COLOR_SET_ALLOW_LIST } from "../../../../components/ContentPanel/Content/DesignSystem/DSysTokensContent";
+import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import rgbaToHex from "../../../AIState/utils/rgbaToHex";
+import { SAVE_COLOR_SET_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/saveColorSet";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import {
   AIPromptConfig,

@@ -1,5 +1,5 @@
-import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
-import contentTypeToAI from "../../../utils/contentTypeToAI";
+import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import contentTypeToAI from "../../../AIState/utils/contentTypeToAI";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import {
   AIPromptConfig,

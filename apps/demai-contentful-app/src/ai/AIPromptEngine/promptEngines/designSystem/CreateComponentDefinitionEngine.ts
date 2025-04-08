@@ -1,5 +1,5 @@
-import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
-import { CREATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../../mcp/designSystemMCP/tools/createComponentDefinition/createComponentDefinition.tool";
+import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import { CREATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../mcp/designSystemMCP/tools/createComponentDefinition/createComponentDefinition.tool";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import {
   AIPromptConfig,

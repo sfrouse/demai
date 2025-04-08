@@ -10,7 +10,7 @@ import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import getEntryStatus from "../../../utils/entryStatus";
 import LoadingPage from "../../../Loading/LoadingPage";
-import { AIPromptEngineID } from "../../../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
+import { AIPromptEngineID } from "../../../../ai/AIPromptEngine/AIPromptEngineTypes";
 
 const ComponentsContent = () => {
   const { contentState, loadProperty, loadingState, setComponent } =

@@ -1,10 +1,10 @@
 import { AIStateConfig, AIStatePhase, AIStateStatus } from "./AIStateTypes";
 import { nanoid } from "nanoid";
-import { AIPromptEngine } from "./AIPromptEngine/AIPromptEngine";
 import { ContentState } from "../../contexts/ContentStateContext/ContentStateContext";
 import createContextContentSelectionsDefaults from "./utils/createContextContentSelectionsDefaults";
-import createAIPromptEngine from "./AIPromptEngine/AIPromptEngineFactory";
-import { AIPromptEngineID } from "./AIPromptEngine/AIPromptEngineTypes";
+import { AIPromptEngineID } from "../AIPromptEngine/AIPromptEngineTypes";
+import { AIPromptEngine } from "../AIPromptEngine/AIPromptEngine";
+import createAIPromptEngine from "../AIPromptEngine/AIPromptEngineFactory";
 
 export default class AIState {
   key: string; // Unique key for React lists

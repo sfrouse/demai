@@ -15,7 +15,7 @@ import CompDefinitionPanel from "./tabPanels/CompDefinitionPanel";
 import WebComponentPanel from "./tabPanels/WebComponentPanel";
 import BindingsPanel from "./tabPanels/BindingsPanel";
 import createCTypeFromCDef from "../../../../../ai/mcp/designSystemMCP/functions/utils/createCTypeFromCDef/createCTypeFromCDef";
-import { AIPromptEngineID } from "../../../../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
+import { AIPromptEngineID } from "../../../../../ai/AIPromptEngine/AIPromptEngineTypes";
 
 export enum COMP_DETAIL_NAVIGATION {
   DEFINITION = "definition",

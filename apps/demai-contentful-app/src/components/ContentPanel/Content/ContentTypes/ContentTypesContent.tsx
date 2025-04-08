@@ -8,7 +8,7 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
-import { AIPromptEngineID } from "../../../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
+import { AIPromptEngineID } from "../../../../ai/AIPromptEngine/AIPromptEngineTypes";
 
 const ContentTypesContent = () => {
   const sdk = useSDK<PageAppSDK>();

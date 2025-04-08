@@ -1,5 +1,5 @@
-import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
-import { AIModels } from "../../../../openAI/openAIConfig";
+import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import { AIModels } from "../../../openAI/openAIConfig";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import createAIPromptEngine from "../../AIPromptEngineFactory";
 import {
@@ -9,17 +9,11 @@ import {
   PromptExecuteResults,
 } from "../../AIPromptEngineTypes";
 
-const ACTION_RESEARCH_ID = "action";
-const ACTION_RESEARCH_BRAND_TONE = "Tone";
-const ACTION_RESEARCH_BRAND_STYLE = "Writing Style";
-const ACTION_RESEARCH_BRAND_DESCRIPTION = "Description";
-const ACTION_RESEARCH_BRAND_PRODUCT = "Product";
+const SOURCE_ID = "source";
+const SOURCE_PROSPECT = "the prospect";
+const SOURCE_DESCRIPTION = "following description";
 
-const SOURCE_RESEARCH_ID = "source";
-const SOURCE_RESEARCH_PROSPECT = "the prospect";
-const SOURCE_RESEARCH_DESCRIPTION = "following description";
-
-export class ResearchFromWebSiteEngine extends AIPromptEngine {
+export class StylesFromWebSiteEngine extends AIPromptEngine {
   constructor(config: AIPromptConfig) {
     super(config);
 
@@ -30,10 +24,13 @@ export class ResearchFromWebSiteEngine extends AIPromptEngine {
     this.system = {
       role: "system",
       content: `
-You are an expert in figuring out a website's brand from investigating the site 
+You are an expert in figuring out a website's brand colors from investigating the site 
 and the relavant websites that talk about the colors or tone for that brand.
 
-Keep any summary you come up with to a paragraph or two at most.
+Make sure to get the exact *hex* color for the 
+various brand colors that can fit into a "primary", "secondary", or "tertiary" 
+schema and then double check your work to see if you got a hex color and if you got 
+enough colors to satisfy the request.
 
 `,
     };
@@ -41,22 +38,11 @@ Keep any summary you come up with to a paragraph or two at most.
 
     // CONTEXT CONTENT
     this.contextContent = (contentState: ContentState) => [
-      "Describe the ",
+      "Find Three Brand Hex Colors from",
       {
-        id: ACTION_RESEARCH_ID,
-        options: [
-          ACTION_RESEARCH_BRAND_DESCRIPTION,
-          ACTION_RESEARCH_BRAND_PRODUCT,
-          ACTION_RESEARCH_BRAND_STYLE,
-          ACTION_RESEARCH_BRAND_TONE,
-        ],
-        defaultValue: ACTION_RESEARCH_BRAND_DESCRIPTION,
-      },
-      "of this brand from",
-      {
-        id: SOURCE_RESEARCH_ID,
-        options: [SOURCE_RESEARCH_PROSPECT, SOURCE_RESEARCH_DESCRIPTION],
-        defaultValue: SOURCE_RESEARCH_PROSPECT,
+        id: SOURCE_ID,
+        options: [SOURCE_PROSPECT, SOURCE_DESCRIPTION],
+        defaultValue: SOURCE_PROSPECT,
       },
       ".",
     ];
@@ -72,15 +58,13 @@ Keep any summary you come up with to a paragraph or two at most.
       const seDescription =
         contentState.research?.fields.solutionEngineerDescription;
       const useProspect =
-        contextContentSelections[SOURCE_RESEARCH_ID] ===
-        SOURCE_RESEARCH_PROSPECT;
+        contextContentSelections[SOURCE_ID] === SOURCE_PROSPECT;
 
       const extra = useProspect
         ? `The prospect is \`${prospect}\` -- \` ${mainWebsite}\` -- ${seDescription}. Don't pull anymore than a couple paragraphs.`
         : "";
 
-      const finalUserContent = userContent;
-      return `${finalUserContent ? `${finalUserContent}. ` : ""}${extra}`;
+      return `${userContent ? `${userContent}. ` : ""}${extra}`;
     };
   }
 
@@ -92,12 +76,12 @@ Keep any summary you come up with to a paragraph or two at most.
   ) {
     const results = await super.runExe(request, response);
 
-    await this.saveToneOrStyle(request, response, chain, results);
+    await this.saveColors(request, response, chain, results);
 
     return results;
   }
 
-  async saveToneOrStyle(
+  async saveColors(
     // aiState: AIState,
     request: string | undefined,
     response: string | undefined,
@@ -111,11 +95,13 @@ Keep any summary you come up with to a paragraph or two at most.
         this.config
       );
       const finalResponse = `
-The research below defines research on this brand. Use the \`update_brand\` tool and update.
+The research below should have definitions for primary, secondary, or tertiary colors.
+Find them and save to research:
 
 ${response}
 `;
       const otherResults = await otherEngine.runExe(
+        // aiStateClone,
         request,
         finalResponse,
         false

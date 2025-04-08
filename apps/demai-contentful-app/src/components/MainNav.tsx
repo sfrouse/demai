@@ -6,7 +6,7 @@ import { Flex, SectionHeading } from "@contentful/f36-components";
 import { useContentStateSession } from "../contexts/ContentStateContext/ContentStateContext";
 import ContentPanelHeader from "./ContentPanel/ContentPanelHeader";
 import useAIState from "../contexts/AIStateContext/useAIState";
-import { AIPromptEngineID } from "../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
+import { AIPromptEngineID } from "../ai/AIPromptEngine/AIPromptEngineTypes";
 
 type NAVIGATION_ENTRY = {
   label: string;

@@ -64,8 +64,9 @@ const ConversationPanel = () => {
         <>
           <ContentPanelHeader title="AutoBench">
             <Button
-              startIcon={<icons.DiamondIcon />}
+              startIcon={<icons.WorkflowsIcon />}
               variant="transparent"
+              size="small"
               onClick={() => setShowWorkBench((prev) => !prev)}
             >
               Workbench
@@ -78,6 +79,7 @@ const ConversationPanel = () => {
             <Button
               startIcon={<icons.DiamondIcon />}
               variant="transparent"
+              size="small"
               onClick={() => setShowWorkBench((prev) => !prev)}
             >
               AutoBench

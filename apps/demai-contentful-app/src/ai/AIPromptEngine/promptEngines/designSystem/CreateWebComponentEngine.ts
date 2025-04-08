@@ -1,5 +1,5 @@
-import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
-import { CREATE_WEB_COMPONENT_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/createWebComponent";
+import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import { CREATE_WEB_COMPONENT_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/createWebComponent";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import {
   AIPromptConfig,

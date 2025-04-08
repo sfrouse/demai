@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import AIState from "../../ai/AIState/AIState";
 import AISessionManager from "../../ai/AIState/AISessionManager";
 import { AIStateConfig, AIStateStatus } from "../../ai/AIState/AIStateTypes";
-import findAISessionManager from "../../locations/page/utils/findAISessionManager";
 import { AIStateRoute } from "./AIStateRouting";
 import { AIStateContext } from "./useAIState";
-import { AIPromptEngineID } from "../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
+import { AIPromptEngineID } from "../../ai/AIPromptEngine/AIPromptEngineTypes";
 
 // Define the shape of the context
 export interface AIStateContextType {

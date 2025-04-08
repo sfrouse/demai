@@ -1,7 +1,7 @@
 import { Button, Flex } from "@contentful/f36-components";
 import tokens from "@contentful/f36-tokens";
 import React from "react";
-import { AIPromptPrompts } from "../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
+import { AIPromptPrompts } from "../../ai/AIPromptEngine/AIPromptEngineTypes";
 
 interface ConversationConfirmProps {
   onCancel: () => void;

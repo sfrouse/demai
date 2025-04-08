@@ -20,7 +20,7 @@ import LoadingPage from "../Loading/LoadingPage";
 import {
   AIPromptContentPrefix,
   AIPromptEngineID,
-} from "../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
+} from "../../ai/AIPromptEngine/AIPromptEngineTypes";
 
 interface ConversationStateEditorProps {}
 

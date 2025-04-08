@@ -1,7 +1,7 @@
-import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
-import updateBrandColors from "../../../../mcp/researchMCP/tools/updateBrandColors";
-import updateResearch from "../../../../mcp/researchMCP/tools/updateResearch";
-import { AIModels } from "../../../../openAI/openAIConfig";
+import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import updateBrandColors from "../../../mcp/researchMCP/tools/updateBrandColors";
+import updateResearch from "../../../mcp/researchMCP/tools/updateResearch";
+import { AIModels } from "../../../openAI/openAIConfig";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import { AIPromptConfig } from "../../AIPromptEngineTypes";
 

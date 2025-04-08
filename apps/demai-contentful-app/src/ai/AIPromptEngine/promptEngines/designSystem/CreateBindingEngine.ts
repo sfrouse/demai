@@ -1,13 +1,14 @@
 import { ContentType } from "contentful-management";
-import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
-import { CREATE_BINDING_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/createBinding";
-import { AIPromptEngine } from "../../AIPromptEngine";
-import contentTypeToAI from "../../../utils/contentTypeToAI";
-import cDefToAI from "../../../utils/cDefToAI";
+import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import { CREATE_BINDING_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/createBinding";
+
 import {
   AIPromptConfig,
   AIPromptContextContentSelections,
 } from "../../AIPromptEngineTypes";
+import { AIPromptEngine } from "../../AIPromptEngine";
+import contentTypeToAI from "../../../AIState/utils/contentTypeToAI";
+import cDefToAI from "../../../AIState/utils/cDefToAI";
 
 export class CreateBindingEngine extends AIPromptEngine {
   constructor(config: AIPromptConfig) {
