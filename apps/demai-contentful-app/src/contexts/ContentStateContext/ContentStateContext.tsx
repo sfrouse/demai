@@ -119,7 +119,15 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     } else {
       switch (key) {
         case "contentTypes": {
-          payload = await getContentTypes(sdk);
+          const params = {
+            ...(sdk.parameters.installation as AppInstallationParameters),
+          };
+          payload = await getContentTypes({
+            cma: params.cma,
+            spaceId: sdk.ids.space,
+            environmentId: sdk.ids.environment,
+            openAiApiKey: params.openai,
+          });
           break;
         }
         case "entries": {

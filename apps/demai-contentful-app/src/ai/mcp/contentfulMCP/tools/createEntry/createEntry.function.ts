@@ -28,7 +28,6 @@ export default async function createEntryFunction(
     const fieldDef = contentType.fields.find((f: any) => f.id === key);
     if (!fieldDef) return; // Skip unknown fields
 
-    console.log("fieldDef", fieldDef);
     switch (fieldDef.type) {
       case "Number":
         finalFields[key] = { "en-US": Number(value) };

@@ -11,7 +11,6 @@ import ContentPanelHeader from "../../ContentPanelHeader";
 import tokens from "@contentful/f36-tokens";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
-import LoadingPage from "../../../Loading/LoadingPage";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { AppInstallationParameters } from "../../../../locations/config/ConfigScreen";
@@ -34,6 +33,10 @@ const ProspectContent = () => {
     if (!contentState.research || forceReload) {
       if (!forceReload) setLocalInvalidated(invalidated);
       loadProperty("research", forceReload);
+    }
+    if (!contentState.contentTypes || forceReload) {
+      if (!forceReload) setLocalInvalidated(invalidated);
+      loadProperty("contentTypes", forceReload);
     }
   }, [invalidated, cpa]);
 

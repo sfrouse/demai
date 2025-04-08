@@ -9,17 +9,27 @@ import {
   PromptExecuteResults,
 } from "../../AIPromptEngineTypes";
 
-const ACTION_RESEARCH_ID = "action";
-const ACTION_RESEARCH_BRAND_TONE = "Tone";
-const ACTION_RESEARCH_BRAND_STYLE = "Writing Style";
-const ACTION_RESEARCH_BRAND_DESCRIPTION = "Description";
-const ACTION_RESEARCH_BRAND_PRODUCT = "Product";
-
-const SOURCE_RESEARCH_ID = "source";
-const SOURCE_RESEARCH_PROSPECT = "the prospect";
-const SOURCE_RESEARCH_DESCRIPTION = "following description";
-
 export class ResearchFromWebSiteEngine extends AIPromptEngine {
+  static ACTION_RESEARCH_ID = "action";
+  static ACTION_RESEARCH_BRAND_TONE = "Tone";
+  static ACTION_RESEARCH_BRAND_STYLE = "Writing Style";
+  static ACTION_RESEARCH_BRAND_DESCRIPTION = "Description";
+  static ACTION_RESEARCH_BRAND_PRODUCT = "Product";
+  static ACTION_RESEARCH_OPTIONS = [
+    ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_DESCRIPTION,
+    ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_PRODUCT,
+    ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_STYLE,
+    ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_TONE,
+  ];
+
+  static SOURCE_RESEARCH_ID = "source";
+  static SOURCE_RESEARCH_PROSPECT = "the prospect";
+  static SOURCE_RESEARCH_DESCRIPTION = "following description";
+  static SOURCE_RESEARCH_OPTIONS = [
+    ResearchFromWebSiteEngine.SOURCE_RESEARCH_PROSPECT,
+    ResearchFromWebSiteEngine.SOURCE_RESEARCH_DESCRIPTION,
+  ];
+
   constructor(config: AIPromptConfig) {
     super(config);
 
@@ -43,20 +53,16 @@ Keep any summary you come up with to a paragraph or two at most.
     this.contextContent = (contentState: ContentState) => [
       "Describe the ",
       {
-        id: ACTION_RESEARCH_ID,
-        options: [
-          ACTION_RESEARCH_BRAND_DESCRIPTION,
-          ACTION_RESEARCH_BRAND_PRODUCT,
-          ACTION_RESEARCH_BRAND_STYLE,
-          ACTION_RESEARCH_BRAND_TONE,
-        ],
-        defaultValue: ACTION_RESEARCH_BRAND_DESCRIPTION,
+        id: ResearchFromWebSiteEngine.ACTION_RESEARCH_ID,
+        options: ResearchFromWebSiteEngine.ACTION_RESEARCH_OPTIONS,
+        defaultValue:
+          ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_DESCRIPTION,
       },
       "of this brand from",
       {
-        id: SOURCE_RESEARCH_ID,
-        options: [SOURCE_RESEARCH_PROSPECT, SOURCE_RESEARCH_DESCRIPTION],
-        defaultValue: SOURCE_RESEARCH_PROSPECT,
+        id: ResearchFromWebSiteEngine.SOURCE_RESEARCH_ID,
+        options: ResearchFromWebSiteEngine.SOURCE_RESEARCH_OPTIONS,
+        defaultValue: ResearchFromWebSiteEngine.SOURCE_RESEARCH_PROSPECT,
       },
       ".",
     ];
@@ -72,8 +78,9 @@ Keep any summary you come up with to a paragraph or two at most.
       const seDescription =
         contentState.research?.fields.solutionEngineerDescription;
       const useProspect =
-        contextContentSelections[SOURCE_RESEARCH_ID] ===
-        SOURCE_RESEARCH_PROSPECT;
+        contextContentSelections[
+          ResearchFromWebSiteEngine.SOURCE_RESEARCH_ID
+        ] === ResearchFromWebSiteEngine.SOURCE_RESEARCH_PROSPECT;
 
       const extra = useProspect
         ? `The prospect is \`${prospect}\` -- \` ${mainWebsite}\` -- ${seDescription}. Don't pull anymore than a couple paragraphs.`

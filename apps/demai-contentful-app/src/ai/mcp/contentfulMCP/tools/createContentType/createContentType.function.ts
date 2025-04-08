@@ -49,6 +49,8 @@ export default async function createContentTypeFunction(
     toCamelCase(params.name),
     contentTypeProps
   );
+  console.log("created contentType.sys.id", contentType.sys.id);
+  await contentType.publish();
 
   return {
     content: [{ type: "text", text: JSON.stringify(contentType, null, 2) }],

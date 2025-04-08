@@ -1,4 +1,5 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import getContentTypes from "../../../../contexts/ContentStateContext/services/getContentTypes";
 import contentTypeToAI from "../../../AIState/utils/contentTypeToAI";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import {
@@ -6,13 +7,20 @@ import {
   AIPromptContextContentSelections,
 } from "../../AIPromptEngineTypes";
 
-const CONTEXT_NUMBER_OF_TYPES = "numberOfCTypes";
-const CONTEXT_CTYPE_ID = "ctypeId";
-const CONTEXT_TONE_AND_STYLE = "toneAndStyle";
-const CONTEXT_TONE_AND_STYLE_BRAND = "the prospect";
-const CONTEXT_TONE_AND_STYLE_DESCRIPTION = "my description";
-
 export class CreateEntryEngine extends AIPromptEngine {
+  static CONTEXT_NUMBER_OF_TYPES = "numberOfCTypes";
+  static CONTEXT_CTYPE_ID = "ctypeId";
+
+  static CONTEXT_TONE_AND_STYLE = "toneAndStyle";
+  static CONTEXT_TONE_AND_STYLE_BRAND = "the prospect";
+  static CONTEXT_TONE_AND_STYLE_DESCRIPTION = "my description";
+  static CONTEXT_TONE_AND_STYLE_OPTIONS = [
+    CreateEntryEngine.CONTEXT_TONE_AND_STYLE_BRAND,
+    CreateEntryEngine.CONTEXT_TONE_AND_STYLE_DESCRIPTION,
+  ];
+  static CONTEXT_TONE_AND_STYLE_DEFAULT =
+    CreateEntryEngine.CONTEXT_TONE_AND_STYLE_BRAND;
+
   constructor(config: AIPromptConfig) {
     super(config);
 
@@ -36,13 +44,13 @@ Don't forget to include all the new fields in the function call. This is essenti
     this.contextContent = (contentState: ContentState) => [
       "Create",
       {
-        id: CONTEXT_NUMBER_OF_TYPES,
+        id: CreateEntryEngine.CONTEXT_NUMBER_OF_TYPES,
         options: ["1", "2", "3", "4", "5", "6"],
         defaultValue: "1",
       },
       "entries of content type:",
       {
-        id: CONTEXT_CTYPE_ID,
+        id: CreateEntryEngine.CONTEXT_CTYPE_ID,
         options: contentState.contentTypes?.map((ctype) => ctype.sys.id) || [],
         labels: contentState.contentTypes?.map((ctype) => ctype.name) || [],
         defaultValue:
@@ -54,12 +62,9 @@ Don't forget to include all the new fields in the function call. This is essenti
       "[BREAK]",
       "Use style and tone from",
       {
-        id: CONTEXT_TONE_AND_STYLE,
-        options: [
-          CONTEXT_TONE_AND_STYLE_BRAND,
-          CONTEXT_TONE_AND_STYLE_DESCRIPTION,
-        ],
-        defaultValue: CONTEXT_TONE_AND_STYLE_BRAND,
+        id: CreateEntryEngine.CONTEXT_TONE_AND_STYLE,
+        options: CreateEntryEngine.CONTEXT_TONE_AND_STYLE_OPTIONS,
+        defaultValue: CreateEntryEngine.CONTEXT_TONE_AND_STYLE_DEFAULT,
       },
     ];
 
@@ -70,11 +75,13 @@ Don't forget to include all the new fields in the function call. This is essenti
       contentState: ContentState
     ) => {
       const ctype = contentState.contentTypes?.find(
-        (comp) => comp.sys.id === contextContentSelections[CONTEXT_CTYPE_ID]
+        (comp) =>
+          comp.sys.id ===
+          contextContentSelections[CreateEntryEngine.CONTEXT_CTYPE_ID]
       );
       const useBrand =
-        contextContentSelections[CONTEXT_TONE_AND_STYLE] ===
-        CONTEXT_TONE_AND_STYLE_BRAND;
+        contextContentSelections[CreateEntryEngine.CONTEXT_TONE_AND_STYLE] ===
+        CreateEntryEngine.CONTEXT_TONE_AND_STYLE_BRAND;
 
       return `
 ${userContent}.

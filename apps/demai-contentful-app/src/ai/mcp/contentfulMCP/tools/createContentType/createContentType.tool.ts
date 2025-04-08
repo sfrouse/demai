@@ -3,7 +3,11 @@ export const CREATE_CONTENT_TYPE = "create_content_type";
 const createEntryTool = {
   name: CREATE_CONTENT_TYPE,
   description: `
-Create a new content type in Contentful.`,
+Create a new content type in Contentful.
+A content type in Contentful is like a template or blueprint for your content that describes ideas or content that is important to a website or brand.
+It defines the structure by specifying the fields (e.g., text, media, references) that entries of that type will have.
+For example, a “Blog Post” content type might include fields like title, body, author, and publish date.
+Every entry created from this type will follow that same structure.`,
   inputSchema: {
     type: "object",
     properties: {
@@ -88,7 +92,11 @@ Create a new content type in Contentful.`,
         },
       },
       description: { type: "string" },
-      displayField: { type: "string" },
+      displayField: {
+        type: "string",
+        description:
+          "the *ID* of the field that should be used as the default display title in lists and such. Do not use the name of the field, use the id of an existing field.",
+      },
     },
     required: ["name", "fields", "displayField"],
   },

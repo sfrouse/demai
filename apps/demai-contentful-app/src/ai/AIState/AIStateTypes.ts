@@ -1,4 +1,4 @@
-import { AIPromptContextContentSelections } from "./AIPromptEngine/AIPromptEngineTypes";
+import { AIPromptContextContentSelections } from "../AIPromptEngine/AIPromptEngineTypes";
 
 export type AIStateConfig = {
   cma: string;

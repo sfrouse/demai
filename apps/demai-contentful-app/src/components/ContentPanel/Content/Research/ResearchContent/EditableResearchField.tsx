@@ -51,7 +51,7 @@ const EditableResearchField: React.FC<Props> = ({
     await saveResearch(id);
   };
 
-  if (!content) return null;
+  // if (!content) return null;
 
   return (
     <Flex flexDirection="column" style={{ marginBottom: tokens.spacingL }}>

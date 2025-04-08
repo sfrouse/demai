@@ -1,7 +1,7 @@
-import { AIStateContentPrefix } from "../AIStateTypes";
+import { AIPromptContentPrefix } from "../../AIPromptEngine/AIPromptEngineTypes";
 
 export default function createContextContentSelectionsDefaults(
-  contentPrefixes: AIStateContentPrefix,
+  contentPrefixes: AIPromptContentPrefix,
   selections: { [key: string]: string } = {}
 ): { [key: string]: string } {
   contentPrefixes.forEach((item) => {

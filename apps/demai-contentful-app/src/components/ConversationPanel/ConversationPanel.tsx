@@ -13,6 +13,7 @@ import ConversationBubble from "./ConversationBubble/ConversationBubble";
 import ConversationToolbar from "./ConversationBubble/ConversationToolbar";
 import * as icons from "@contentful/f36-icons";
 import ContentPanelHeader from "../ContentPanel/ContentPanelHeader";
+import AutoBench from "./AutoBench/AutoBench";
 
 const ConversationPanel = () => {
   const { spaceStatus, loadingState, contentState } = useContentStateSession();
@@ -61,18 +62,7 @@ const ConversationPanel = () => {
         ></div>
       ) : null}
       {!showWorkBench ? (
-        <>
-          <ContentPanelHeader title="AutoBench">
-            <Button
-              startIcon={<icons.WorkflowsIcon />}
-              variant="transparent"
-              size="small"
-              onClick={() => setShowWorkBench((prev) => !prev)}
-            >
-              Workbench
-            </Button>
-          </ContentPanelHeader>
-        </>
+        <AutoBench setShowWorkBench={setShowWorkBench} />
       ) : (
         <>
           <ContentPanelHeader title="Workbench">

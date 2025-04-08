@@ -1,5 +1,5 @@
 import { IconComponent, IconProps } from "@contentful/f36-components";
-import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
+import { ContentState } from "../../contexts/ContentStateContext/ContentStateContext";
 
 export type PromptRunResults =
   | { success: true; result: string }

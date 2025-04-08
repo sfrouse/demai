@@ -1,7 +1,6 @@
 import { AIStateConfig, AIStatePhase, AIStateStatus } from "./AIStateTypes";
 import { nanoid } from "nanoid";
 import { ContentState } from "../../contexts/ContentStateContext/ContentStateContext";
-import createContextContentSelectionsDefaults from "./utils/createContextContentSelectionsDefaults";
 import { AIPromptEngineID } from "../AIPromptEngine/AIPromptEngineTypes";
 import { AIPromptEngine } from "../AIPromptEngine/AIPromptEngine";
 import createAIPromptEngine from "../AIPromptEngine/AIPromptEngineFactory";
@@ -62,7 +61,6 @@ export default class AIState {
     ignoreContextContent: boolean = false
   ) {
     this.refreshState();
-    console.log("RUN", forceExecution, this.status.phase);
     if (
       forceExecution === true ||
       this.status.phase === AIStatePhase.describing
@@ -181,9 +179,8 @@ ${toolSummary}
   }
 
   processContextSelections(contentState: ContentState) {
-    const defaultSelections = createContextContentSelectionsDefaults(
-      this.promptEngine.contextContent(contentState)
-    );
+    const defaultSelections =
+      this.promptEngine.getContextContentSelectionDefaults(contentState);
     this.status.contextContentSelections = {
       ...defaultSelections,
       ...this.status.contextContentSelections,
@@ -214,6 +211,7 @@ ${toolSummary}
       errors: [],
     });
   }
+
   updateStatus(statusUpdates?: Partial<AIStateStatus>) {
     this.status = { ...this.status, ...statusUpdates };
     this.refreshState();

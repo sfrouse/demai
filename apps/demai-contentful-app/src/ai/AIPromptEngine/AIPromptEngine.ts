@@ -98,6 +98,23 @@ export class AIPromptEngine {
     );
   }
 
+  async runAndExec(
+    request: string | undefined,
+    contentState: ContentState,
+    chain: boolean = false
+  ) {
+    const runResults = await this.run(request);
+    if (runResults.success) {
+      const response = this.responseContent(
+        `${runResults.result}`,
+        contentState
+      );
+      const runExeResults = await this.runExe(request, response);
+      return runExeResults;
+    }
+    return runResults;
+  }
+
   async run(
     request: string | undefined,
     chain: boolean = false
@@ -272,6 +289,35 @@ export class AIPromptEngine {
       : "";
 
     return [...contextPrompt, content].join(" ");
+  }
+
+  getContextContentSelectionDefaults(
+    contentState: ContentState,
+    selections: AIPromptContextContentSelections = {},
+    path?: AIPromptContentPrefix
+  ) {
+    const contentPrefixes = path || this.contextContent(contentState);
+    contentPrefixes.forEach((item) => {
+      if (typeof item === "string") {
+        return; // Skip plain strings
+      }
+
+      // Store default value for the select item
+      selections[item.id] = item.defaultValue;
+
+      // Recursively process paths if they exist
+      if (item.paths) {
+        item.paths.forEach((path) => {
+          this.getContextContentSelectionDefaults(
+            contentState,
+            selections,
+            path
+          );
+        });
+      }
+    });
+
+    return selections;
   }
 
   async getTools(toolFilters?: string[]) {
