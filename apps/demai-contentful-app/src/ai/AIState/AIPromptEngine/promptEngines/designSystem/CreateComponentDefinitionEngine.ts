@@ -1,11 +1,14 @@
 import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import { CREATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../../mcp/designSystemMCP/tools/createComponentDefinition/createComponentDefinition.tool";
-import AIState from "../../../AIState";
 import { AIPromptEngine } from "../../AIPromptEngine";
+import {
+  AIPromptConfig,
+  AIPromptContextContentSelections,
+} from "../../AIPromptEngineTypes";
 
 export class CreateComponentDefinitionEngine extends AIPromptEngine {
-  constructor(aiState: AIState) {
-    super(aiState);
+  constructor(config: AIPromptConfig) {
+    super(config);
 
     this.system = {
       role: "system",
@@ -39,10 +42,13 @@ Make sure to tell the SE what name and id you are going to use, but summarize th
         "component.",
       ];
     };
-    this.content = (aiState: AIState, contentState: ContentState) => {
+    this.content = (
+      userContent: string,
+      contextContentSelections: AIPromptContextContentSelections,
+      contentState: ContentState
+    ) => {
       const compDefEntry = contentState.components?.find(
-        (comp) =>
-          comp.sys.id === aiState.contextContentSelections["componentId"]
+        (comp) => comp.sys.id === contextContentSelections["componentId"]
       );
       if (compDefEntry && compDefEntry.fields?.componentDefinition) {
         const compDef = compDefEntry.fields?.componentDefinition;
@@ -60,7 +66,7 @@ Make sure to tell the SE what name and id you are going to use, but summarize th
       }
 
       return `
-${aiState.userContent}.
+${userContent}.
 Use \`demai\` as the prefix for the component id. This will be used for the tag name in web components later.
 
 If you do something design oriented, try to follow the patterns in these css variables from the design system.

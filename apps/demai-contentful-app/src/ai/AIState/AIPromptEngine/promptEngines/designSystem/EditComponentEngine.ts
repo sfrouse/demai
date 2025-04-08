@@ -1,8 +1,11 @@
 import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import { UPDATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/updateComponentDefinition";
-import AIState from "../../../AIState";
 import cDefToAI from "../../../utils/cDefToAI";
 import { AIPromptEngine } from "../../AIPromptEngine";
+import {
+  AIPromptConfig,
+  AIPromptContextContentSelections,
+} from "../../AIPromptEngineTypes";
 
 const EDIT_COMP_ACTION = "compAction";
 const EDIT_COMP_ACTION_DEFITION = "Component Definition";
@@ -10,8 +13,8 @@ const EDIT_COMP_ACTION_WEB_COMP = "Web Component";
 const EDIT_COMP_ACTION_BINDING = "Binding";
 
 export class EditComponentEngine extends AIPromptEngine {
-  constructor(aiState: AIState) {
-    super(aiState);
+  constructor(config: AIPromptConfig) {
+    super(config);
 
     this.introMessage =
       "Let's edit this component definition, what would you like to do?";
@@ -44,11 +47,14 @@ A component is made up of a definition, code, and bindings.
         "for this component.",
       ];
     };
-    this.content = (aiState: AIState, contentState: ContentState) => {
-      console.log("content", aiState, contentState);
+    this.content = (
+      userContent: string,
+      contextContentSelections: AIPromptContextContentSelections,
+      contentState: ContentState
+    ) => {
       const comp = contentState.component;
       let compInfo = "";
-      switch (aiState.contextContentSelections[EDIT_COMP_ACTION]) {
+      switch (contextContentSelections[EDIT_COMP_ACTION]) {
         case EDIT_COMP_ACTION_DEFITION: {
           // need cDef to look like MCP version...
           const mcpCDef = cDefToAI(comp?.fields.componentDefinition);
@@ -107,7 +113,7 @@ ${JSON.stringify(comp?.fields.bindings, null, 2)}
       }
 
       return `
-${aiState.userContent}. ${compInfo}`;
+${userContent}. ${compInfo}`;
     };
   }
 }

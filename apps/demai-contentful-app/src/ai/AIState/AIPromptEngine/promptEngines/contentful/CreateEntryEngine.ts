@@ -1,7 +1,10 @@
 import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
-import AIState from "../../../AIState";
 import contentTypeToAI from "../../../utils/contentTypeToAI";
 import { AIPromptEngine } from "../../AIPromptEngine";
+import {
+  AIPromptConfig,
+  AIPromptContextContentSelections,
+} from "../../AIPromptEngineTypes";
 
 const CONTEXT_NUMBER_OF_TYPES = "numberOfCTypes";
 const CONTEXT_CTYPE_ID = "ctypeId";
@@ -10,8 +13,8 @@ const CONTEXT_TONE_AND_STYLE_BRAND = "the prospect";
 const CONTEXT_TONE_AND_STYLE_DESCRIPTION = "my description";
 
 export class CreateEntryEngine extends AIPromptEngine {
-  constructor(aiState: AIState) {
-    super(aiState);
+  constructor(config: AIPromptConfig) {
+    super(config);
 
     this.introMessage = "Let’s create some entries, what would you like to do?";
     this.executionPrompt = "Creating your Entries...";
@@ -61,17 +64,20 @@ Don't forget to include all the new fields in the function call. This is essenti
     ];
 
     // CONTENT
-    this.content = (aiState: AIState, contentState: ContentState) => {
+    this.content = (
+      userContent: string,
+      contextContentSelections: AIPromptContextContentSelections,
+      contentState: ContentState
+    ) => {
       const ctype = contentState.contentTypes?.find(
-        (comp) =>
-          comp.sys.id === aiState.contextContentSelections[CONTEXT_CTYPE_ID]
+        (comp) => comp.sys.id === contextContentSelections[CONTEXT_CTYPE_ID]
       );
       const useBrand =
-        aiState.contextContentSelections[CONTEXT_TONE_AND_STYLE] ===
+        contextContentSelections[CONTEXT_TONE_AND_STYLE] ===
         CONTEXT_TONE_AND_STYLE_BRAND;
 
       return `
-${aiState.userContent}.
+${userContent}.
   
 That content types full definition is:
 

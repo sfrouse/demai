@@ -1,10 +1,14 @@
-import AIState from "../../../AIState";
-import { AIPromptEngineID } from "../../../AIStateTypes";
-import { AIPromptEngine, PromptExecuteResults } from "../../AIPromptEngine";
+import { AIPromptEngine } from "../../AIPromptEngine";
+import createAIPromptEngine from "../../AIPromptEngineFactory";
+import {
+  AIPromptConfig,
+  AIPromptEngineID,
+  PromptExecuteResults,
+} from "../../AIPromptEngineTypes";
 
 export class CreateContentTypeEngine extends AIPromptEngine {
-  constructor(aiState: AIState) {
-    super(aiState);
+  constructor(config: AIPromptConfig) {
+    super(config);
 
     this.system = {
       role: "system",
@@ -39,10 +43,12 @@ If you find that a tool would be useful, render that tool name in the output.
   }
 
   async runExe(
-    aiState: AIState,
+    // aiState: AIState,
+    request: string | undefined,
+    response: string | undefined,
     chain?: boolean
   ): Promise<PromptExecuteResults> {
-    const results = await super.runExe(aiState, chain);
+    const results = await super.runExe(request, response, chain);
     if (results.success === true) {
       const newContentType = results.toolResults?.[0]?.content?.[0]?.text;
 
@@ -56,13 +62,15 @@ If you find that a tool would be useful, render that tool name in the output.
 
       // publish as well...
       if (newContentTypeId) {
-        const publishEngine = AIState.createAIPromptEngine(
+        const publishEngine = createAIPromptEngine(
           AIPromptEngineID.EDIT_CONTENT_TYPE, // has publish in it
-          aiState
+          this.config
         );
-        const aiStateClone = aiState.clone();
-        aiStateClone.response = `publish the content type with id ${newContentTypeId}`;
-        const otherResults = await publishEngine.runExe(aiStateClone, false);
+        const otherResults = await publishEngine.runExe(
+          request,
+          `publish the content type with id ${newContentTypeId}`,
+          false
+        );
         if (otherResults.success === true) {
           return {
             success: true,

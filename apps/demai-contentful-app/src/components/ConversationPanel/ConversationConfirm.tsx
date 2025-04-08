@@ -1,12 +1,12 @@
 import { Button, Flex } from "@contentful/f36-components";
 import tokens from "@contentful/f36-tokens";
 import React from "react";
-import { AIActionPrompts } from "../../ai/_archive/v3/AIAction/AIActionTypes";
+import { AIPromptPrompts } from "../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
 
 interface ConversationConfirmProps {
   onCancel: () => void;
   onConfirm: () => void;
-  prompts?: AIActionPrompts;
+  prompts?: AIPromptPrompts;
   style?: React.CSSProperties;
   visible: boolean;
 }
@@ -33,16 +33,18 @@ const ConversationConfirm: React.FC<ConversationConfirmProps> = ({
     >
       {/* <Paragraph>{message}</Paragraph> */}
       <Flex flexDirection="row" justifyContent="center" alignItems="center">
-        <Button
-          startIcon={
-            prompts?.cancelIcon && React.createElement(prompts.cancelIcon)
-          }
-          variant="secondary"
-          onClick={onCancel}
-          style={{ marginRight: "10px" }}
-        >
-          {prompts?.cancel}
-        </Button>
+        {prompts?.cancel && (
+          <Button
+            startIcon={
+              prompts?.cancelIcon && React.createElement(prompts.cancelIcon)
+            }
+            variant="secondary"
+            onClick={onCancel}
+            style={{ marginRight: "10px" }}
+          >
+            {prompts?.cancel}
+          </Button>
+        )}
         <Button
           startIcon={prompts?.runIcon && React.createElement(prompts.runIcon)}
           variant="primary"

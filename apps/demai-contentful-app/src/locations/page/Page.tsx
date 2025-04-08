@@ -17,8 +17,18 @@ import testCPA from "./utils/testCPA";
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
   const { spaceStatus, validateSpace, setCPA } = useContentStateSession();
-  const { setAIStateConfig, setRoute } = useAIState();
+  const { setAIStateConfig, setRoute, route, findAndSetAIState } = useAIState();
   const [configReady, setConfigReady] = useState<boolean>(false);
+
+  // MAIN AISTATE MANEGEMENT
+  useEffect(() => {
+    if (route && route.aiStateEngines.length > 0) {
+      findAndSetAIState(
+        route.aiStateEngines[route.aiStateEngineFocus || 0],
+        JSON.stringify(route)
+      );
+    }
+  }, [route]);
 
   useEffect(() => {
     (async () => {

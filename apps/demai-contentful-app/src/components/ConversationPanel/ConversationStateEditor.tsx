@@ -9,10 +9,6 @@ import {
   Textarea,
 } from "@contentful/f36-components";
 import * as icons from "@contentful/f36-icons";
-import {
-  AIPromptEngineID,
-  AIStateContentPrefix,
-} from "../../ai/AIState/AIStateTypes";
 import AIState from "../../ai/AIState/AIState";
 import {
   ContentState,
@@ -21,6 +17,10 @@ import {
 import LoadingIcon from "../Loading/LoadingIcon";
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import LoadingPage from "../Loading/LoadingPage";
+import {
+  AIPromptContentPrefix,
+  AIPromptEngineID,
+} from "../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
 
 interface ConversationStateEditorProps {}
 
@@ -183,7 +183,7 @@ const renderContextContent = (
 
 const renderContextContentRow = (
   aiState: AIState,
-  contextContent: AIStateContentPrefix,
+  contextContent: AIPromptContentPrefix,
   pathIndexes: { sentenceIndex: number; pathIndex: number }[] = []
 ): (JSX.Element | null)[] => {
   const output: (JSX.Element | null)[] = [];
@@ -213,7 +213,7 @@ const renderContextContentRow = (
     }
 
     const val =
-      aiState.contextContentSelections[item.id] ||
+      aiState.status.contextContentSelections[item.id] ||
       item.defaultValue ||
       (item.options[0] as any);
     let path, pathIndex;
@@ -232,7 +232,7 @@ const renderContextContentRow = (
             const val = e.target.value;
             aiState.updateStatus({
               contextContentSelections: {
-                ...aiState.contextContentSelections,
+                ...aiState.status.contextContentSelections,
                 [item.id]: val,
               },
             });

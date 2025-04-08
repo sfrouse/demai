@@ -1,10 +1,13 @@
 import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
-import AIState from "../../../AIState";
 import { AIPromptEngine } from "../../AIPromptEngine";
+import {
+  AIPromptConfig,
+  AIPromptContextContentSelections,
+} from "../../AIPromptEngineTypes";
 
 export class EditContentTypeEngine extends AIPromptEngine {
-  constructor(aiState: AIState) {
-    super(aiState);
+  constructor(config: AIPromptConfig) {
+    super(config);
 
     this.introMessage = "What would you like to do to this content type?";
     this.executionPrompt = "Updated your Content Types...";
@@ -34,9 +37,13 @@ export class EditContentTypeEngine extends AIPromptEngine {
     ];
 
     // CONTENT
-    this.content = (aiState: AIState, contentState: ContentState) => {
+    this.content = (
+      userContent: string,
+      contextContentSelections: AIPromptContextContentSelections,
+      contentState: ContentState
+    ) => {
       let extra = "";
-      if (aiState.contextContentSelections["action"] === "Edit") {
+      if (contextContentSelections["action"] === "Edit") {
         extra = `Please show what you are going to do to the content type.
 Could you skip loading the content type and just use this information 
       
@@ -45,7 +52,7 @@ ${JSON.stringify(contentState.contentType)}
 \`\`\`
 `;
       }
-      return `${aiState.userContent}. ${extra}`;
+      return `${userContent}. ${extra}`;
     };
   }
 }

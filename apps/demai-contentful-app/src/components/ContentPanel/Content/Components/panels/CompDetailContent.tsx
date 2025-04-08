@@ -7,7 +7,6 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import * as icons from "@contentful/f36-icons";
 import { useCallback, useEffect, useState } from "react";
 import useAIState from "../../../../../contexts/AIStateContext/useAIState";
-import { AIPromptEngineID } from "../../../../../ai/AIState/AIStateTypes";
 import saveComponent from "./utils/saveComponent";
 import validateComponent, { ValidationResult } from "./utils/validateComponent";
 import { PageAppSDK } from "@contentful/app-sdk";
@@ -16,6 +15,7 @@ import CompDefinitionPanel from "./tabPanels/CompDefinitionPanel";
 import WebComponentPanel from "./tabPanels/WebComponentPanel";
 import BindingsPanel from "./tabPanels/BindingsPanel";
 import createCTypeFromCDef from "../../../../../ai/mcp/designSystemMCP/functions/utils/createCTypeFromCDef/createCTypeFromCDef";
+import { AIPromptEngineID } from "../../../../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
 
 export enum COMP_DETAIL_NAVIGATION {
   DEFINITION = "definition",

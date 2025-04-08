@@ -5,12 +5,9 @@ import scrollBarStyles from "../../utils/ScrollBarMinimal.module.css";
 import convertMarkdown from "../util/convertMarkdown";
 import ConversationTitle from "./ConversationTitle";
 import { Flex } from "@contentful/f36-components";
-import ButtonXs from "../../ButtonXs/ButtonXs";
 
 const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
   if (!aiState) return null;
-  const [showSystem, setShowSystem] = useState<boolean>(false);
-  const [showFullPrompt, setShowFullPrompt] = useState<boolean>(false);
   const [systemHtml, setSystemHtml] = useState<string>("");
   const [userContentHTML, setUserContentHTML] = useState<string>("");
   const [requestHtml, setRequestHTML] = useState<string>("");
@@ -28,7 +25,7 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
 
   useEffect(() => {
     (async () => {
-      if (!showSystem || toolsHtml) return;
+      // if (!showSystem || toolsHtml) return;
       const tools = await aiState.promptEngine.getTools(
         aiState.promptEngine.toolFilters
       );
@@ -37,14 +34,17 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
         .join(", ");
       setToolsHTML(toolNames || "");
     })();
-  }, [aiState.promptEngine, showSystem]);
+  }, [
+    aiState.promptEngine,
+    // showSystem
+  ]);
 
   useEffect(() => {
     (async () => {
-      const newHTML = convertMarkdown(`${aiState.userContent}`);
+      const newHTML = convertMarkdown(`${aiState.status.userContent}`);
       setUserContentHTML(newHTML);
     })();
-  }, [aiState.userContent]);
+  }, [aiState.status.userContent]);
 
   useEffect(() => {
     (async () => {
@@ -67,27 +67,6 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
     })();
   }, [aiState.executionResponse]);
 
-  if (!aiState.request) {
-    return (
-      <div>
-        <div
-          style={{
-            alignSelf: "flex-start",
-            backgroundColor: "rgba(0,0,0,0)",
-            maxWidth: "100%",
-            width: "100%",
-            fontSize: tokens.fontSizeM,
-            padding: `0 ${tokens.spacingL} ${tokens.spacingM} ${tokens.spacingL}`,
-          }}
-        >
-          <span>{aiState.promptEngine.introMessage}</span>
-        </div>
-      </div>
-    );
-  }
-
-  const doShowPromptMore = requestHtml?.length > 200;
-
   return (
     <Flex
       flexDirection="column"
@@ -106,126 +85,81 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
         fontSize: 12,
         gap: tokens.spacingM,
         backgroundColor: "rgba(0,0,0,0)",
-        paddingTop: tokens.spacingL,
+        padding: `${tokens.spacingL} 0`,
       }}
     >
-      {/* <Divider style={{ margin: 0 }} /> */}
-      <div
-        style={{
-          padding: `0 ${tokens.spacingL}`,
-        }}
-      >
-        <ConversationTitle title="User Prompt" />
-        <span
-          dangerouslySetInnerHTML={{
-            __html: aiState.userContent ? userContentHTML : "--",
-          }}
-        ></span>
-      </div>
-      <div
-        style={{
-          padding: `0 ${tokens.spacingL}`,
-        }}
-      >
-        <ConversationTitle title="Full Prompt" />
+      <div>
         <div
           style={{
-            maxHeight: showFullPrompt ? "initial" : 100,
-            overflow: "hidden",
-            position: "relative",
-            paddingBottom: doShowPromptMore ? 40 : 0,
+            alignSelf: "flex-start",
+            backgroundColor: "rgba(0,0,0,0)",
+            maxWidth: "100%",
+            width: "100%",
+            fontSize: tokens.fontSizeM,
+            padding: `0 ${tokens.spacingL} ${tokens.spacingM} ${tokens.spacingL}`,
           }}
         >
-          <span dangerouslySetInnerHTML={{ __html: requestHtml }}></span>
-          {doShowPromptMore &&
-            (showFullPrompt ? (
-              <Flex
-                justifyContent="center"
-                alignItems="flex-end"
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: 60,
-                  background: "linear-gradient(to top, white, transparent)",
-                }}
-              >
-                <ButtonXs
-                  onClick={async () => {
-                    setShowFullPrompt((prev) => !prev);
-                  }}
-                >
-                  Hide
-                </ButtonXs>
-              </Flex>
-            ) : (
-              <Flex
-                justifyContent="center"
-                alignItems="flex-end"
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: 60,
-                  background:
-                    "linear-gradient(to top, white 50%, transparent 100%)",
-                }}
-              >
-                <ButtonXs
-                  onClick={async () => {
-                    setShowFullPrompt((prev) => !prev);
-                  }}
-                >
-                  More...
-                </ButtonXs>
-              </Flex>
-            ))}
+          <span>{aiState.promptEngine.introMessage}</span>
         </div>
       </div>
 
-      <div
-        style={{
-          padding: `0 ${tokens.spacingL}`,
-        }}
-      >
-        <ConversationTitle title="System" />
-        {showSystem ? (
-          <>
+      {aiState.status.userContent && (
+        <div
+          style={{
+            padding: `0 ${tokens.spacingL}`,
+          }}
+        >
+          <ConversationTitle title="User Prompt" />
+          <span
+            dangerouslySetInnerHTML={{
+              __html: aiState.status.userContent ? userContentHTML : "--",
+            }}
+          ></span>
+        </div>
+      )}
+      {aiState.request && (
+        <div
+          style={{
+            padding: `0 ${tokens.spacingL}`,
+          }}
+        >
+          <ConversationTitle title="Full Prompt" />
+          <div
+            style={{
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
+            <span
+              dangerouslySetInnerHTML={{
+                __html: aiState.request ? requestHtml : "--",
+              }}
+            ></span>
+          </div>
+        </div>
+      )}
+      {aiState.request && (
+        <>
+          <div
+            style={{
+              padding: `0 ${tokens.spacingL}`,
+            }}
+          >
+            <ConversationTitle title="System" />
             <div>
               <span dangerouslySetInnerHTML={{ __html: systemHtml }} />
             </div>
-            <div
-              style={{
-                padding: ` ${tokens.spacingM} 0`,
-              }}
-            >
-              <ConversationTitle title="Tools" />
-              <span>{toolsHtml}</span>
-            </div>
-            <Flex justifyContent="center" alignItems="flex-end">
-              <ButtonXs
-                onClick={async () => {
-                  setShowSystem((prev) => !prev);
-                }}
-              >
-                Hide
-              </ButtonXs>
-            </Flex>
-          </>
-        ) : (
-          <Flex justifyContent="center" alignItems="flex-end">
-            <ButtonXs
-              onClick={async () => {
-                setShowSystem((prev) => !prev);
-              }}
-            >
-              Show...
-            </ButtonXs>
-          </Flex>
-        )}
-      </div>
+          </div>
+          <div
+            style={{
+              padding: `0 ${tokens.spacingL}`,
+            }}
+          >
+            <ConversationTitle title="Tools" />
+            <span>{toolsHtml || "none"}</span>
+          </div>
+        </>
+      )}
       {aiState.response && (
         <div
           style={{
@@ -248,7 +182,7 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
           ></span>
         </div>
       )}
-      {aiState.errors.length > 0 && (
+      {aiState.status.errors.length > 0 && (
         <div
           style={{
             padding: `0 ${tokens.spacingL}`,
@@ -256,7 +190,7 @@ const ConversationBubble = ({ aiState }: { aiState: AIState }) => {
         >
           <ConversationTitle title="Errors" />
           <span style={{ color: tokens.colorWarning }}>
-            {aiState.errors.join(", ")}
+            {aiState.status.errors.join(", ")}
           </span>
         </div>
       )}

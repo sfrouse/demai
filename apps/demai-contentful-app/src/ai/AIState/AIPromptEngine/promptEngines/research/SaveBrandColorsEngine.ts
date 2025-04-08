@@ -2,12 +2,12 @@ import { ContentState } from "../../../../../contexts/ContentStateContext/Conten
 import updateBrandColors from "../../../../mcp/researchMCP/tools/updateBrandColors";
 import updateResearch from "../../../../mcp/researchMCP/tools/updateResearch";
 import { AIModels } from "../../../../openAI/openAIConfig";
-import AIState from "../../../AIState";
 import { AIPromptEngine } from "../../AIPromptEngine";
+import { AIPromptConfig } from "../../AIPromptEngineTypes";
 
 export class SaveBrandColorsEngine extends AIPromptEngine {
-  constructor(aiState: AIState) {
-    super(aiState);
+  constructor(config: AIPromptConfig) {
+    super(config);
 
     this.model = AIModels.gpt4o;
     this.introMessage = "Let’s do some research. What would you like to do?";
@@ -37,8 +37,8 @@ For instance, if you get a brand description, don't try to update the colors or 
     this.contextContent = (contentState: ContentState) => [];
 
     // CONTENT
-    this.content = (aiState: AIState, contentState: ContentState) => {
-      return `${aiState.userContent}`;
+    this.content = (userContent: string) => {
+      return `${userContent}`;
     };
   }
 }

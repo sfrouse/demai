@@ -5,14 +5,6 @@ import {
   OPEN_AI_TEMPERATURE,
   OPEN_AI_TOP_P,
 } from "../../openAI/openAIConfig";
-import AIState from "../AIState";
-import {
-  AIStateContent,
-  AIStateContentPrefix,
-  AIStatePrompts,
-  AIStateResponseContent,
-  AIStateSystemPrompt,
-} from "../AIStateTypes";
 import * as icons from "@contentful/f36-icons";
 import { DesignSystemMCPClient } from "../../mcp/designSystemMCP/DesignSystemMCPClient";
 import { ContentfulMCP } from "../../mcp/contentfulMCP/ContentfulMCP";
@@ -22,45 +14,40 @@ import openAIChatCompletions, {
   OpenAIChatCompletionsProps,
 } from "../../openAI/openAIChatCompletions";
 import { ResearchMCP } from "../../mcp/researchMCP/ResearchMCP";
-
-export type PromptRunResults =
-  | { success: true; result: string }
-  | { success: false; errors: string[] };
-
-export type PromptExecuteResults =
-  | {
-      success: true;
-      result: string;
-      toolCalls: string[];
-      toolResults: any[];
-    }
-  | {
-      success: false;
-      errors: string[];
-      toolCalls: string[];
-      toolResults: any[];
-    };
+import { processContextContent } from "./AIPromptEngineRequest";
+import {
+  AIPromptConfig,
+  AIPromptContentFunction,
+  AIPromptContentPrefix,
+  AIPromptContextContentSelections,
+  AIPromptPrompts,
+  AIPromptResponseContentFunction,
+  AIPromptSystemPrompt,
+  PromptExecuteResults,
+  PromptRunResults,
+} from "./AIPromptEngineTypes";
 
 export class AIPromptEngine {
   label: string = "Open Ended";
 
   // USER CONTENT
-  contextContent: (contentState: ContentState) => AIStateContentPrefix =
+  contextContent: (contentState: ContentState) => AIPromptContentPrefix =
     () => [];
-  content: AIStateContent = (aiState: AIState) => `${aiState.userContent}`;
+  content: AIPromptContentFunction = (userContent: string) => `${userContent}`;
 
   // AI SETUP
-  system: AIStateSystemPrompt = {
+  system: AIPromptSystemPrompt = {
     role: "system",
     content:
       "You are an expert in Contentful, help this SE learn about Contentful demos.",
   };
-  responseContent: AIStateResponseContent = (response: string) => `${response}`;
+  responseContent: AIPromptResponseContentFunction = (response: string) =>
+    `${response}`;
 
   // UI CONTENT
   introMessage: string = "Let's do something";
   placeholder: string = "This is an open ended prompt...ask me anything.";
-  prompts: AIStatePrompts = {
+  prompts: AIPromptPrompts = {
     cancel: "Nope, Let's Rethink",
     run: "Yes, Create This",
     cancelIcon: icons.DeleteIcon,
@@ -84,36 +71,36 @@ export class AIPromptEngine {
   private contentfulMCP: ContentfulMCP | undefined;
   private designSystemCMPClient: DesignSystemMCPClient | undefined;
   private researchMCP: ResearchMCP | undefined;
+  protected config: AIPromptConfig;
 
-  constructor(aiState: AIState) {
-    this.openAIClient = getOpeAIClient(aiState.config.openAiApiKey);
+  constructor(config: AIPromptConfig) {
+    this.config = config;
+    this.openAIClient = getOpeAIClient(this.config.openAiApiKey);
     this.designSystemCMPClient = new DesignSystemMCPClient(
-      aiState.config.cma,
-      aiState.config.spaceId,
-      aiState.config.environmentId,
-      aiState.config.cpa
+      this.config.cma,
+      this.config.spaceId,
+      this.config.environmentId,
+      this.config.cpa
     );
     this.contentfulMCP = new ContentfulMCP(
-      aiState.config.cma,
-      aiState.config.spaceId,
-      aiState.config.environmentId,
-      aiState.config.cpa
+      this.config.cma,
+      this.config.spaceId,
+      this.config.environmentId,
+      this.config.cpa
     );
     this.researchMCP = new ResearchMCP(
-      aiState.config.cma,
-      aiState.config.spaceId,
-      aiState.config.environmentId,
-      aiState.config.cpa
+      this.config.cma,
+      this.config.spaceId,
+      this.config.environmentId,
+      this.config.cpa
     );
   }
 
   async run(
-    aiState: AIState,
+    request: string | undefined,
     chain: boolean = false
   ): Promise<PromptRunResults> {
     try {
-      // const prevState = aiState.getStateHistory();
-
       // API CHAT COMPLETETIONS
       let tools = await this.getTools(this.toolFilters);
       let aiArg: OpenAIChatCompletionsProps = {
@@ -122,7 +109,7 @@ export class AIPromptEngine {
         systemPrompt: this.system,
         userPrompt: {
           role: "user",
-          content: `${aiState.request}`,
+          content: `${request}`,
         },
         // prevMessages: prevState,
         max_tokens: OPEN_AI_MAX_TOKENS,
@@ -161,7 +148,8 @@ export class AIPromptEngine {
   }
 
   async runExe(
-    aiState: AIState,
+    request: string | undefined,
+    response: string | undefined,
     chain: boolean = true
   ): Promise<PromptExecuteResults> {
     // There are no tools in web search...
@@ -176,8 +164,6 @@ export class AIPromptEngine {
     }
 
     try {
-      // const prevState = aiState.getStateHistory();
-
       // API CHAT COMPLETETIONS
       let tools = await this.getTools(this.toolFilters);
       let aiArg: OpenAIChatCompletionsProps = {
@@ -186,12 +172,12 @@ export class AIPromptEngine {
         systemPrompt: this.system,
         userPrompt: {
           role: "user",
-          content: `Please figure out a tool and all the appropriate properties that fulfills this: ${aiState.response}`,
+          content: `Please figure out a tool and all the appropriate properties that fulfills this: ${response}`,
         },
         prevMessages: [
           {
             role: "user",
-            content: `${aiState.request}`,
+            content: `${request}`,
           },
         ],
         // prevMessages: prevState,
@@ -262,6 +248,28 @@ export class AIPromptEngine {
         toolResults: [],
       };
     }
+  }
+
+  createRequest(
+    userContent: string,
+    contextContentSelections: AIPromptContextContentSelections,
+    contentState: ContentState,
+    ignoreContextContent: boolean = false
+  ): string {
+    if (ignoreContextContent) {
+      return this.content
+        ? this.content(userContent, contextContentSelections, contentState)
+        : "";
+    }
+    const contextPrompt = processContextContent(
+      this.contextContent(contentState),
+      contextContentSelections
+    );
+    const content = this.content
+      ? this.content(userContent, contextContentSelections, contentState)
+      : "";
+
+    return [...contextPrompt, content].join(" ");
   }
 
   async getTools(toolFilters?: string[]) {

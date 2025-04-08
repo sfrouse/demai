@@ -1,9 +1,8 @@
-import AIState from "../../../AIState";
-import { AIPromptEngine } from "../../AIPromptEngine";
+import { AIPromptConfig, AIPromptEngine } from "../../AIPromptEngine";
 
 export class ContentfulOpenToolingEngine extends AIPromptEngine {
-  constructor(aiState: AIState) {
-    super(aiState);
+  constructor(config: AIPromptConfig) {
+    super(config);
 
     this.system = {
       role: "system",

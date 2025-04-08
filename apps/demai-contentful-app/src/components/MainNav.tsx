@@ -6,7 +6,7 @@ import { Flex, SectionHeading } from "@contentful/f36-components";
 import { useContentStateSession } from "../contexts/ContentStateContext/ContentStateContext";
 import ContentPanelHeader from "./ContentPanel/ContentPanelHeader";
 import useAIState from "../contexts/AIStateContext/useAIState";
-import { AIPromptEngineID } from "../ai/AIState/AIStateTypes";
+import { AIPromptEngineID } from "../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
 
 type NAVIGATION_ENTRY = {
   label: string;
@@ -24,7 +24,10 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
   research: {
     label: "Research",
     end: true,
-    aiStateEngines: [AIPromptEngineID.RESEARCH_STYLES],
+    aiStateEngines: [
+      AIPromptEngineID.RESEARCH_STYLES,
+      AIPromptEngineID.RESEARCH_BRAND,
+    ],
   },
   content_model: {
     label: "Content Types",
@@ -46,7 +49,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
   design_tokens: {
     label: "Design Tokens",
     section_header: "Design System",
-    aiStateEngines: [AIPromptEngineID.DESIGN_TOKENS, AIPromptEngineID.OPEN],
+    aiStateEngines: [AIPromptEngineID.DESIGN_TOKENS],
   },
   components: {
     label: "Components",

@@ -101,7 +101,7 @@ const ResearchContent = () => {
         style={{
           overflowY: "auto",
           flex: 1,
-          padding: `${tokens.spacingL} ${tokens.spacing2Xl} 400px ${tokens.spacing2Xl}`,
+          padding: `${tokens.spacingL} ${tokens.spacing2Xl} 100px ${tokens.spacing2Xl}`,
           backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
           opacity: isLoading ? 0.6 : 1,
           position: "relative",

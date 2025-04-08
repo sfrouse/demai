@@ -1,14 +1,16 @@
 import { COLOR_SET_ALLOW_LIST } from "../../../../../components/ContentPanel/Content/DesignSystem/DSysTokensContent";
 import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import { SAVE_COLOR_SET_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/saveColorSet";
-import AIState from "../../../AIState";
 import rgbaToHex from "../../../utils/rgbaToHex";
 import { AIPromptEngine } from "../../AIPromptEngine";
-import * as icons from "@contentful/f36-icons";
+import {
+  AIPromptConfig,
+  AIPromptContextContentSelections,
+} from "../../AIPromptEngineTypes";
 
 export class ChangeTokenColorSetEngine extends AIPromptEngine {
-  constructor(aiState: AIState) {
-    super(aiState);
+  constructor(config: AIPromptConfig) {
+    super(config);
 
     this.system = {
       role: "system",
@@ -64,30 +66,30 @@ export class ChangeTokenColorSetEngine extends AIPromptEngine {
     ];
 
     // CONTENT
-    this.content = (aiState: AIState, contentState: ContentState) => {
+    this.content = (
+      userContent: string,
+      contextContentSelections: AIPromptContextContentSelections,
+      contentState: ContentState
+    ) => {
       let extra = "";
-      if (aiState.contextContentSelections["updateType"] === "brand colors") {
+      if (contextContentSelections["updateType"] === "brand colors") {
         extra = `
 The brand colors are primary ${contentState.research?.fields.primaryColor}, secondary ${contentState.research?.fields.secondaryColor}, tertiary ${contentState.research?.fields.tertiaryColor}. `;
       }
-      if (
-        aiState.contextContentSelections["updateType"] === "specific colorset"
-      ) {
+      if (contextContentSelections["updateType"] === "specific colorset") {
         console.log("contentState.tokens", contentState.tokens);
         if (
           contentState.tokens?.color?.[
-            aiState.contextContentSelections["colorSetList"]
+            contextContentSelections["colorSetList"]
           ]?.["500"]
         ) {
           extra = `
  The base color that you will be updating for this colorset now is ${rgbaToHex(
-   contentState.tokens.color[aiState.contextContentSelections["colorSetList"]][
-     "500"
-   ]
+   contentState.tokens.color[contextContentSelections["colorSetList"]]["500"]
  )}. `;
         }
       }
-      return `${extra}${aiState.userContent}. Please show the hex colors for each step and don't change any color names.`;
+      return `${extra}${userContent}. Please show the hex colors for each step and don't change any color names.`;
     };
 
     this.introMessage =

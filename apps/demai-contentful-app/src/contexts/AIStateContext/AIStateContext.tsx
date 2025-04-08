@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import AIState from "../../ai/AIState/AIState";
 import AISessionManager from "../../ai/AIState/AISessionManager";
-import {
-  AIPromptEngineID,
-  AIStateConfig,
-  AIStateStatus,
-} from "../../ai/AIState/AIStateTypes";
+import { AIStateConfig, AIStateStatus } from "../../ai/AIState/AIStateTypes";
 import findAISessionManager from "../../locations/page/utils/findAISessionManager";
 import { AIStateRoute } from "./AIStateRouting";
 import { AIStateContext } from "./useAIState";
+import { AIPromptEngineID } from "../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
 
 // Define the shape of the context
 export interface AIStateContextType {
@@ -36,7 +33,7 @@ export interface AIStateContextType {
   invalidated: number;
   setInvalidated: React.Dispatch<React.SetStateAction<number>>;
 
-  findAndSetAISessionManager: (
+  findAndSetAIState: (
     aiStateEngineId: AIPromptEngineID,
     context?: string
   ) => Promise<AISessionManager | void>;
@@ -65,38 +62,26 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [invalidated, setInvalidated] = useState<number>(0);
   const [route, setRoute] = useState<AIStateRoute>();
 
-  const findAndSetAISessionManager = async (
+  const aiStateLookup = new Map();
+
+  const findAndSetAIState = async (
     aiStateEngineId: AIPromptEngineID,
     context: string = ""
   ) => {
     if (aiStateConfig) {
-      const newAIStackManager = findAISessionManager(
-        `${aiStateEngineId}${context ? `-${context}` : ``}`, // nav.aiStateEngine,
-        setAISession,
-        setAIState
-      );
-      setAISessionManager(newAIStackManager);
-      let newFocusedAIState = newAIStackManager.getLastState();
-      if (!newFocusedAIState) {
+      const uniqueLookupKey = `${aiStateEngineId}${
+        context ? `-${context}` : ``
+      }`;
+      if (!aiStateLookup.get(uniqueLookupKey)) {
         const newAIState = new AIState(
-          newAIStackManager,
           aiStateConfig,
           setAIStateStatus,
           aiStateEngineId,
           () => setInvalidated((prev) => prev + 1)
-          // true
         );
-        // newAIStackManager.addAndActivateAIState(newAIState);
-        newAIStackManager.reset();
-        setAIState(newAIState);
-        newAIState.refreshState();
-      } else {
-        // if (newFocusedAIState) {
-        newAIStackManager.refreshState();
-        setAIState(newFocusedAIState);
-        newFocusedAIState.refreshState();
+        aiStateLookup.set(uniqueLookupKey, newAIState);
       }
-      return newAIStackManager;
+      setAIState(aiStateLookup.get(uniqueLookupKey));
     }
   };
 
@@ -122,7 +107,7 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
         setAISession,
         invalidated,
         setInvalidated,
-        findAndSetAISessionManager,
+        findAndSetAIState,
         route,
         setRoute,
         autoExecute,

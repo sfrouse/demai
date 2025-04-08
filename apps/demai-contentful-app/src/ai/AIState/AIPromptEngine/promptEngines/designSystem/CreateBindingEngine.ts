@@ -1,15 +1,17 @@
 import { ContentType } from "contentful-management";
 import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import { CREATE_BINDING_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/createBinding";
-import AIState from "../../../AIState";
 import { AIPromptEngine } from "../../AIPromptEngine";
-import * as icons from "@contentful/f36-icons";
 import contentTypeToAI from "../../../utils/contentTypeToAI";
 import cDefToAI from "../../../utils/cDefToAI";
+import {
+  AIPromptConfig,
+  AIPromptContextContentSelections,
+} from "../../AIPromptEngineTypes";
 
 export class CreateBindingEngine extends AIPromptEngine {
-  constructor(aiState: AIState) {
-    super(aiState);
+  constructor(config: AIPromptConfig) {
+    super(config);
 
     this.system = {
       role: "system",
@@ -59,14 +61,16 @@ Just make sure that the types of data are the same on both sides, boolean to boo
         },
       ];
     };
-    this.content = (aiState: AIState, contentState: ContentState) => {
+    this.content = (
+      userContent: string,
+      contextContentSelections: AIPromptContextContentSelections,
+      contentState: ContentState
+    ) => {
       const component = contentState.components?.find(
-        (comp) =>
-          comp.sys.id === aiState.contextContentSelections["componentId"]
+        (comp) => comp.sys.id === contextContentSelections["componentId"]
       );
       const contentType = contentState.contentTypes?.find(
-        (ct: ContentType) =>
-          ct.sys.id === aiState.contextContentSelections["ctypeId"]
+        (ct: ContentType) => ct.sys.id === contextContentSelections["ctypeId"]
       );
 
       const cDef = component?.fields.componentDefinition
@@ -75,7 +79,7 @@ Just make sure that the types of data are the same on both sides, boolean to boo
 
       const prompt = `
       
-${aiState.userContent}
+${userContent}
     
 Here is the content type:
 

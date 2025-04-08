@@ -8,7 +8,7 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
-import { AIPromptEngineID } from "../../../../ai/AIState/AIStateTypes";
+import { AIPromptEngineID } from "../../../../ai/AIState/AIPromptEngine/AIPromptEngineTypes";
 
 const ContentTypesContent = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -29,7 +29,7 @@ const ContentTypesContent = () => {
 
   return (
     <>
-      <ContentPanelHeader title="Content Typesss" invalidate />
+      <ContentPanelHeader title="Content Types" invalidate />
       <Flex
         flexDirection="column"
         alignItems="center"

@@ -3,7 +3,6 @@ import { Button, Flex, Tabs } from "@contentful/f36-components";
 import Divider from "../Divider";
 import { useEffect, useRef, useState } from "react";
 import ConversationConfirm from "./ConversationConfirm";
-import AIState from "../../ai/AIState/AIState";
 import ConversationStateEditor from "./ConversationStateEditor";
 import { AIStatePhase } from "../../ai/AIState/AIStateTypes";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
@@ -13,18 +12,11 @@ import useAIState from "../../contexts/AIStateContext/useAIState";
 import ConversationBubble from "./ConversationBubble/ConversationBubble";
 import ConversationToolbar from "./ConversationBubble/ConversationToolbar";
 import * as icons from "@contentful/f36-icons";
+import ContentPanelHeader from "../ContentPanel/ContentPanelHeader";
 
 const ConversationPanel = () => {
-  const { contentState, spaceStatus, loadingState } = useContentStateSession();
-  const {
-    aiState,
-    aiSession,
-    aiStateStatus,
-    route,
-    setRoute,
-    findAndSetAISessionManager,
-    aiSessionManager,
-  } = useAIState();
+  const { spaceStatus, loadingState, contentState } = useContentStateSession();
+  const { aiState, aiSession, aiStateStatus, route, setRoute } = useAIState();
   const [showWorkBench, setShowWorkBench] = useState<boolean>(false);
   const chatLastBubbleRef = useRef<HTMLDivElement>(null);
 
@@ -39,15 +31,6 @@ const ConversationPanel = () => {
       chatLastBubbleRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 200);
   }, [aiStateStatus?.isRunning]);
-
-  useEffect(() => {
-    if (route && route.aiStateEngines.length > 0) {
-      findAndSetAISessionManager(
-        route.aiStateEngines[route.aiStateEngineFocus || 0],
-        JSON.stringify(route)
-      );
-    }
-  }, [route]);
 
   const isLoading =
     Object.values(loadingState).includes(true) || !spaceStatus?.valid;
@@ -78,17 +61,28 @@ const ConversationPanel = () => {
         ></div>
       ) : null}
       {!showWorkBench ? (
-        <div>
-          <Button
-            startIcon={<icons.DiamondIcon />}
-            variant="transparent"
-            onClick={() => setShowWorkBench((prev) => !prev)}
-          >
-            Workbench
-          </Button>
-        </div>
+        <>
+          <ContentPanelHeader title="AutoBench">
+            <Button
+              startIcon={<icons.DiamondIcon />}
+              variant="transparent"
+              onClick={() => setShowWorkBench((prev) => !prev)}
+            >
+              Workbench
+            </Button>
+          </ContentPanelHeader>
+        </>
       ) : (
         <>
+          <ContentPanelHeader title="Workbench">
+            <Button
+              startIcon={<icons.DiamondIcon />}
+              variant="transparent"
+              onClick={() => setShowWorkBench((prev) => !prev)}
+            >
+              AutoBench
+            </Button>
+          </ContentPanelHeader>
           <div
             className={classNames(scrollBarStyles["scrollbar-minimal"])}
             style={{
@@ -99,14 +93,12 @@ const ConversationPanel = () => {
               backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
             }}
           >
-            {aiSession.map((aiState: AIState) => {
-              return <ConversationBubble key={aiState.key} aiState={aiState} />;
-            })}
+            {aiState && (
+              <ConversationBubble key={aiState.key} aiState={aiState} />
+            )}
             <div ref={chatLastBubbleRef}></div>
           </div>
-          {aiState && aiSession.length > 0 && (
-            <ConversationToolbar aiState={aiSession[0]} />
-          )}
+          {aiState && <ConversationToolbar aiState={aiState} />}
           <Divider style={{ marginTop: 0, marginBottom: 0 }} />
           {useNav ? (
             <Flex flexDirection="column" justifyContent="flex-end">
@@ -147,19 +139,36 @@ const ConversationPanel = () => {
                     zIndex: 1000,
                   }}
                   onCancel={() => {
-                    console.log("CAN", aiSessionManager);
-                    aiSessionManager?.reset();
-
-                    aiState?.updateStatus({
-                      phase: AIStatePhase.answered,
-                      userContent: aiState.userContent,
-                    });
+                    aiState.reset();
                   }}
                   onConfirm={async () => {
                     await aiState?.run(contentState);
                   }}
                   prompts={aiState?.promptEngine.prompts}
                   visible={aiStateStatus?.phase === AIStatePhase.describing}
+                />
+                <ConversationConfirm
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    zIndex: 1000,
+                  }}
+                  onCancel={() => {
+                    aiState.redo();
+                  }}
+                  onConfirm={async () => {
+                    aiState.reset();
+                  }}
+                  prompts={{
+                    cancel: "Let's try this again.",
+                    run: "OK, Done.",
+                    cancelIcon: icons.CycleIcon,
+                    runIcon: icons.StarIcon,
+                  }}
+                  visible={aiStateStatus?.phase === AIStatePhase.executed}
                 />
                 <ConversationStateEditor />
               </>

@@ -1,12 +1,14 @@
 import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import { CREATE_WEB_COMPONENT_TOOL_NAME } from "../../../../mcp/designSystemMCP/functions/createWebComponent";
-import AIState from "../../../AIState";
 import { AIPromptEngine } from "../../AIPromptEngine";
-import * as icons from "@contentful/f36-icons";
+import {
+  AIPromptConfig,
+  AIPromptContextContentSelections,
+} from "../../AIPromptEngineTypes";
 
 export class CreateWebComponentEngine extends AIPromptEngine {
-  constructor(aiState: AIState) {
-    super(aiState);
+  constructor(config: AIPromptConfig) {
+    super(config);
 
     this.system = {
       role: "system",
@@ -49,11 +51,14 @@ Do not create another component definition, create ONLY a web component using th
     };
 
     // ======= CONTENT ========
-    this.content = (aiState: AIState, contentState: ContentState) => {
+    this.content = (
+      userContent: string,
+      contextContentSelections: AIPromptContextContentSelections,
+      contentState: ContentState
+    ) => {
       let extraPrompt = "";
       const compDefEntry = contentState.components?.find(
-        (comp) =>
-          comp.sys.id === aiState.contextContentSelections["componentId"]
+        (comp) => comp.sys.id === contextContentSelections["componentId"]
       );
       if (compDefEntry && compDefEntry.fields?.componentDefinition) {
         const compDef = compDefEntry.fields?.componentDefinition;
@@ -95,7 +100,7 @@ ${contentState.ai}
 
 `;
 
-      return `${aiState.userContent}. ${extraPrompt}`;
+      return `${userContent}. ${extraPrompt}`;
     };
   }
 }
