@@ -130,7 +130,6 @@ export default async function createCTypeFromCDef(
   };
 
   let cType: ContentType;
-  console.log("TEST");
   try {
     cType = await environment.getContentType(contentTypeId);
 
@@ -171,7 +170,6 @@ export default async function createCTypeFromCDef(
     cType.description = newCType.description || "";
     cType.fields = newCType.fields || [];
 
-    console.log("cType", JSON.parse(JSON.stringify(cType)));
     cType = await cType.update();
     return await cType.publish();
   } catch (err: any) {

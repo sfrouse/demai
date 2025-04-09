@@ -15,6 +15,8 @@ import ContentSectionHeader from "../../ContentPanel/ContentSectionHeader/Conten
 import scrollBarStyles from "../../utils/ScrollBarMinimal.module.css";
 import ContentfulAIChain from "../../../ai/AIStateChain/chains/ContentfulAIChain";
 import LoadingIcon from "../../Loading/LoadingIcon";
+import installWebComponent from "../../../ai/mcp/designSystemMCP/validate/webComponents/installWebComponent";
+import demaiButton from "../../../ai/mcp/designSystemMCP/validate/webComponents/components/demai-button";
 
 const AutoBench = ({
   setShowWorkBench,
@@ -188,7 +190,8 @@ const AutoBench = ({
                 variant="secondary"
                 isLoading={isLoading === "designSystem"}
                 isDisabled={
-                  isLoading !== undefined && isLoading !== "designSystem"
+                  true
+                  //isLoading !== undefined && isLoading !== "designSystem"
                 }
                 onClick={async () => {
                   setAIChainOutput([]);
@@ -199,7 +202,10 @@ const AutoBench = ({
               <Button
                 style={{ minWidth: "100%" }}
                 variant="secondary"
-                isDisabled={isLoading !== undefined && isLoading !== "pages"}
+                isDisabled={
+                  true
+                  //isLoading !== undefined && isLoading !== "pages"
+                }
                 onClick={async () => {
                   setAIChainOutput([]);
                 }}

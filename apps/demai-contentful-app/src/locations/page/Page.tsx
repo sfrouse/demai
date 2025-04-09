@@ -32,64 +32,71 @@ const Page = () => {
 
   useEffect(() => {
     (async () => {
-      const params = {
-        ...(sdk.parameters.installation as AppInstallationParameters),
-      };
-      if (!params.cma) {
-        sdk.notifier.error("No CMA, got to config");
-        return;
-      }
-      const client = createClient({
-        accessToken: params.cma,
-      });
-      const space = await client.getSpace(sdk.ids.space);
-      const previewKeys = await space.getPreviewApiKeys();
-      let cpaResult;
-      if (
-        previewKeys &&
-        previewKeys.items &&
-        previewKeys.items[0] &&
-        previewKeys.items[0].accessToken
-      ) {
-        cpaResult = previewKeys.items[0].accessToken;
-        const isValidCPA = await testCPA(cpaResult, sdk);
-        if (isValidCPA) {
-          setCPA(cpaResult);
+      try {
+        const params = {
+          ...(sdk.parameters.installation as AppInstallationParameters),
+        };
+        if (!params.cma) {
+          sdk.notifier.error("No CMA, got to config");
+          return;
+        }
+        const client = createClient({
+          accessToken: params.cma,
+        });
+        const space = await client.getSpace(sdk.ids.space);
+        const previewKeys = await space.getPreviewApiKeys();
+        let cpaResult;
+        if (
+          previewKeys &&
+          previewKeys.items &&
+          previewKeys.items[0] &&
+          previewKeys.items[0].accessToken
+        ) {
+          cpaResult = previewKeys.items[0].accessToken;
+          const isValidCPA = await testCPA(cpaResult, sdk);
+          if (isValidCPA) {
+            setCPA(cpaResult);
+          } else {
+            sdk.dialogs.openAlert({
+              title: "CPA is not valid",
+              message:
+                "CPA is not valid for this space double check permissions.",
+              confirmLabel: "OK",
+            });
+            return;
+          }
         } else {
           sdk.dialogs.openAlert({
-            title: "CPA is not valid",
+            title: "No CPA Key",
             message:
-              "CPA is not valid for this space double check permissions.",
+              "No CPA key found, please create an API key for the space.",
             confirmLabel: "OK",
           });
           return;
         }
-      } else {
-        sdk.dialogs.openAlert({
-          title: "No CPA Key",
-          message: "No CPA key found, please create an API key for the space.",
-          confirmLabel: "OK",
+
+        // Build and Save Config...pass on to AI State Context
+        const newAIConfig: AIStateConfig = {
+          cma: params.cma,
+          openAiApiKey: params.openai,
+          spaceId: sdk.ids.space,
+          environmentId: sdk.ids.environment,
+          cpa: cpaResult,
+        };
+        setAIStateConfig(newAIConfig);
+        validateSpace();
+        setRoute({
+          navigation: "prospect",
+          aiStateEngines: NAVIGATION["prospect"].aiStateEngines,
+          aiStateEngineFocus: 0,
         });
-        return;
+
+        setConfigReady(true);
+      } catch (err: any) {
+        sdk.notifier.error(
+          `Error: Check that App config is correct. ${err?.message}`
+        );
       }
-
-      // Build and Save Config...pass on to AI State Context
-      const newAIConfig: AIStateConfig = {
-        cma: params.cma,
-        openAiApiKey: params.openai,
-        spaceId: sdk.ids.space,
-        environmentId: sdk.ids.environment,
-        cpa: cpaResult,
-      };
-      setAIStateConfig(newAIConfig);
-      validateSpace();
-      setRoute({
-        navigation: "prospect",
-        aiStateEngines: NAVIGATION["prospect"].aiStateEngines,
-        aiStateEngineFocus: 0,
-      });
-
-      setConfigReady(true);
     })();
   }, []);
 

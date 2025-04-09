@@ -72,7 +72,7 @@ const ConfigScreen = () => {
             onChange={(e) =>
               setParameters({ ...parameters, cma: e.target.value })
             }
-            type="text"
+            type="password"
           />
         </FormControl>
         <FormControl isRequired isInvalid={!parameters.openai}>
