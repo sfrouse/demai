@@ -90,7 +90,7 @@ const Page = () => {
         // Build and Save Config...pass on to AI State Context
         const newAIConfig: AIStateConfig = {
           cma: params.cma,
-          openAiApiKey: "pp", // params.openai,
+          openAiApiKey: params.openai,
           spaceId: sdk.ids.space,
           environmentId: sdk.ids.environment,
           cpa: cpaResult,
