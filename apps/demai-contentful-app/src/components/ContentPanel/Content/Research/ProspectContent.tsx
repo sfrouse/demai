@@ -158,7 +158,7 @@ const ProspectContent = () => {
                 value={seDescription}
                 placeholder="'Headless CMS'"
                 onChange={(e) => setSEDescription(e.target.value)}
-                style={{ height: 120 }}
+                style={{ height: 200 }}
               />
               <FormControl.HelpText>
                 Provide a short description, just enough to disambiguate the

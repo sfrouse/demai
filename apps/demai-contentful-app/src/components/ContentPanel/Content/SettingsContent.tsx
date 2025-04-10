@@ -18,6 +18,8 @@ import { useError } from "../../../contexts/ErrorContext/ErrorContext";
 import useAIState from "../../../contexts/AIStateContext/useAIState";
 import { AIPromptConfig } from "../../../ai/AIPromptEngine/AIPromptEngineTypes";
 import { deleteAllPreviewAccessKey } from "../../../locations/page/utils/getPreviewAccessKey";
+import validateWebComponents from "../../../ai/mcp/designSystemMCP/validate/webComponents/validateWebComponents";
+import installWebComponents from "../../../ai/mcp/designSystemMCP/validate/webComponents/installWebComponents";
 
 function generateErrorMessage(
   validationResult: IMCPClientValidation
@@ -131,6 +133,22 @@ const SettingsContent = () => {
               }}
             >
               Install / Update DemAI
+            </Button>
+            <Button
+              isDisabled={isLoading}
+              style={{ minWidth: "100%" }}
+              onClick={async () => {
+                const params = sdk.parameters
+                  .installation as AppInstallationParameters;
+                const result = await installWebComponents(
+                  params.cma,
+                  sdk.ids.space,
+                  sdk.ids.environment
+                );
+                console.log("result", result);
+              }}
+            >
+              VALIDATE WEB COMPS
             </Button>
           </Flex>
           {/* <Button

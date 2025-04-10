@@ -28,6 +28,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
     aiStateEngines: [
       AIPromptEngineID.RESEARCH_STYLES,
       AIPromptEngineID.RESEARCH_BRAND,
+      AIPromptEngineID.OPEN,
     ],
   },
   content_model: {
@@ -103,7 +104,8 @@ const MainNav = () => {
       }}
     >
       <ContentPanelHeader
-        title={`DemAI (${isLocalhost ? "localhost" : "beta"})`}
+        title={`DemAI`}
+        secondaryTitle={isLocalhost ? "localhost" : "beta"}
       />
       <Flex
         flexDirection="column"

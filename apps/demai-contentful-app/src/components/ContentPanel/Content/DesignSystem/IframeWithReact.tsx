@@ -14,17 +14,39 @@ const IframeWithReact = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!iframeDoc) return;
+    try {
+      const copyCSSRulesToIframe = (iframeDoc: Document) => {
+        for (const sheet of Array.from(document.styleSheets)) {
+          try {
+            const rules = sheet.cssRules;
+            const styleEl = iframeDoc.createElement("style");
+            for (const rule of Array.from(rules)) {
+              styleEl.appendChild(iframeDoc.createTextNode(rule.cssText));
+            }
+            iframeDoc.head.appendChild(styleEl);
+          } catch (err) {
+            // Ignore CORS-protected stylesheets
+            console.warn("Could not access stylesheet:", sheet.href);
+          }
+        }
+      };
 
-    // Clone all <link> and <style> elements from parent
-    document
-      .querySelectorAll('style, link[rel="stylesheet"]')
-      .forEach((styleNode) => {
-        iframeDoc.head.appendChild(styleNode.cloneNode(true));
-      });
+      // Clone all <link> and <style> elements from parent
+      const base = iframeDoc.createElement("base");
+      base.href = window.location.href.replace(/[^/]*$/, "");
+      iframeDoc.head.appendChild(base);
 
-    // Add your own custom <style> tag
-    const customStyle = iframeDoc.createElement("style");
-    customStyle.textContent = `
+      document
+        .querySelectorAll('style, link[rel="stylesheet"]')
+        .forEach((styleNode) => {
+          iframeDoc.head.appendChild(styleNode.cloneNode(true));
+        });
+
+      copyCSSRulesToIframe(iframeDoc);
+
+      // Add your own custom <style> tag
+      const customStyle = iframeDoc.createElement("style");
+      customStyle.textContent = `
 html, body {
     /* Firefox */
     scrollbar-width: thin;
@@ -54,7 +76,10 @@ body::-webkit-scrollbar-thumb:hover {
     background: rgba(100, 100, 100, 0.6);
 }
   `;
-    iframeDoc.head.appendChild(customStyle);
+      iframeDoc.head.appendChild(customStyle);
+    } catch (err) {
+      console.error(err);
+    }
   }, [iframeDoc]);
 
   return (

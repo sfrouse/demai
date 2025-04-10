@@ -2,17 +2,45 @@ import { createClient } from "contentful-management";
 import type { CDefDefinition } from "demai-component-definitions/dist/types.d.ts";
 import { DEMAI_COMPONENT_CTYPE_ID } from "../ctypes/demaiComponentCType";
 import createCTypeFromCDef from "../../functions/utils/createCTypeFromCDef/createCTypeFromCDef";
+import webComponentManifest from "./webComponentManifest";
 
 export type WebComponentInfo = {
+  id: string;
   code: string;
   cdef: CDefDefinition;
 };
 
-export default async function installWebComponent(
+export default async function installWebComponents(
   cmaToken: string,
   spaceId: string,
   environmentId: string,
-  compInfo: WebComponentInfo
+  errors: string[] = []
+) {
+  const manifest = webComponentManifest;
+  const promiseArr = [];
+  for (const compInfo of manifest) {
+    promiseArr.push(
+      (async () => {
+        try {
+          return installWebComponent(
+            cmaToken,
+            spaceId,
+            environmentId,
+            compInfo,
+            errors
+          );
+        } catch {}
+      })()
+    );
+  }
+}
+
+export async function installWebComponent(
+  cmaToken: string,
+  spaceId: string,
+  environmentId: string,
+  compInfo: WebComponentInfo,
+  errors: string[]
 ): Promise<{
   success: boolean;
   content: string;
@@ -55,6 +83,9 @@ export default async function installWebComponent(
       console.log(
         `No content type found with ID "${DEMAI_COMPONENT_CTYPE_ID}", stopping....`
       );
+      errors.push(
+        `No content type found with ID "${DEMAI_COMPONENT_CTYPE_ID}", stopping....`
+      );
       return {
         success: false,
         content: `No content type found with ID "${DEMAI_COMPONENT_CTYPE_ID}", stopping....`,
@@ -77,7 +108,13 @@ export default async function installWebComponent(
     );
 
     await entry.publish();
-    await createCTypeFromCDef(cmaToken, spaceId, environmentId, compInfo.cdef);
+    await createCTypeFromCDef(
+      cmaToken,
+      spaceId,
+      environmentId,
+      compInfo.cdef,
+      errors
+    );
 
     return {
       success: true,
@@ -85,6 +122,7 @@ export default async function installWebComponent(
     };
   }
 
+  errors.push(`Component id not found`);
   return {
     success: false,
     content: "Component id not found",

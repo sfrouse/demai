@@ -21,7 +21,7 @@ import {
   DEMAI_BINDING_DISPLAY_FIELD,
   DEMAI_BINDING_EXPECTED_FIELDS,
 } from "./ctypes/demaiBindingsCType";
-import installWebComponent from "./webComponents/installWebComponent";
+import installWebComponents from "./webComponents/installWebComponents";
 import demaiButton from "./webComponents/components/demai-button";
 
 export default async function updateDesignSystemMCP(
@@ -76,7 +76,7 @@ export default async function updateDesignSystemMCP(
   );
 
   // More components to come...
-  await installWebComponent(cmaToken, spaceId, environmentId, demaiButton);
+  await installWebComponents(cmaToken, spaceId, environmentId);
 
   return errors;
 }

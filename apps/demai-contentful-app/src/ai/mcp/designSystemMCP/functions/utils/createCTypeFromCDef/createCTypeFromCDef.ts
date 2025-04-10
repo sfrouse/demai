@@ -11,7 +11,8 @@ export default async function createCTypeFromCDef(
   cma: string,
   spaceId: string,
   environmentId: string,
-  cdef: any
+  cdef: any,
+  errors: string[] = []
 ) {
   const client = createClient({ accessToken: cma });
   const space = await client.getSpace(spaceId);
@@ -189,6 +190,7 @@ export default async function createCTypeFromCDef(
     return await cType.publish();
   } catch (err: any) {
     console.log("err", err);
+    errors.push(err);
     if (err.name === "NotFound") {
       cType = await environment.createContentTypeWithId(
         contentTypeId,

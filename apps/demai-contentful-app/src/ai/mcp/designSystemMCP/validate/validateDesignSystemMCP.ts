@@ -18,6 +18,7 @@ import {
   DEMAI_CONTROLLER_CTYPE_ID,
   DEMAI_CONTROLLER_EXPECTED_FIELDS,
 } from "./ctypes/demaiControllerCType";
+import validateWebComponents from "./webComponents/validateWebComponents";
 
 export default async function validateDesignSystemMCP(
   cmaToken: string,
@@ -56,6 +57,13 @@ export default async function validateDesignSystemMCP(
     environment
   );
 
+  // WEB COMPS
+  const webCompsResults = await validateWebComponents(
+    cmaToken,
+    spaceId,
+    environmentId
+  );
+
   const tokensSingleton = await checkSingleton(
     DEMAI_TOKENS_SINGLETON_ENTRY_ID,
     environment
@@ -72,6 +80,7 @@ export default async function validateDesignSystemMCP(
       componentContentType.valid &&
       controllerType.valid &&
       bindingsType.valid &&
+      webCompsResults.valid &&
       tokensSingleton &&
       precompiledJavascript,
     details: {
@@ -79,6 +88,7 @@ export default async function validateDesignSystemMCP(
       tokensContentType,
       controllerType,
       bindingsType,
+      webCompsResults,
       tokensSingleton: {
         exists: tokensSingleton,
         fieldsValid: true,
