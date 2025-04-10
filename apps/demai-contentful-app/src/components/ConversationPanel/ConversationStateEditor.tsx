@@ -21,6 +21,7 @@ import {
   AIPromptContentPrefix,
   AIPromptEngineID,
 } from "../../ai/AIPromptEngine/AIPromptEngineTypes";
+import { useError } from "../../contexts/ErrorContext/ErrorContext";
 
 interface ConversationStateEditorProps {}
 
@@ -34,7 +35,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
     ignoreContextContent,
     setIgnoreContextContent,
   } = useAIState();
-
+  const { addError } = useError();
   const isLoading = Object.values(loadingState).includes(true);
 
   const isReady = !aiState || !aiStateStatus || !spaceStatus?.valid;
@@ -110,6 +111,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
               onClick={() =>
                 aiState?.run(
                   contentState,
+                  addError,
                   false,
                   autoExecute,
                   ignoreContextContent

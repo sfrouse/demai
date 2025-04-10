@@ -95,7 +95,10 @@ const ProspectContent = () => {
     setSEDescription(research?.fields.solutionEngineerDescription || "");
   };
 
-  const isLoading = loadingState.research === true || !spaceStatus?.valid;
+  const isLoading =
+    loadingState.research === true ||
+    loadingState.contentTypes === true ||
+    !spaceStatus?.valid;
 
   return (
     <>

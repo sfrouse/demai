@@ -12,6 +12,7 @@ import { ResearchMCP } from "../../ai/mcp/researchMCP/ResearchMCP";
 import { DEMAI_RESEARCH_SINGLETON_ENTRY_ID } from "../../ai/mcp/researchMCP/validate/ctypes/demaiResearchCType";
 import getContentTypes from "./services/getContentTypes";
 import getEntries from "./services/getEntries";
+import { useError } from "../ErrorContext/ErrorContext";
 
 // Define the shape of your session data
 export interface ContentState {
@@ -67,6 +68,7 @@ const ContentStateContext = createContext<
       contentState: ContentState;
       loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void;
       loadingState: { [key in keyof ContentState]?: boolean };
+      resetLoadingState: () => void;
       spaceStatus: IMCPClientValidation | undefined;
       validateSpace: () => Promise<void>;
       setContentType: (ctypeId: string | undefined) => Promise<void>;
@@ -81,6 +83,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const sdk = useSDK<PageAppSDK>();
+  const { addError } = useError();
   const [contentState, dispatch] = useReducer(sessionReducer, initialState);
   const [spaceStatus, setSpaceStatus] = useState<
     IMCPClientValidation | undefined
@@ -119,41 +122,63 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     } else {
       switch (key) {
         case "contentTypes": {
-          const params = {
-            ...(sdk.parameters.installation as AppInstallationParameters),
-          };
-          payload = await getContentTypes({
-            cma: params.cma,
-            spaceId: sdk.ids.space,
-            environmentId: sdk.ids.environment,
-            openAiApiKey: params.openai,
-          });
+          try {
+            const params = {
+              ...(sdk.parameters.installation as AppInstallationParameters),
+            };
+            payload = await getContentTypes({
+              cma: params.cma,
+              spaceId: sdk.ids.space,
+              environmentId: sdk.ids.environment,
+              openAiApiKey: params.openai,
+            });
+          } catch (err) {
+            addError({
+              service: "Load Content Types",
+              message: "Loading content types in contentStateContext",
+              details: `${err}`,
+            });
+          }
           break;
         }
         case "entries": {
-          payload = await getEntries(previewClient);
+          console.log("test");
+          payload = await getEntries(previewClient, addError);
           break;
         }
         case "tokens": {
-          payload = await getLatestTokens(previewClient, "jsonNested");
+          payload = await getLatestTokens(
+            previewClient,
+            "jsonNested",
+            addError
+          );
           break;
         }
         case "css": {
-          payload = await getLatestTokens(previewClient, "css");
+          payload = await getLatestTokens(previewClient, "css", addError);
           break;
         }
         case "ai": {
-          payload = await getLatestTokens(previewClient, "ai");
+          payload = await getLatestTokens(previewClient, "ai", addError);
           break;
         }
         case "components": {
-          payload = await getComponents(previewClient);
+          payload = await getComponents(previewClient, addError);
           break;
         }
         case "research": {
-          payload = await previewClient.getEntry(
-            DEMAI_RESEARCH_SINGLETON_ENTRY_ID
-          );
+          try {
+            payload = await previewClient.getEntry(
+              DEMAI_RESEARCH_SINGLETON_ENTRY_ID
+            );
+          } catch (err) {
+            addError({
+              service: "Loading Research",
+              message: "Error loading research entry",
+              details: err,
+              showDialog: true,
+            });
+          }
           break;
         }
         default:
@@ -165,6 +190,10 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     dispatch({ type: "SET_PROPERTY", key, payload });
     setLoadingState((prev) => ({ ...prev, [key]: false }));
     return payload;
+  };
+
+  const resetLoadingState = () => {
+    setLoadingState({});
   };
 
   const setContentType = async (contentTypeId: string | undefined) => {
@@ -237,7 +266,11 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       });
     } catch (error) {
-      console.error("Error validating space:", error);
+      addError({
+        service: "Validating Space",
+        message: "Error trying to validate space",
+        details: `${error}`,
+      });
       setSpaceStatus(undefined);
     }
   };
@@ -248,6 +281,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         contentState,
         loadProperty,
         loadingState,
+        resetLoadingState,
         spaceStatus,
         validateSpace,
         setContentType,

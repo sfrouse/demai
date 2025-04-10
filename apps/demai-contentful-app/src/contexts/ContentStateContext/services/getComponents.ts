@@ -1,8 +1,10 @@
 import { DEMAI_COMPONENT_CTYPE_ID } from "../../../ai/mcp/designSystemMCP/validate/ctypes/demaiComponentCType";
 import { ContentfulClientApi } from "contentful";
+import { AppError } from "../../ErrorContext/ErrorContext";
 
 export default async function getComponents(
-  previewClient: ContentfulClientApi<undefined> | undefined
+  previewClient: ContentfulClientApi<undefined> | undefined,
+  addError?: (err: AppError) => void
 ) {
   if (!previewClient) return null;
   try {
@@ -15,6 +17,12 @@ export default async function getComponents(
     });
   } catch (error: any) {
     console.error("Error fetching DemAI Tokens:", error);
+    addError &&
+      addError({
+        service: "Getting Components",
+        message: "Error getting components.",
+        details: `${error}`,
+      });
     return null;
   }
 }

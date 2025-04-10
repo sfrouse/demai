@@ -34,7 +34,8 @@ function generateErrorMessage(
 
 const SpaceContent = () => {
   const sdk = useSDK<PageAppSDK>();
-  const { validateSpace, spaceStatus } = useContentStateSession();
+  const { validateSpace, spaceStatus, resetLoadingState } =
+    useContentStateSession();
   const { invalidated } = useAIState();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<(string | null)[]>([]);
@@ -100,6 +101,7 @@ const SpaceContent = () => {
               if (errors.length === 0) {
                 await localValidateSpace();
               }
+              resetLoadingState();
             }}
           >
             Install DemAI

@@ -1,4 +1,5 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { AIModels } from "../../../openAI/openAIConfig";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import createAIPromptEngine from "../../AIPromptEngineFactory";
@@ -72,11 +73,12 @@ enough colors to satisfy the request.
     // aiState: AIState,
     request: string | undefined,
     response: string | undefined,
+    addError: (err: AppError) => void,
     chain: boolean = true
   ) {
-    const results = await super.runExe(request, response);
+    const results = await super.runExe(request, response, addError);
 
-    await this.saveColors(request, response, chain, results);
+    await this.saveColors(request, response, addError, chain, results);
 
     return results;
   }
@@ -85,6 +87,7 @@ enough colors to satisfy the request.
     // aiState: AIState,
     request: string | undefined,
     response: string | undefined,
+    addError: (err: AppError) => void,
     chain: boolean = true,
     results: PromptExecuteResults
   ) {
@@ -104,6 +107,7 @@ ${response}
         // aiStateClone,
         request,
         finalResponse,
+        addError,
         false
       );
 

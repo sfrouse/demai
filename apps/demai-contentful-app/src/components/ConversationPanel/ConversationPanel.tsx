@@ -14,10 +14,12 @@ import ConversationToolbar from "./ConversationBubble/ConversationToolbar";
 import * as icons from "@contentful/f36-icons";
 import ContentPanelHeader from "../ContentPanel/ContentPanelHeader";
 import AutoBench from "./AutoBench/AutoBench";
+import { useError } from "../../contexts/ErrorContext/ErrorContext";
 
 const ConversationPanel = () => {
   const { spaceStatus, loadingState, contentState } = useContentStateSession();
   const { aiState, aiSession, aiStateStatus, route, setRoute } = useAIState();
+  const { addError } = useError();
   const [showWorkBench, setShowWorkBench] = useState<boolean>(false);
   const chatLastBubbleRef = useRef<HTMLDivElement>(null);
 
@@ -134,7 +136,7 @@ const ConversationPanel = () => {
                     aiState.reset();
                   }}
                   onConfirm={async () => {
-                    await aiState?.run(contentState);
+                    await aiState?.run(contentState, addError);
                   }}
                   prompts={aiState?.promptEngine.prompts}
                   visible={aiStateStatus?.phase === AIStatePhase.describing}

@@ -9,6 +9,7 @@ import DSysTokensContent from "./Content/DesignSystem/DSysTokensContent";
 import ResearchContent from "./Content/Research/ResearchContent";
 import ContentTypeDetailContent from "./Content/ContentTypes/ContentTypeDetailContent";
 import ProspectContent from "./Content/Research/ProspectContent";
+import ErrorsContent from "./Content/Errors/ErrorsContent";
 
 const ContentPanel = () => {
   const { route } = useAIState();
@@ -33,6 +34,8 @@ const ContentPanel = () => {
         return <ResearchContent />;
       case "prospect":
         return <ProspectContent />;
+      case "error":
+        return <ErrorsContent />;
       default:
         return (
           <Flex

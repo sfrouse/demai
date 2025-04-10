@@ -7,6 +7,7 @@ import { useContentStateSession } from "../contexts/ContentStateContext/ContentS
 import ContentPanelHeader from "./ContentPanel/ContentPanelHeader";
 import useAIState from "../contexts/AIStateContext/useAIState";
 import { AIPromptEngineID } from "../ai/AIPromptEngine/AIPromptEngineTypes";
+import { useError } from "../contexts/ErrorContext/ErrorContext";
 
 type NAVIGATION_ENTRY = {
   label: string;
@@ -79,11 +80,20 @@ export type PromptAreas = keyof typeof NAVIGATION;
 const MainNav = () => {
   const { spaceStatus } = useContentStateSession();
   const { route, setRoute } = useAIState();
+  const { errors } = useError();
   const navEntries = Object.entries(NAVIGATION) as [
     PromptAreas,
     { label: string; section_header?: string; end?: boolean }
   ][];
 
+  const isLocalhost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      window.location.hostname.startsWith("192.168.") || // local network
+      window.location.hostname === "[::1]"); // IPv6 localhost
+
+  console.log("errors", errors);
   return (
     <NavList
       aria-label="Prompt Area Navigation Sidebar"
@@ -93,7 +103,9 @@ const MainNav = () => {
         borderRight: `1px solid ${tokens.gray200}`,
       }}
     >
-      <ContentPanelHeader title="DemAI" />
+      <ContentPanelHeader
+        title={`DemAI (${isLocalhost ? "localhost" : "beta"})`}
+      />
       <Flex
         flexDirection="column"
         flex="1"
@@ -127,6 +139,21 @@ const MainNav = () => {
           );
         })}
         <div style={{ flex: 1 }}></div>
+        {errors.length > 0 && (
+          <NavList.Item
+            style={{ color: tokens.colorWarning }}
+            onClick={() => {
+              setRoute({
+                navigation: "error",
+                aiStateEngines: [AIPromptEngineID.OPEN],
+              });
+            }}
+            isActive={route?.navigation === "errors"}
+            isDisabled={spaceStatus?.valid === false}
+          >
+            Errors ({errors.length})
+          </NavList.Item>
+        )}
         <NavList.Item
           onClick={() => {
             setRoute({

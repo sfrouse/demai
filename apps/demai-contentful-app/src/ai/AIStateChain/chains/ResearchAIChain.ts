@@ -2,30 +2,35 @@ import { nanoid } from "nanoid";
 import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
 import { ResearchFromWebSiteEngine } from "../../AIPromptEngine/promptEngines/research/ResearchFromWebSiteEngine";
 import { AIChainOutput, AIStateChain } from "../AIStateChain";
+import { AppError } from "../../../contexts/ErrorContext/ErrorContext";
 
 export default class ResearchAIChain extends AIStateChain {
-  async run(contentState: ContentState) {
-    super.run(contentState);
+  async run(contentState: ContentState, addError: (err: AppError) => void) {
+    super.run(contentState, addError);
 
     await this.runResearch(
       contentState,
       ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_DESCRIPTION,
-      this.descriptionOutput
+      this.descriptionOutput,
+      addError
     );
     await this.runResearch(
       contentState,
       ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_PRODUCT,
-      this.productOutput
+      this.productOutput,
+      addError
     );
     await this.runResearch(
       contentState,
       ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_STYLE,
-      this.styleOutput
+      this.styleOutput,
+      addError
     );
     await this.runResearch(
       contentState,
       ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_TONE,
-      this.toneOutput
+      this.toneOutput,
+      addError
     );
   }
 
@@ -57,7 +62,8 @@ export default class ResearchAIChain extends AIStateChain {
   async runResearch(
     contentState: ContentState,
     researchTopic: string,
-    output: AIChainOutput
+    output: AIChainOutput,
+    addError: (err: AppError) => void
   ) {
     const researchEngine = new ResearchFromWebSiteEngine(this.config);
     const contextDefaults =
@@ -73,7 +79,11 @@ export default class ResearchAIChain extends AIStateChain {
       },
       contentState
     );
-    const results = await researchEngine.runAndExec(request, contentState);
+    const results = await researchEngine.runAndExec(
+      request,
+      contentState,
+      addError
+    );
 
     if (results.success) {
       output.content = results.result?.substring(0, 40);

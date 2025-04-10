@@ -6,27 +6,30 @@ import { DESIGN_SYSTEM_PREFIX } from "../../../constants";
 import { CreateContentTypeEngine } from "../../AIPromptEngine/promptEngines/contentful/CreateContentTypeEngine";
 import { CreateEntryEngine } from "../../AIPromptEngine/promptEngines/contentful/CreateEntryEngine";
 import getContentTypes from "../../../contexts/ContentStateContext/services/getContentTypes";
+import { AppError } from "../../../contexts/ErrorContext/ErrorContext";
 
 export default class ContentfulAIChain extends AIStateChain {
-  async run(contentState: ContentState) {
-    super.run(contentState);
+  async run(contentState: ContentState, addError: (err: AppError) => void) {
+    super.run(contentState, addError);
 
-    await this.clear();
+    await this.clear(addError);
     await this.createSeveralContentTypes(
       contentState,
-      this.outputs.createCTypesOutput
+      this.outputs.createCTypesOutput,
+      addError
     );
     await this.createSeveralEntries(
       contentState,
-      this.outputs.createEntriesOutput
+      this.outputs.createEntriesOutput,
+      addError
     );
   }
 
-  async clear() {
+  async clear(addError: (err: AppError) => void) {
     // we are going to delete everything in there....
     // TODO: localize to just DemAI stuff...
-    await this.deleteAllEntries(this.outputs.deleteEntriesOutput);
-    await this.deleteAllCTypes(this.outputs.deleteCTypesOutput);
+    await this.deleteAllEntries(this.outputs.deleteEntriesOutput, addError);
+    await this.deleteAllCTypes(this.outputs.deleteCTypesOutput, addError);
   }
 
   outputs: { [key: string]: AIChainOutput } = {
@@ -58,7 +61,8 @@ export default class ContentfulAIChain extends AIStateChain {
 
   async createSeveralContentTypes(
     contentState: ContentState,
-    output: AIChainOutput
+    output: AIChainOutput,
+    addError: (err: AppError) => void
   ) {
     const totalNewCTypes = "3";
     const promptEngine = new CreateContentTypeEngine(this.config);
@@ -75,7 +79,11 @@ export default class ContentfulAIChain extends AIStateChain {
       contentState
     );
 
-    const results = await promptEngine.runAndExec(request, contentState);
+    const results = await promptEngine.runAndExec(
+      request,
+      contentState,
+      addError
+    );
 
     if (results.success) {
       output.content = `Created ${totalNewCTypes} Content Types`;
@@ -91,7 +99,8 @@ export default class ContentfulAIChain extends AIStateChain {
 
   async createSeveralEntries(
     contentState: ContentState,
-    output: AIChainOutput
+    output: AIChainOutput,
+    addError: (err: AppError) => void
   ) {
     const totalNewEntries = "2";
     const promptEngine = new CreateEntryEngine(this.config);
@@ -116,7 +125,11 @@ export default class ContentfulAIChain extends AIStateChain {
         contentState
       );
       console.log("request", request);
-      const results = await promptEngine.runAndExec(request, contentState);
+      const results = await promptEngine.runAndExec(
+        request,
+        contentState,
+        addError
+      );
       return results;
     });
 
@@ -139,64 +152,86 @@ export default class ContentfulAIChain extends AIStateChain {
 
   // CAREFULL!!!!!
 
-  async deleteAllEntries(output: AIChainOutput) {
-    output.status = "running";
-    const client = createClient({
-      accessToken: this.config.cma,
-    });
-    const space = await client.getSpace(this.config.spaceId);
-    const env = await space.getEnvironment(this.config.environmentId);
+  async deleteAllEntries(
+    output: AIChainOutput,
+    addError: (err: AppError) => void
+  ) {
+    try {
+      output.status = "running";
+      const client = createClient({
+        accessToken: this.config.cma,
+      });
+      const space = await client.getSpace(this.config.spaceId);
+      const env = await space.getEnvironment(this.config.environmentId);
 
-    const entries = await env.getEntries({ limit: 1000 }); // max limit
-    let total = 0;
-    for (const entry of entries.items) {
-      console.log("entry.sys", entry.sys.id);
-      const contentTypeId = entry.sys.contentType.sys.id;
-      if (contentTypeId.indexOf(`${DESIGN_SYSTEM_PREFIX}-`) !== 0) {
-        if (!entry.isPublished()) {
-          await entry.delete();
-        } else {
-          await entry.unpublish();
-          await entry.delete();
+      const entries = await env.getEntries({ limit: 1000 }); // max limit
+      let total = 0;
+      for (const entry of entries.items) {
+        console.log("entry.sys", entry.sys.id);
+        const contentTypeId = entry.sys.contentType.sys.id;
+        if (contentTypeId.indexOf(`${DESIGN_SYSTEM_PREFIX}-`) !== 0) {
+          if (!entry.isPublished()) {
+            await entry.delete();
+          } else {
+            await entry.unpublish();
+            await entry.delete();
+          }
+          console.log(`Deleted entry: ${entry.sys.id}`);
+          total = total + 1;
         }
-        console.log(`Deleted entry: ${entry.sys.id}`);
-        total = total + 1;
       }
+      output.content = `Deleted ${total} entries`;
+      output.status = "done";
+      this.updateOutput();
+      this.setInvalidated((prev) => prev + 1);
+    } catch (err) {
+      addError({
+        service: "Deleting all DemAI Entries",
+        message: "Error trying to delete entries related to DemAI",
+        details: `${err}`,
+      });
     }
-    output.content = `Deleted ${total} entries`;
-    output.status = "done";
-    this.updateOutput();
-    this.setInvalidated((prev) => prev + 1);
   }
 
   // CAREFULL!!!!!
-  async deleteAllCTypes(output: AIChainOutput) {
-    output.status = "running";
-    const client = createClient({
-      accessToken: this.config.cma,
-    });
-    const space = await client.getSpace(this.config.spaceId);
-    const env = await space.getEnvironment(this.config.environmentId);
+  async deleteAllCTypes(
+    output: AIChainOutput,
+    addError: (err: AppError) => void
+  ) {
+    try {
+      output.status = "running";
+      const client = createClient({
+        accessToken: this.config.cma,
+      });
+      const space = await client.getSpace(this.config.spaceId);
+      const env = await space.getEnvironment(this.config.environmentId);
 
-    const contentTypes = await env.getContentTypes({ limit: 1000 });
+      const contentTypes = await env.getContentTypes({ limit: 1000 });
 
-    let total = 0;
-    for (const contentType of contentTypes.items) {
-      if (contentType.sys.id.indexOf(`${DESIGN_SYSTEM_PREFIX}-`) !== 0) {
-        if (!contentType.isPublished()) {
-          await contentType.delete();
-        } else {
-          await contentType.unpublish();
-          await contentType.delete();
+      let total = 0;
+      for (const contentType of contentTypes.items) {
+        if (contentType.sys.id.indexOf(`${DESIGN_SYSTEM_PREFIX}-`) !== 0) {
+          if (!contentType.isPublished()) {
+            await contentType.delete();
+          } else {
+            await contentType.unpublish();
+            await contentType.delete();
+          }
+          console.log(`Deleted content type: ${contentType.sys.id}`);
+          total = total + 1;
         }
-        console.log(`Deleted content type: ${contentType.sys.id}`);
-        total = total + 1;
       }
+      output.content = `Deleted ${total} Content Types`;
+      output.status = "done";
+      this.updateOutput();
+      this.setInvalidated((prev) => prev + 1);
+    } catch (err) {
+      addError({
+        service: "Deleting all DemAI Entries",
+        message: "Error trying to delete entries related to DemAI",
+        details: `${err}`,
+      });
     }
-    output.content = `Deleted ${total} Content Types`;
-    output.status = "done";
-    this.updateOutput();
-    this.setInvalidated((prev) => prev + 1);
   }
 
   updateOutput() {

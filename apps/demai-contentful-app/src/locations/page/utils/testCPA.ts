@@ -12,7 +12,7 @@ export default async function testCPA(cpa: string, sdk: PageAppSDK) {
     : undefined;
 
   try {
-    const entries = await previewClient?.getEntries();
+    await previewClient?.getEntries();
     return true;
   } catch {
     return false;

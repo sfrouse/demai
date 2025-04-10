@@ -1,4 +1,5 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import createAIPromptEngine from "../../AIPromptEngineFactory";
 import {
@@ -116,9 +117,10 @@ ${contentState.research?.fields.products}
     // aiState: AIState,
     request: string | undefined,
     response: string | undefined,
+    addError: (err: AppError) => void,
     chain?: boolean
   ): Promise<PromptExecuteResults> {
-    const results = await super.runExe(request, response, chain);
+    const results = await super.runExe(request, response, addError, chain);
     if (results.success === true) {
       const newContentType = results.toolResults?.[0]?.content?.[0]?.text;
 
@@ -139,6 +141,7 @@ ${contentState.research?.fields.products}
         const otherResults = await publishEngine.runExe(
           request,
           `publish the content type with id ${newContentTypeId}`,
+          addError,
           false
         );
         if (otherResults.success === true) {

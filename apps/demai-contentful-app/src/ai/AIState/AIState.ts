@@ -4,6 +4,7 @@ import { ContentState } from "../../contexts/ContentStateContext/ContentStateCon
 import { AIPromptEngineID } from "../AIPromptEngine/AIPromptEngineTypes";
 import { AIPromptEngine } from "../AIPromptEngine/AIPromptEngine";
 import createAIPromptEngine from "../AIPromptEngine/AIPromptEngineFactory";
+import { AppError } from "../../contexts/ErrorContext/ErrorContext";
 
 export default class AIState {
   key: string; // Unique key for React lists
@@ -56,6 +57,7 @@ export default class AIState {
 
   async run(
     contentState: ContentState,
+    addError: (err: AppError) => void,
     forceExecution: boolean = false,
     autoExecute: boolean = false,
     ignoreContextContent: boolean = false
@@ -65,10 +67,11 @@ export default class AIState {
       forceExecution === true ||
       this.status.phase === AIStatePhase.describing
     ) {
-      await this.runExecute(contentState);
+      await this.runExecute(contentState, addError);
     } else {
       await this.runAnswerOrDescribe(
         contentState,
+        addError,
         autoExecute,
         ignoreContextContent
       );
@@ -77,6 +80,7 @@ export default class AIState {
 
   protected async runAnswerOrDescribe(
     contentState: ContentState,
+    addError: (err: AppError) => void,
     autoExecute: boolean = false,
     ignoreContextContent: boolean = false
   ) {
@@ -99,7 +103,7 @@ export default class AIState {
     });
 
     // RUN
-    const runResults = await this.promptEngine.run(this.request);
+    const runResults = await this.promptEngine.run(this.request, addError);
 
     // FINISH
     let errors: string[] = [];
@@ -121,18 +125,22 @@ export default class AIState {
     this.suggestionRunTime = Date.now() - startRunTime;
 
     if (autoExecute) {
-      return this.runExecute(contentState);
+      return this.runExecute(contentState, addError);
     }
   }
 
-  protected async runExecute(contentState: ContentState) {
+  protected async runExecute(
+    contentState: ContentState,
+    addError: (err: AppError) => void
+  ) {
     this.startRunTime = Date.now();
     this.updateStatus({ isRunning: true, phase: AIStatePhase.executing });
 
     // RUN
     const executionResults = await this.promptEngine.runExe(
       this.request,
-      this.response
+      this.response,
+      addError
     );
     console.log("executionResults", executionResults);
 

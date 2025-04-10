@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { AIPromptConfig } from "../AIPromptEngine/AIPromptEngineTypes";
 import { ContentState } from "../../contexts/ContentStateContext/ContentStateContext";
+import { AppError } from "../../contexts/ErrorContext/ErrorContext";
 
 export type AIChainOutput = {
   key: string;
@@ -26,5 +27,11 @@ export class AIStateChain {
     this.setInvalidated = setInvalidated;
   }
 
-  async run(contentState: ContentState) {}
+  async run(contentState: ContentState, addError: (err: AppError) => void) {
+    // console.log("Override this function", contentState);
+    // addError({
+    //   service: "AIStateChain Root",
+    //   message: "Override this function",
+    // });
+  }
 }

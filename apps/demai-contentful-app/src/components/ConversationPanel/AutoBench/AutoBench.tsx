@@ -15,8 +15,7 @@ import ContentSectionHeader from "../../ContentPanel/ContentSectionHeader/Conten
 import scrollBarStyles from "../../utils/ScrollBarMinimal.module.css";
 import ContentfulAIChain from "../../../ai/AIStateChain/chains/ContentfulAIChain";
 import LoadingIcon from "../../Loading/LoadingIcon";
-import installWebComponent from "../../../ai/mcp/designSystemMCP/validate/webComponents/installWebComponent";
-import demaiButton from "../../../ai/mcp/designSystemMCP/validate/webComponents/components/demai-button";
+import { useError } from "../../../contexts/ErrorContext/ErrorContext";
 
 const AutoBench = ({
   setShowWorkBench,
@@ -31,6 +30,7 @@ const AutoBench = ({
   const [contentfulAIChain, setContentfulAIChain] = useState<
     ContentfulAIChain | undefined
   >();
+  const { addError } = useError();
   const [isLoading, setIsLoading] = useState<string | undefined>();
   const [startTime, setStartTime] = useState<number>(0);
   const [runTimer, setRunTimer] = useState<boolean>(false);
@@ -125,8 +125,8 @@ const AutoBench = ({
                 startTimer();
                 setIsLoading("everything");
                 setAIChainOutput([]);
-                await researchAIChain?.run(contentState);
-                await contentfulAIChain?.run(contentState);
+                await researchAIChain?.run(contentState, addError);
+                await contentfulAIChain?.run(contentState, addError);
                 setIsLoading(undefined);
                 stopTimer();
               }}
@@ -144,7 +144,7 @@ const AutoBench = ({
                   startTimer();
                   setIsLoading("research");
                   setAIChainOutput([]);
-                  await researchAIChain?.run(contentState);
+                  await researchAIChain?.run(contentState, addError);
                   setIsLoading(undefined);
                   stopTimer();
                 }}
@@ -178,7 +178,7 @@ const AutoBench = ({
                   startTimer();
                   setIsLoading("contentful");
                   setAIChainOutput([]);
-                  await contentfulAIChain?.run(contentState);
+                  await contentfulAIChain?.run(contentState, addError);
                   setIsLoading(undefined);
                   stopTimer();
                 }}

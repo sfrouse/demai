@@ -1,4 +1,5 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
+import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { AIModels } from "../../../openAI/openAIConfig";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import createAIPromptEngine from "../../AIPromptEngineFactory";
@@ -95,11 +96,12 @@ Keep any summary you come up with to a paragraph or two at most.
     // aiState: AIState,
     request: string | undefined,
     response: string | undefined,
+    addError: (err: AppError) => void,
     chain: boolean = true
   ) {
-    const results = await super.runExe(request, response);
+    const results = await super.runExe(request, response, addError);
 
-    await this.saveToneOrStyle(request, response, chain, results);
+    await this.saveToneOrStyle(request, response, addError, chain, results);
 
     return results;
   }
@@ -108,6 +110,7 @@ Keep any summary you come up with to a paragraph or two at most.
     // aiState: AIState,
     request: string | undefined,
     response: string | undefined,
+    addError: (err: AppError) => void,
     chain: boolean = true,
     results: PromptExecuteResults
   ) {
@@ -125,6 +128,7 @@ ${response}
       const otherResults = await otherEngine.runExe(
         request,
         finalResponse,
+        addError,
         false
       );
 

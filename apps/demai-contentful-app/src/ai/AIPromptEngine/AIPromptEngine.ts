@@ -28,6 +28,7 @@ import getOpeAIClient from "../openAI/getOpenAIClient";
 import openAIChatCompletions, {
   OpenAIChatCompletionsProps,
 } from "../openAI/openAIChatCompletions";
+import { AppError } from "../../contexts/ErrorContext/ErrorContext";
 
 export class AIPromptEngine {
   label: string = "Open Ended";
@@ -101,15 +102,16 @@ export class AIPromptEngine {
   async runAndExec(
     request: string | undefined,
     contentState: ContentState,
+    addError: (err: AppError) => void,
     chain: boolean = false
   ) {
-    const runResults = await this.run(request);
+    const runResults = await this.run(request, addError);
     if (runResults.success) {
       const response = this.responseContent(
         `${runResults.result}`,
         contentState
       );
-      const runExeResults = await this.runExe(request, response);
+      const runExeResults = await this.runExe(request, response, addError);
       return runExeResults;
     }
     return runResults;
@@ -117,12 +119,14 @@ export class AIPromptEngine {
 
   async run(
     request: string | undefined,
+    addError: (err: AppError) => void,
     chain: boolean = false
   ): Promise<PromptRunResults> {
+    let aiArg: OpenAIChatCompletionsProps | undefined;
     try {
       // API CHAT COMPLETETIONS
       let tools = await this.getTools(this.toolFilters);
-      let aiArg: OpenAIChatCompletionsProps = {
+      aiArg = {
         model: this.model,
         openAIClient: this.openAIClient,
         systemPrompt: this.system,
@@ -158,7 +162,16 @@ export class AIPromptEngine {
         result: `${result.description}`,
       };
     } catch (err) {
-      console.error(err);
+      addError({
+        service: "AI Service Run",
+        showDialog: true,
+        message: `AIPromptEngine:run (ToolType: ${this.toolType})`,
+        details: `
+Error: ${err}
+
+Request: ${aiArg || "no aiArg"}
+`,
+      });
       return {
         success: false,
         errors: [`${err}`],
@@ -169,6 +182,7 @@ export class AIPromptEngine {
   async runExe(
     request: string | undefined,
     response: string | undefined,
+    addError: (err: AppError) => void,
     chain: boolean = true
   ): Promise<PromptExecuteResults> {
     // There are no tools in web search...
@@ -182,10 +196,11 @@ export class AIPromptEngine {
       };
     }
 
+    let aiArg: OpenAIChatCompletionsProps | undefined;
     try {
       // API CHAT COMPLETETIONS
       let tools = await this.getTools(this.toolFilters);
-      let aiArg: OpenAIChatCompletionsProps = {
+      aiArg = {
         model: this.model,
         openAIClient: this.openAIClient,
         systemPrompt: this.system,
@@ -260,6 +275,16 @@ export class AIPromptEngine {
       };
     } catch (err) {
       console.error("AIPromptEngine: ", err);
+      addError({
+        service: "AI Service runExe",
+        showDialog: true,
+        message: `AIPromptEngine:runExe (ToolType: ${this.toolType})`,
+        details: `
+Error: ${err}
+
+Request: ${aiArg || "no aiArg"}
+`,
+      });
       return {
         success: false,
         errors: [`${err}`],

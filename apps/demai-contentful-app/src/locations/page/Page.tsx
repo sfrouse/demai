@@ -10,13 +10,15 @@ import ContentPanel from "../../components/ContentPanel/ContentPanel";
 import { AIStateConfig } from "../../ai/AIState/AIStateTypes";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
 import useAIState from "../../contexts/AIStateContext/useAIState";
-import { createClient } from "contentful-management";
 import LoadingIcon from "../../components/Loading/LoadingIcon";
 import testCPA from "./utils/testCPA";
+import getPreviewAccessKey from "./utils/getPreviewAccessKey";
+import { useError } from "../../contexts/ErrorContext/ErrorContext";
 
 const Page = () => {
   const sdk = useSDK<PageAppSDK>();
   const { spaceStatus, validateSpace, setCPA } = useContentStateSession();
+  const { addError, errors } = useError();
   const { setAIStateConfig, setRoute, route, findAndSetAIState } = useAIState();
   const [configReady, setConfigReady] = useState<boolean>(false);
 
@@ -28,7 +30,20 @@ const Page = () => {
         JSON.stringify(route)
       );
     }
+    // addError({ service: "test" });
   }, [route]);
+
+  useEffect(() => {
+    const dialogError = errors.find((error) => error.showDialog === true);
+    if (dialogError) {
+      // sdk.dialogs.openAlert({
+      //   title: `${error.service}`,
+      //   message: error.message,
+      //   confirmLabel: "OK",
+      // });
+      sdk.notifier.error(`${dialogError.service}: ${dialogError.message}`);
+    }
+  }, [errors]);
 
   useEffect(() => {
     (async () => {
@@ -37,40 +52,37 @@ const Page = () => {
           ...(sdk.parameters.installation as AppInstallationParameters),
         };
         if (!params.cma) {
-          sdk.notifier.error("No CMA, got to config");
+          addError({
+            service: "Looking for CMA",
+            message: "No CMA found, got to config and enter your CMA.",
+            showDialog: true,
+          });
           return;
         }
-        const client = createClient({
-          accessToken: params.cma,
-        });
-        const space = await client.getSpace(sdk.ids.space);
-        const previewKeys = await space.getPreviewApiKeys();
-        let cpaResult;
-        if (
-          previewKeys &&
-          previewKeys.items &&
-          previewKeys.items[0] &&
-          previewKeys.items[0].accessToken
-        ) {
-          cpaResult = previewKeys.items[0].accessToken;
+        const cpaResult = await getPreviewAccessKey(
+          params.cma,
+          sdk.ids.space,
+          sdk.ids.environment
+        );
+        if (cpaResult) {
           const isValidCPA = await testCPA(cpaResult, sdk);
           if (isValidCPA) {
             setCPA(cpaResult);
           } else {
-            sdk.dialogs.openAlert({
-              title: "CPA is not valid",
+            addError({
+              service: "Test CPA",
               message:
                 "CPA is not valid for this space double check permissions.",
-              confirmLabel: "OK",
+              showDialog: true,
             });
             return;
           }
         } else {
-          sdk.dialogs.openAlert({
-            title: "No CPA Key",
+          addError({
+            service: "Get Preview Access Key",
             message:
               "No CPA key found, please create an API key for the space.",
-            confirmLabel: "OK",
+            showDialog: true,
           });
           return;
         }
@@ -78,7 +90,7 @@ const Page = () => {
         // Build and Save Config...pass on to AI State Context
         const newAIConfig: AIStateConfig = {
           cma: params.cma,
-          openAiApiKey: params.openai,
+          openAiApiKey: "pp", // params.openai,
           spaceId: sdk.ids.space,
           environmentId: sdk.ids.environment,
           cpa: cpaResult,
@@ -93,9 +105,12 @@ const Page = () => {
 
         setConfigReady(true);
       } catch (err: any) {
-        sdk.notifier.error(
-          `Error: Check that App config is correct. ${err?.message}`
-        );
+        addError({
+          service: "Initializing App",
+          message: "Something went wrong initializing app.",
+          details: `${err} ${err} ${err} ${err} ${err}`,
+          showDialog: true,
+        });
       }
     })();
   }, []);

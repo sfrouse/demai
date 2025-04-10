@@ -10,6 +10,7 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import Page from "./locations/page/Page";
 import { ContentStateProvider } from "./contexts/ContentStateContext/ContentStateContext";
 import { AIStateProvider } from "./contexts/AIStateContext/AIStateContext";
+import { ErrorProvider } from "./contexts/ErrorContext/ErrorContext";
 
 const ComponentLocationSettings = {
   [locations.LOCATION_APP_CONFIG]: ConfigScreen,
@@ -35,11 +36,13 @@ const App = () => {
   }, [sdk.location]);
 
   return Component ? (
-    <ContentStateProvider>
-      <AIStateProvider>
-        <Component />
-      </AIStateProvider>
-    </ContentStateProvider>
+    <ErrorProvider>
+      <ContentStateProvider>
+        <AIStateProvider>
+          <Component />
+        </AIStateProvider>
+      </ContentStateProvider>
+    </ErrorProvider>
   ) : null;
 };
 
