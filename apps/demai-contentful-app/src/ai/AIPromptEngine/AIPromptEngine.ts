@@ -153,9 +153,9 @@ export class AIPromptEngine {
       }
 
       // RUN
-      console.log(`run[start][${this.toolType}]:`, aiArg);
+      console.log(`run[start][${this.toolType}]:`, aiArg, tools);
       const result = await openAIChatCompletions(aiArg);
-      console.log(`run[end][${this.toolType}]:`, result);
+      console.log(`run[end][${this.toolType}]:`, result, tools);
 
       return {
         success: true,
@@ -228,9 +228,9 @@ Request: ${aiArg || "no aiArg"}
       };
 
       // RUN
-      console.log(`runExe[start][${this.toolType}]:`, aiArg);
+      console.log(`runExe[start][${this.toolType}]:`, aiArg, tools);
       const result = await openAIChatCompletions(aiArg);
-      console.log(`runExe[end][${this.toolType}]:`, result);
+      console.log(`runExe[end][${this.toolType}]:`, result, tools);
 
       const toolResults: any[] = [];
       if (result.toolCalls) {

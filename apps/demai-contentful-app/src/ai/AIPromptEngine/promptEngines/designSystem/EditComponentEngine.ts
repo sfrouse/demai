@@ -1,6 +1,6 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import cDefToAI from "../../../AIState/utils/cDefToAI";
-import { UPDATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/updateComponentDefinition";
+import { UPDATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../mcp/designSystemMCP/tools/updateComponentDefinition/updateComponentDefinition.tool";
 import { AIPromptEngine } from "../../AIPromptEngine";
 import {
   AIPromptConfig,

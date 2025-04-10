@@ -10,13 +10,12 @@ import createBinding, {
   CREATE_BINDING_TOOL_NAME,
 } from "./functions/createBinding";
 import validateDesignSystemMCP from "./validate/validateDesignSystemMCP";
-import updateComponentDefinition, {
-  UPDATE_COMPONENT_DEFINITION_TOOL_NAME,
-} from "./functions/updateComponentDefinition";
 import createComponentDefinitionTool, {
   CREATE_COMPONENT_DEFINITION_TOOL_NAME,
 } from "./tools/createComponentDefinition/createComponentDefinition.tool";
 import createComponentDefinitionFunction from "./tools/createComponentDefinition/createComponentDefinition.function";
+import updateComponentDefinition from "./tools/updateComponentDefinition";
+import { UPDATE_COMPONENT_DEFINITION_TOOL_NAME } from "./tools/updateComponentDefinition/updateComponentDefinition.tool";
 
 export class DesignSystemMCPClient extends MCPClient {
   async getToolsForOpenAI(): Promise<ChatCompletionTool[]> {
