@@ -15,6 +15,7 @@ import * as icons from "@contentful/f36-icons";
 import ContentPanelHeader from "../ContentPanel/ContentPanelHeader";
 import AutoBench from "./AutoBench/AutoBench";
 import { useError } from "../../contexts/ErrorContext/ErrorContext";
+import LoadingStyles from "../Loading/LoadingStyles";
 
 const ConversationPanel = () => {
   const { spaceStatus, loadingState, contentState } = useContentStateSession();
@@ -47,7 +48,7 @@ const ConversationPanel = () => {
       style={{
         flex: 1,
         position: "relative",
-        maxWidth: 650,
+        maxWidth: 650, // Not Content Panel
       }}
     >
       {!spaceStatus?.valid ? (
@@ -84,7 +85,7 @@ const ConversationPanel = () => {
               display: "flex",
               flexDirection: "column",
               overflowY: "scroll",
-              backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
+              ...LoadingStyles(isLoading),
             }}
           >
             {aiState && (

@@ -68,7 +68,7 @@ export default async function ensureResearchSingletonEntry(
       {
         fields: {
           title: {
-            "en-US": "DemAI Research",
+            "en-US": DEMAI_RESEARCH_SINGLETON_ENTRY_ID,
           },
         },
       }

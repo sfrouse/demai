@@ -16,6 +16,8 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import EditableResearchField from "./ResearchContent/EditableResearchField";
 import ContentSectionHeader from "../../ContentSectionHeader/ContentSectionHeader";
 import ColorTokensContent from "../DesignSystem/sections/ColorTokensContent";
+import { CONTENT_PANEL_MAX_WIDTH } from "../../../../constants";
+import LoadingStyles from "../../../Loading/LoadingStyles";
 
 const ResearchContent = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -102,15 +104,15 @@ const ResearchContent = () => {
           overflowY: "auto",
           flex: 1,
           padding: `${tokens.spacingL} ${tokens.spacing2Xl} 100px ${tokens.spacing2Xl}`,
-          backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
-          opacity: isLoading ? 0.6 : 1,
+          ...LoadingStyles(isLoading),
           position: "relative",
         }}
         alignContent="stretch"
       >
         <div
           style={{
-            maxWidth: 800,
+            maxWidth: CONTENT_PANEL_MAX_WIDTH,
+            width: "100%",
           }}
         >
           {research && research.fields && (

@@ -2,17 +2,29 @@ import { createClient } from "contentful-management";
 import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
 import { AIChainOutput, AIStateChain } from "../AIStateChain";
 import { nanoid } from "nanoid";
-import { DESIGN_SYSTEM_PREFIX } from "../../../constants";
+import {
+  DEMAI_GENERATED_PROPERTY_IDENTIFIER,
+  DEMAI_SYSTEM_PROPERTY_IDENTIFIER,
+} from "../../../constants";
 import { CreateContentTypeEngine } from "../../AIPromptEngine/promptEngines/contentful/CreateContentTypeEngine";
 import { CreateEntryEngine } from "../../AIPromptEngine/promptEngines/contentful/CreateEntryEngine";
 import getContentTypes from "../../../contexts/ContentStateContext/services/getContentTypes";
 import { AppError } from "../../../contexts/ErrorContext/ErrorContext";
 
 export default class ContentfulAIChain extends AIStateChain {
+  chainOutput: AIChainOutput[] = [];
+
   async run(contentState: ContentState, addError: (err: AppError) => void) {
     super.run(contentState, addError);
 
-    await this.clear(addError);
+    await this.clearGeneratedContent(addError);
+
+    this.chainOutput = [
+      this.outputs.deleteEntriesOutput,
+      this.outputs.deleteCTypesOutput,
+      this.outputs.createCTypesOutput,
+      this.outputs.createEntriesOutput,
+    ];
     await this.createSeveralContentTypes(
       contentState,
       this.outputs.createCTypesOutput,
@@ -25,11 +37,30 @@ export default class ContentfulAIChain extends AIStateChain {
     );
   }
 
-  async clear(addError: (err: AppError) => void) {
-    // we are going to delete everything in there....
-    // TODO: localize to just DemAI stuff...
-    await this.deleteAllEntries(this.outputs.deleteEntriesOutput, addError);
-    await this.deleteAllCTypes(this.outputs.deleteCTypesOutput, addError);
+  async clearGeneratedContent(addError: (err: AppError) => void) {
+    this.chainOutput = [
+      this.outputs.deleteEntriesOutput,
+      this.outputs.deleteCTypesOutput,
+    ];
+    await this.deleteAllCTypes(
+      DEMAI_GENERATED_PROPERTY_IDENTIFIER,
+      this.outputs.deleteCTypesOutput,
+      this.outputs.deleteEntriesOutput,
+      addError
+    );
+  }
+
+  async clearSystemContent(addError: (err: AppError) => void) {
+    this.chainOutput = [
+      this.outputs.deleteEntriesOutput,
+      this.outputs.deleteCTypesOutput,
+    ];
+    await this.deleteAllCTypes(
+      DEMAI_SYSTEM_PROPERTY_IDENTIFIER,
+      this.outputs.deleteCTypesOutput,
+      this.outputs.deleteEntriesOutput,
+      addError
+    );
   }
 
   outputs: { [key: string]: AIChainOutput } = {
@@ -124,7 +155,6 @@ export default class ContentfulAIChain extends AIStateChain {
         localDefaults,
         contentState
       );
-      console.log("request", request);
       const results = await promptEngine.runAndExec(
         request,
         contentState,
@@ -151,51 +181,10 @@ export default class ContentfulAIChain extends AIStateChain {
   }
 
   // CAREFULL!!!!!
-
-  async deleteAllEntries(
-    output: AIChainOutput,
-    addError: (err: AppError) => void
-  ) {
-    try {
-      output.status = "running";
-      const client = createClient({
-        accessToken: this.config.cma,
-      });
-      const space = await client.getSpace(this.config.spaceId);
-      const env = await space.getEnvironment(this.config.environmentId);
-
-      const entries = await env.getEntries({ limit: 1000 }); // max limit
-      let total = 0;
-      for (const entry of entries.items) {
-        console.log("entry.sys", entry.sys.id);
-        const contentTypeId = entry.sys.contentType.sys.id;
-        if (contentTypeId.indexOf(`${DESIGN_SYSTEM_PREFIX}-`) !== 0) {
-          if (!entry.isPublished()) {
-            await entry.delete();
-          } else {
-            await entry.unpublish();
-            await entry.delete();
-          }
-          console.log(`Deleted entry: ${entry.sys.id}`);
-          total = total + 1;
-        }
-      }
-      output.content = `Deleted ${total} entries`;
-      output.status = "done";
-      this.updateOutput();
-      this.setInvalidated((prev) => prev + 1);
-    } catch (err) {
-      addError({
-        service: "Deleting all DemAI Entries",
-        message: "Error trying to delete entries related to DemAI",
-        details: `${err}`,
-      });
-    }
-  }
-
-  // CAREFULL!!!!!
   async deleteAllCTypes(
+    ctypeIdentifier: string,
     output: AIChainOutput,
+    entryOutput: AIChainOutput,
     addError: (err: AppError) => void
   ) {
     try {
@@ -209,20 +198,36 @@ export default class ContentfulAIChain extends AIStateChain {
       const contentTypes = await env.getContentTypes({ limit: 1000 });
 
       let total = 0;
+      let totalEntries = 0;
       for (const contentType of contentTypes.items) {
-        if (contentType.sys.id.indexOf(`${DESIGN_SYSTEM_PREFIX}-`) !== 0) {
+        // if (contentType.sys.id.indexOf(`${DESIGN_SYSTEM_PREFIX}-`) !== 0) {
+        const demaiPropIdentifier = contentType.fields.find(
+          (field) => field.id === ctypeIdentifier
+        );
+        if (demaiPropIdentifier) {
+          totalEntries = await this.deleteAllEntriesByContentType(
+            contentType.sys.id,
+            entryOutput,
+            addError,
+            totalEntries
+          );
           if (!contentType.isPublished()) {
             await contentType.delete();
           } else {
             await contentType.unpublish();
             await contentType.delete();
           }
-          console.log(`Deleted content type: ${contentType.sys.id}`);
+          console.log(
+            `Deleted content type: ${contentType.sys.id}`,
+            contentType
+          );
           total = total + 1;
         }
       }
       output.content = `Deleted ${total} Content Types`;
       output.status = "done";
+      entryOutput.content = `Deleted ${totalEntries} entries`;
+      entryOutput.status = "done";
       this.updateOutput();
       this.setInvalidated((prev) => prev + 1);
     } catch (err) {
@@ -234,12 +239,59 @@ export default class ContentfulAIChain extends AIStateChain {
     }
   }
 
+  // CAREFULL !!!!
+  async deleteAllEntriesByContentType(
+    contentTypeIdToDelete: string,
+    output: AIChainOutput,
+    addError: (err: AppError) => void,
+    totalDeleted: number = 0
+  ) {
+    let total = totalDeleted;
+    try {
+      output.status = "running";
+      const client = createClient({
+        accessToken: this.config.cma,
+      });
+      const space = await client.getSpace(this.config.spaceId);
+      const env = await space.getEnvironment(this.config.environmentId);
+
+      const entries = await env.getEntries({
+        content_type: contentTypeIdToDelete,
+        limit: 1000,
+      });
+
+      for (const entry of entries.items) {
+        try {
+          if (entry.isPublished()) {
+            await entry.unpublish();
+          }
+          await entry.delete();
+          console.log(`Deleted entry: ${entry.sys.id}`);
+          total += 1;
+        } catch (entryErr) {
+          addError({
+            message: `Failed to delete entry ${entry.sys.id}`,
+            service: "Delete Entry",
+            details: entryErr,
+          });
+        }
+      }
+
+      // output.content = `Deleted ${total} entries of content type "${contentTypeIdToDelete}"`;
+      // output.status = "done";
+      this.updateOutput();
+      this.setInvalidated((prev) => prev + 1);
+    } catch (err) {
+      addError({
+        service: "Deleting Entries by Content Type",
+        message: "Failed to delete entries",
+        details: `${err}`,
+      });
+    }
+    return total;
+  }
+
   updateOutput() {
-    this.setAIChainOutput([
-      this.outputs.deleteEntriesOutput,
-      this.outputs.deleteCTypesOutput,
-      this.outputs.createCTypesOutput,
-      this.outputs.createEntriesOutput,
-    ]);
+    this.setAIChainOutput([...this.chainOutput]);
   }
 }

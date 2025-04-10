@@ -44,7 +44,9 @@ export interface ContentStateResearch {
 }
 
 // Define action types for updating session contentState
-type Action = { type: "SET_PROPERTY"; key: keyof ContentState; payload: any };
+type Action =
+  | { type: "SET_PROPERTY"; key: keyof ContentState; payload: any }
+  | { type: "RESET_STATE" };
 
 // Initial session contentState
 const initialState: ContentState = {};
@@ -57,6 +59,8 @@ const sessionReducer = (
   switch (action.type) {
     case "SET_PROPERTY":
       return { ...contentState, [action.key]: action.payload };
+    case "RESET_STATE":
+      return initialState;
     default:
       return contentState;
   }
@@ -75,6 +79,7 @@ const ContentStateContext = createContext<
       setComponent: (compId: string | undefined) => Promise<void>;
       cpa: string;
       setCPA: (val: string) => void;
+      resetContentState: () => void;
     }
   | undefined
 >(undefined);
@@ -196,6 +201,13 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoadingState({});
   };
 
+  const resetContentState = () => {
+    dispatch({ type: "RESET_STATE" });
+    // setLoadingState({});
+    setSpaceStatus(undefined);
+    // setCPA("");
+  };
+
   const setContentType = async (contentTypeId: string | undefined) => {
     if (!contentTypeId) {
       dispatch({
@@ -288,6 +300,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         setComponent,
         cpa,
         setCPA,
+        resetContentState,
       }}
     >
       {children}

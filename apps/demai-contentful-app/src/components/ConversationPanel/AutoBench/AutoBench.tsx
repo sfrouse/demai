@@ -14,8 +14,8 @@ import ResearchAIChain from "../../../ai/AIStateChain/chains/ResearchAIChain";
 import ContentSectionHeader from "../../ContentPanel/ContentSectionHeader/ContentSectionHeader";
 import scrollBarStyles from "../../utils/ScrollBarMinimal.module.css";
 import ContentfulAIChain from "../../../ai/AIStateChain/chains/ContentfulAIChain";
-import LoadingIcon from "../../Loading/LoadingIcon";
 import { useError } from "../../../contexts/ErrorContext/ErrorContext";
+import AutoBenchItem from "./components/AutoBenchItem";
 
 const AutoBench = ({
   setShowWorkBench,
@@ -153,19 +153,26 @@ const AutoBench = ({
               </Button>
               {/* <Button
                 style={{ minWidth: "100%" }}
-                variant="secondary"
+                variant="negative"
                 isLoading={isLoading === "contentful-clear"}
                 isDisabled={
                   isLoading !== undefined && isLoading !== "contentful-clear"
                 }
                 onClick={async () => {
-                  setIsLoading("contentful-clear");
-                  setAIChainOutput([]);
-                  await contentfulAIChain?.clear();
-                  setIsLoading(undefined);
+                  const result = await sdk.dialogs.openConfirm({
+                    title: "Deleting Generated Content",
+                    message:
+                      "Are you sure you want to delete all the DemAI generated content in this space? It can not be undone.",
+                  });
+                  if (result === true) {
+                    setIsLoading("contentful-clear");
+                    setAIChainOutput([]);
+                    await contentfulAIChain?.clearGeneratedContent(addError);
+                    setIsLoading(undefined);
+                  }
                 }}
               >
-                Clear Contentful Space
+                Delete Generated Content
               </Button> */}
               <Button
                 style={{ minWidth: "100%" }}
@@ -230,49 +237,7 @@ const AutoBench = ({
             }}
           >
             {aiChainOutput?.map((output) => (
-              <Flex
-                flexDirection="column"
-                key={output.key}
-                style={{
-                  padding: `${tokens.spacingS}`,
-                  borderRadius: tokens.borderRadiusSmall,
-                  color:
-                    output.status === "done"
-                      ? tokens.colorWhite
-                      : tokens.gray700,
-                  backgroundColor:
-                    output.status === "initialized"
-                      ? tokens.gray200
-                      : output.status === "running"
-                      ? tokens.blue200
-                      : output.status === "error"
-                      ? tokens.red200
-                      : output.status === "done"
-                      ? tokens.blue900
-                      : tokens.gray100,
-                }}
-              >
-                <Flex flexDirection="row" alignItems="center">
-                  <div
-                    style={{
-                      flex: 1,
-                      fontSize: tokens.fontSizeS,
-                      lineHeight: tokens.lineHeightS,
-                      fontWeight: tokens.fontWeightDemiBold,
-                    }}
-                  >
-                    {output.name}
-                  </div>
-                  <div style={{ fontSize: 10 }}>
-                    {output.status === "running" ? (
-                      <LoadingIcon />
-                    ) : (
-                      output.status
-                    )}
-                  </div>
-                </Flex>
-                <div style={{ fontSize: 11 }}>{output.content}</div>
-              </Flex>
+              <AutoBenchItem output={output} key={output.key} />
             ))}
           </Flex>
           <Flex

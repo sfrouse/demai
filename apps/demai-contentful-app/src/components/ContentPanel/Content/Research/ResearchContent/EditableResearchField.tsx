@@ -79,10 +79,13 @@ const EditableResearchField: React.FC<Props> = ({
           }
         />
       ) : (
-        <div
-          style={{ margin: 0 }}
-          dangerouslySetInnerHTML={{ __html: contentHTML }}
-        ></div>
+        <>
+          <div
+            style={{ margin: 0 }}
+            dangerouslySetInnerHTML={{ __html: contentHTML }}
+          ></div>
+          {!content && <span>--</span>}
+        </>
       )}
 
       {id === fieldInEditMode && (

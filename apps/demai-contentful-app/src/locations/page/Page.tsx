@@ -102,7 +102,6 @@ const Page = () => {
           aiStateEngines: NAVIGATION["prospect"].aiStateEngines,
           aiStateEngineFocus: 0,
         });
-
         setConfigReady(true);
       } catch (err: any) {
         addError({

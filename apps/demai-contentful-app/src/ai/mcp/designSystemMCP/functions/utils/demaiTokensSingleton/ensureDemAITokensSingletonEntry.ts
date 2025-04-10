@@ -68,7 +68,7 @@ export default async function ensureDemAITokensSingletonEntry(
       {
         fields: {
           title: {
-            "en-US": "DemAI Tokens",
+            "en-US": DEMAI_TOKENS_SINGLETON_ENTRY_ID,
           },
           source: {
             "en-US": tokens,

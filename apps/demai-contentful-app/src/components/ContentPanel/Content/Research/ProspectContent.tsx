@@ -16,6 +16,8 @@ import { PageAppSDK } from "@contentful/app-sdk";
 import { AppInstallationParameters } from "../../../../locations/config/ConfigScreen";
 import { createClient } from "contentful-management";
 import { DEMAI_RESEARCH_SINGLETON_ENTRY_ID } from "../../../../ai/mcp/researchMCP/validate/ctypes/demaiResearchCType";
+import { CONTENT_PANEL_MAX_WIDTH } from "../../../../constants";
+import LoadingStyles from "../../../Loading/LoadingStyles";
 
 const ProspectContent = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -109,8 +111,7 @@ const ProspectContent = () => {
           overflowY: "auto",
           flex: 1,
           padding: `${tokens.spacingL} ${tokens.spacing2Xl}`,
-          backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
-          opacity: isLoading ? 0.6 : 1,
+          ...LoadingStyles(isLoading),
           position: "relative",
         }}
         alignItems="center"
@@ -118,7 +119,7 @@ const ProspectContent = () => {
         <Flex
           alignItems="stretch"
           style={{
-            maxWidth: 700,
+            maxWidth: CONTENT_PANEL_MAX_WIDTH,
             width: "100%",
           }}
         >

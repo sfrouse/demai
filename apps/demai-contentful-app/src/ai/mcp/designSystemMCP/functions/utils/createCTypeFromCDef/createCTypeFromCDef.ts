@@ -5,6 +5,7 @@ import {
   createClient,
 } from "contentful-management";
 import { kebabToCamel } from "../kebabTransforms";
+import { DEMAI_SYSTEM_PROPERTY_IDENTIFIER } from "../../../../../../constants";
 
 export default async function createCTypeFromCDef(
   cma: string,
@@ -128,6 +129,20 @@ export default async function createCTypeFromCDef(
     description,
     fields: Object.values(fields),
   };
+
+  // add DemAI Identifier
+  newCType.fields.push({
+    id: DEMAI_SYSTEM_PROPERTY_IDENTIFIER,
+    name: DEMAI_SYSTEM_PROPERTY_IDENTIFIER,
+    type: "Boolean",
+    omitted: true,
+    disabled: true,
+    required: false,
+    localized: false,
+    defaultValue: {
+      "en-US": true,
+    },
+  });
 
   let cType: ContentType;
   try {

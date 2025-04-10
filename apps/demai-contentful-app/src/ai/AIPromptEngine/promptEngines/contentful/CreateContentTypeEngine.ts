@@ -1,3 +1,4 @@
+import OpenAI from "openai";
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { AIPromptEngine } from "../../AIPromptEngine";
@@ -8,22 +9,13 @@ import {
   AIPromptEngineID,
   PromptExecuteResults,
 } from "../../AIPromptEngineTypes";
+import { DEMAI_GENERATED_PROPERTY_IDENTIFIER } from "../../../../constants";
 
 export class CreateContentTypeEngine extends AIPromptEngine {
   // IDs
   static ACTION_CREATE_CTYPES_ID = "numberOfCTypes";
   static ACTION_CREATE_CTYPES_OPTIONS = ["1", "2", "3", "4", "5", "6"];
   static ACTION_CREATE_CTYPES_DEFAULT = "1";
-
-  // static CONTEXT_CTYPES_ID = "context";
-  // static CONTEXT_CTYPES_OPTION_NONE = "no other content types";
-  // static CONTEXT_CTYPES_OPTION_ALL = "all content types";
-  // static CONTEXT_CTYPES_OPTIONS = [
-  //   CreateContentTypeEngine.CONTEXT_CTYPES_OPTION_NONE,
-  //   CreateContentTypeEngine.CONTEXT_CTYPES_OPTION_ALL,
-  // ];
-  // static CONTEXT_CTYPES_DEFAULT =
-  //   CreateContentTypeEngine.CONTEXT_CTYPES_OPTION_NONE;
 
   static SOURCE_RESEARCH_ID = "sourceResearch";
   static SOURCE_RESEARCH_OPTIONS_PROSPECT = "the prospect";
@@ -55,13 +47,6 @@ If you find that a tool would be useful, render that tool name in the output.
         defaultValue: CreateContentTypeEngine.ACTION_CREATE_CTYPES_DEFAULT,
       },
       "content types.",
-      // "Account for",
-      // {
-      //   id: CreateContentTypeEngine.CONTEXT_CTYPES_ID,
-      //   options: CreateContentTypeEngine.CONTEXT_CTYPES_OPTIONS,
-      //   defaultValue: CreateContentTypeEngine.CONTEXT_CTYPES_DEFAULT,
-      // },
-      // ".",
       "of this brand from",
       {
         id: CreateContentTypeEngine.SOURCE_RESEARCH_ID,
@@ -113,6 +98,41 @@ ${contentState.research?.fields.products}
     };
   }
 
+  preprocessToolRequest(
+    tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
+    addError: (err: AppError) => void
+  ): OpenAI.Chat.Completions.ChatCompletionMessageToolCall {
+    try {
+      const args = JSON.parse(tool.function.arguments);
+      if (args.fields) {
+        args.fields.push({
+          id: DEMAI_GENERATED_PROPERTY_IDENTIFIER,
+          name: DEMAI_GENERATED_PROPERTY_IDENTIFIER,
+          type: "Boolean",
+          omitted: true,
+          disabled: true,
+          defaultValue: {
+            "en-US": true,
+          },
+        });
+      }
+      return {
+        ...tool,
+        function: {
+          ...tool.function,
+          arguments: JSON.stringify(args),
+        },
+      };
+    } catch (err) {
+      addError({
+        service: "Preprocessing Content Type",
+        message: "CreateContentTypeEngine had an issue preprocessing tool",
+        details: `${err}`,
+      });
+      return tool;
+    }
+  }
+
   async runExe(
     // aiState: AIState,
     request: string | undefined,
@@ -144,6 +164,7 @@ ${contentState.research?.fields.products}
           addError,
           false
         );
+
         if (otherResults.success === true) {
           return {
             success: true,

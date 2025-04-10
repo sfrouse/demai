@@ -1,3 +1,5 @@
+import { DEMAI_SYSTEM_PROPERTY_IDENTIFIER } from "../../../../../constants";
+
 export const DEMAI_CONTROLLER_CTYPE_ID = "demai-controller";
 export const DEMAI_CONTROLLER_DISPLAY_FIELD = "title";
 export const DEMAI_CONTROLLER_EXPECTED_FIELDS = [
@@ -82,6 +84,16 @@ export const DEMAI_CONTROLLER_EXPECTED_FIELDS = [
         },
       ],
       linkType: "Entry",
+    },
+  },
+  {
+    id: DEMAI_SYSTEM_PROPERTY_IDENTIFIER,
+    name: DEMAI_SYSTEM_PROPERTY_IDENTIFIER,
+    type: "Boolean",
+    omitted: true,
+    disabled: true,
+    defaultValue: {
+      "en-US": true,
     },
   },
 ];

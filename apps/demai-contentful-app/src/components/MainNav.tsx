@@ -93,7 +93,6 @@ const MainNav = () => {
       window.location.hostname.startsWith("192.168.") || // local network
       window.location.hostname === "[::1]"); // IPv6 localhost
 
-  console.log("errors", errors);
   return (
     <NavList
       aria-label="Prompt Area Navigation Sidebar"

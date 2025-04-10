@@ -6,7 +6,8 @@ import tokens from "@contentful/f36-tokens";
 import Divider from "../../../Divider";
 import { NAVIGATION } from "../../../MainNav";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
-import LoadingPage from "../../../Loading/LoadingPage";
+import LoadingStyles from "../../../Loading/LoadingStyles";
+import { CONTENT_PANEL_MAX_WIDTH } from "../../../../constants";
 
 const ContentTypeDetailContent = () => {
   const { contentState, loadProperty, loadingState } = useContentStateSession();
@@ -50,56 +51,59 @@ const ContentTypeDetailContent = () => {
       />
       <Flex
         flexDirection="column"
+        alignItems="center"
         style={{
           overflowY: "auto",
-          padding: tokens.spacingM,
           position: "relative",
+          ...LoadingStyles(isLoading),
           flex: 1,
         }}
       >
-        {isLoading ? (
-          <LoadingPage />
-        ) : (
-          <>
-            {contentState.contentType?.fields
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((field) => (
-                <Flex
-                  key={`${contentType.sys.id}-${field.id}`}
-                  flexDirection="column"
-                  style={{
-                    padding: `${tokens.spacingS} ${tokens.spacingXs}`,
-                    cursor: "hand",
-                  }}
-                >
-                  <Flex flexDirection="row" alignItems="center">
-                    <Text
-                      fontSize="fontSizeL"
-                      style={{
-                        color: tokens.gray800,
-                      }}
-                    >
-                      {field.name}{" "}
-                    </Text>
-                    <div style={{ flex: 1 }}></div>
-                  </Flex>
-                  <Caption
+        <div
+          style={{
+            maxWidth: CONTENT_PANEL_MAX_WIDTH,
+            padding: tokens.spacingM,
+            width: "100%",
+          }}
+        >
+          {contentState.contentType?.fields
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((field) => (
+              <Flex
+                key={`${contentType?.sys.id}-${field.id}`}
+                flexDirection="column"
+                style={{
+                  padding: `${tokens.spacingS} ${tokens.spacingXs}`,
+                  cursor: "hand",
+                }}
+              >
+                <Flex flexDirection="row" alignItems="center">
+                  <Text
+                    fontSize="fontSizeL"
                     style={{
-                      color: tokens.gray600,
+                      color: tokens.gray800,
                     }}
                   >
-                    id: {field.id}, type: {field.type}
-                    {", "}
-                    {field.linkType ? `linkType: ${field.linkType},` : ""}{" "}
-                    localized: {field.localized ? "Yes" : "No"}, required:{" "}
-                    {field.required ? "Yes" : "No"}, omitted:{" "}
-                    {field.omitted ? "Yes" : "No"}
-                  </Caption>
-                  <Divider style={{ marginBottom: 0 }} />
+                    {field.name}{" "}
+                  </Text>
+                  <div style={{ flex: 1 }}></div>
                 </Flex>
-              ))}
-          </>
-        )}
+                <Caption
+                  style={{
+                    color: tokens.gray600,
+                  }}
+                >
+                  id: {field.id}, type: {field.type}
+                  {", "}
+                  {field.linkType ? `linkType: ${field.linkType},` : ""}{" "}
+                  localized: {field.localized ? "Yes" : "No"}, required:{" "}
+                  {field.required ? "Yes" : "No"}, omitted:{" "}
+                  {field.omitted ? "Yes" : "No"}
+                </Caption>
+                <Divider style={{ marginBottom: 0 }} />
+              </Flex>
+            ))}
+        </div>
       </Flex>
     </>
   );

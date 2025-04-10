@@ -1,3 +1,5 @@
+import { DEMAI_SYSTEM_PROPERTY_IDENTIFIER } from "../../../../../constants";
+
 export const DEMAI_RESEARCH_CTYPE_ID = "demai-research";
 export const DEMAI_RESEARCH_DISPLAY_FIELD = "title";
 export const DEMAI_RESEARCH_SINGLETON_ENTRY_ID = "demai-research-entry";
@@ -78,5 +80,15 @@ export const DEMAI_RESEARCH_EXPECTED_FIELDS = [
     type: "Text",
     required: false,
     localized: false,
+  },
+  {
+    id: DEMAI_SYSTEM_PROPERTY_IDENTIFIER,
+    name: DEMAI_SYSTEM_PROPERTY_IDENTIFIER,
+    type: "Boolean",
+    omitted: true,
+    disabled: true,
+    defaultValue: {
+      "en-US": true,
+    },
   },
 ];

@@ -5,6 +5,7 @@ import tokens from "@contentful/f36-tokens";
 import { useError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
+import { CONTENT_PANEL_MAX_WIDTH } from "../../../../constants";
 
 const ErrorsContent = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -38,7 +39,7 @@ const ErrorsContent = () => {
             <Flex
               flexDirection="row"
               style={{
-                maxWidth: 700,
+                maxWidth: CONTENT_PANEL_MAX_WIDTH,
                 width: "100%",
                 borderRadius: tokens.borderRadiusSmall,
                 padding: tokens.spacingM,

@@ -9,6 +9,7 @@ import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import { AIPromptEngineID } from "../../../../ai/AIPromptEngine/AIPromptEngineTypes";
+import LoadingStyles from "../../../Loading/LoadingStyles";
 
 const ContentTypesContent = () => {
   const sdk = useSDK<PageAppSDK>();
@@ -37,11 +38,27 @@ const ContentTypesContent = () => {
           overflowY: "auto",
           padding: `${tokens.spacingM} ${tokens.spacingM}`,
           flex: 1,
-          backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
-          opacity: isLoading ? 0.6 : 1,
+          ...LoadingStyles(isLoading),
           position: "relative",
         }}
       >
+        {contentState.contentTypes?.length === 0 && (
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color: tokens.gray500,
+            }}
+          >
+            no content types found
+          </div>
+        )}
         <Flex flexDirection="column" style={{ maxWidth: 800, width: "100%" }}>
           {contentState.contentTypes?.map((contentType: ContentType) => (
             <DmaiContentRow

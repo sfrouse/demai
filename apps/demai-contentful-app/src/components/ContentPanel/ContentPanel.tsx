@@ -1,7 +1,6 @@
 import tokens from "@contentful/f36-tokens";
 import { Flex } from "@contentful/f36-components";
 import ContentTypesContent from "./Content/ContentTypes/ContentTypesContent";
-import SpaceContent from "./Content/SpaceContent";
 import ComponentsContent from "./Content/Components/ComponentsContent";
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import EntriesContent from "./Content/Entries/EntriesContent";
@@ -10,6 +9,7 @@ import ResearchContent from "./Content/Research/ResearchContent";
 import ContentTypeDetailContent from "./Content/ContentTypes/ContentTypeDetailContent";
 import ProspectContent from "./Content/Research/ProspectContent";
 import ErrorsContent from "./Content/Errors/ErrorsContent";
+import SettingsContent from "./Content/SettingsContent";
 
 const ContentPanel = () => {
   const { route } = useAIState();
@@ -27,7 +27,7 @@ const ContentPanel = () => {
       case "components":
         return <ComponentsContent />;
       case "space":
-        return <SpaceContent />;
+        return <SettingsContent />;
       case "entries":
         return <EntriesContent />;
       case "research":

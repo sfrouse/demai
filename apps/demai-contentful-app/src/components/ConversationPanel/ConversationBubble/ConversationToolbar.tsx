@@ -49,6 +49,7 @@ const ConversationToolbar = ({ aiState }: { aiState: AIState }) => {
           backgroundColor: bgColor,
           color: foreColor,
           padding: `${tokens.spacingM} ${tokens.spacingL}`,
+          height: 54,
         }}
       >
         {getStats(aiState, foreColor, iconVariant)}

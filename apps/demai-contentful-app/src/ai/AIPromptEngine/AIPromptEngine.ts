@@ -232,9 +232,13 @@ Request: ${aiArg || "no aiArg"}
       const result = await openAIChatCompletions(aiArg);
       console.log(`runExe[end][${this.toolType}]:`, result);
 
-      const toolResults = [];
+      const toolResults: any[] = [];
       if (result.toolCalls) {
-        for (const toolCall of result.toolCalls) {
+        for (const toolCallRaw of result.toolCalls) {
+          const processedToolCall = this.preprocessToolRequest(
+            toolCallRaw,
+            addError
+          );
           const mcpClient =
             this.toolType === "DemAIDesignSystem"
               ? this.designSystemCMPClient
@@ -245,15 +249,25 @@ Request: ${aiArg || "no aiArg"}
           try {
             // API CHAT COMPLETETIONS
             const exeResult = await mcpClient?.callFunction(
-              toolCall.function.name,
-              JSON.parse(toolCall.function.arguments)
+              processedToolCall.function.name,
+              JSON.parse(processedToolCall.function.arguments)
             );
             toolResults.push(exeResult);
           } catch (err) {
+            addError({
+              service: "AI/MCP Tool Execution",
+              message:
+                "Something went wrong while trying to execute the tool in the MCP.",
+              details: `
+Tool: ${JSON.stringify(processedToolCall, null, 2)}
+              
+Error: ${err}
+`,
+            });
             return {
               success: false,
               errors: [`${err}`],
-              toolCalls: [toolCall.function.name],
+              toolCalls: [processedToolCall.function.name],
               toolResults: [],
             };
           }
@@ -275,6 +289,10 @@ Request: ${aiArg || "no aiArg"}
       };
     } catch (err) {
       console.error("AIPromptEngine: ", err);
+      let aiArgStr = "Failed to parse";
+      try {
+        aiArgStr = JSON.stringify(aiArgStr, null, 2);
+      } catch (err) {}
       addError({
         service: "AI Service runExe",
         showDialog: true,
@@ -282,7 +300,7 @@ Request: ${aiArg || "no aiArg"}
         details: `
 Error: ${err}
 
-Request: ${aiArg || "no aiArg"}
+Request: ${aiArgStr}
 `,
       });
       return {
@@ -292,6 +310,13 @@ Request: ${aiArg || "no aiArg"}
         toolResults: [],
       };
     }
+  }
+
+  preprocessToolRequest(
+    tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
+    addError: (err: AppError) => void
+  ): OpenAI.Chat.Completions.ChatCompletionMessageToolCall {
+    return tool;
   }
 
   createRequest(

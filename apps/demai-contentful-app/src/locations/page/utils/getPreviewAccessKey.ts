@@ -1,12 +1,24 @@
-import { createClient, PreviewApiKey, Space } from "contentful-management";
-import { DEMAI_PREVIEW_ACCESS_KEY_NAME } from "../../../constants";
+import {
+  createClient,
+  Environment,
+  PreviewApiKey,
+  Space,
+} from "contentful-management";
+import {
+  DEMAI_PREVIEW_ACCESS_KEY_NAME,
+  DEMAI_SYSTEM_PROPERTY_IDENTIFIER,
+} from "../../../constants";
+
+function getKeyIdentifier(environmentId: string) {
+  return `${DEMAI_SYSTEM_PROPERTY_IDENTIFIER}-${environmentId}`;
+}
 
 export default async function getPreviewAccessKey(
   cma: string,
   spaceId: string,
   environmentId: string
 ) {
-  const fullKeyName = `${DEMAI_PREVIEW_ACCESS_KEY_NAME} (${environmentId})`;
+  const keyIdentifier = getKeyIdentifier(environmentId);
   const client = createClient({
     accessToken: cma,
   });
@@ -14,12 +26,14 @@ export default async function getPreviewAccessKey(
 
   let previewAccessToken: string | undefined = await loadPreviewAccessKey(
     space,
-    fullKeyName
+    keyIdentifier
   );
 
   if (!previewAccessToken) {
-    await space.createApiKey({
-      name: fullKeyName,
+    console.log("Creating access token", keyIdentifier);
+    await space.createApiKeyWithId(keyIdentifier, {
+      name: keyIdentifier,
+      description: keyIdentifier,
       environments: [
         {
           sys: {
@@ -31,7 +45,7 @@ export default async function getPreviewAccessKey(
       ],
     });
     // try again...
-    previewAccessToken = await loadPreviewAccessKey(space, fullKeyName);
+    previewAccessToken = await loadPreviewAccessKey(space, keyIdentifier);
   }
   return previewAccessToken;
 }
@@ -44,4 +58,24 @@ async function loadPreviewAccessKey(space: Space, fullKeyName: string) {
     }
   );
   return previewKey?.accessToken;
+}
+
+export async function deleteAllPreviewAccessKey(
+  cma: string,
+  spaceId: string,
+  environmentId: string
+) {
+  const keyIdentifier = getKeyIdentifier(environmentId);
+  const client = createClient({
+    accessToken: cma,
+  });
+  const space: Space = await client.getSpace(spaceId);
+  let keys = await space.getApiKeys();
+  for (const key of keys.items) {
+    if (key.sys.id === keyIdentifier) {
+      console.log("Deleting preview key:", key.sys.id);
+      const apiKey = await space.getApiKey(key.sys.id);
+      await apiKey.delete();
+    }
+  }
 }

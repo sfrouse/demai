@@ -22,6 +22,7 @@ import {
   AIPromptEngineID,
 } from "../../ai/AIPromptEngine/AIPromptEngineTypes";
 import { useError } from "../../contexts/ErrorContext/ErrorContext";
+import LoadingStyles from "../Loading/LoadingStyles";
 
 interface ConversationStateEditorProps {}
 
@@ -50,8 +51,7 @@ const ConversationStateEditor: React.FC<ConversationStateEditorProps> = () => {
         paddingBottom: tokens.spacingM,
         minHeight: isLoading ? 200 : 0,
         position: "relative",
-        backgroundColor: isLoading ? tokens.gray100 : tokens.colorWhite,
-        opacity: isLoading ? 0.6 : 1,
+        ...LoadingStyles(isLoading),
       }}
     >
       {isReady ? (
