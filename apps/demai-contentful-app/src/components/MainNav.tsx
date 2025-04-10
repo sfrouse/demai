@@ -139,9 +139,11 @@ const MainNav = () => {
           );
         })}
         <div style={{ flex: 1 }}></div>
-        {errors.length > 0 && (
+        {
           <NavList.Item
-            style={{ color: tokens.colorWarning }}
+            style={{
+              color: errors.length > 0 ? tokens.colorWarning : tokens.gray400,
+            }}
             onClick={() => {
               setRoute({
                 navigation: "error",
@@ -153,7 +155,7 @@ const MainNav = () => {
           >
             Errors ({errors.length})
           </NavList.Item>
-        )}
+        }
         <NavList.Item
           onClick={() => {
             setRoute({
