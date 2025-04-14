@@ -10,9 +10,9 @@ const IframeWithReact = ({ children }: { children: React.ReactNode }) => {
     if (iframe?.contentDocument) {
       setIframeDoc(iframe.contentDocument);
     }
-  }, []);
+    // }, []);
 
-  useEffect(() => {
+    // useEffect(() => {
     if (!iframeDoc) return;
     try {
       const copyCSSRulesToIframe = (iframeDoc: Document) => {
@@ -77,6 +77,8 @@ body::-webkit-scrollbar-thumb:hover {
 }
   `;
       iframeDoc.head.appendChild(customStyle);
+
+      iframe ? (iframe.style.opacity = "1") : null;
     } catch (err) {
       console.error(err);
     }
@@ -94,6 +96,7 @@ body::-webkit-scrollbar-thumb:hover {
         width: "100%",
         height: "100%",
         border: "none",
+        opacity: 0,
       }}
     >
       {iframeDoc && ReactDOM.createPortal(children, iframeDoc.body)}

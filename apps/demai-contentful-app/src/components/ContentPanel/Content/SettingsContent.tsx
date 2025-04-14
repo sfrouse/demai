@@ -134,7 +134,7 @@ const SettingsContent = () => {
             >
               Install / Update DemAI
             </Button>
-            <Button
+            {/* <Button
               isDisabled={isLoading}
               style={{ minWidth: "100%" }}
               onClick={async () => {
@@ -149,7 +149,7 @@ const SettingsContent = () => {
               }}
             >
               VALIDATE WEB COMPS
-            </Button>
+            </Button> */}
           </Flex>
           {/* <Button
             onClick={async () => {

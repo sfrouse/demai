@@ -62,6 +62,7 @@ const ErrorsContent = () => {
                   sdk.dialogs.openAlert({
                     title: `${error.service}`,
                     message: `${error.message}: ${error.details}`,
+                    confirmLabel: "OK",
                   });
                 }}
               >

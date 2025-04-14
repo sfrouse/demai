@@ -4,118 +4,127 @@ import AISessionManager from "../../ai/AIState/AISessionManager";
 import { AIStateConfig, AIStateStatus } from "../../ai/AIState/AIStateTypes";
 import { AIStateRoute } from "./AIStateRouting";
 import { AIStateContext } from "./useAIState";
-import { AIPromptEngineID } from "../../ai/AIPromptEngine/AIPromptEngineTypes";
+// import { AIPromptEngineID } from "../../ai/AIPromptEngine/AIPromptEngineTypes";
+import { AIAction } from "../../ai/AIAction/AIAction";
 
 // Define the shape of the context
 export interface AIStateContextType {
-  aiStateConfig?: AIStateConfig;
-  setAIStateConfig: React.Dispatch<
-    React.SetStateAction<AIStateConfig | undefined>
-  >;
+    aiStateConfig?: AIStateConfig;
+    setAIStateConfig: React.Dispatch<
+        React.SetStateAction<AIStateConfig | undefined>
+    >;
 
-  aiState?: AIState;
-  setAIState: React.Dispatch<React.SetStateAction<AIState | undefined>>;
+    aiAction?: AIAction;
+    setAIAction: React.Dispatch<React.SetStateAction<AIAction | undefined>>;
 
-  aiStateStatus?: AIStateStatus;
-  setAIStateStatus: React.Dispatch<
-    React.SetStateAction<AIStateStatus | undefined>
-  >;
+    aiState?: AIState;
+    setAIState: React.Dispatch<React.SetStateAction<AIState | undefined>>;
 
-  aiSessionManager?: AISessionManager;
-  setAISessionManager: React.Dispatch<
-    React.SetStateAction<AISessionManager | undefined>
-  >; // Setter only, no stored value
+    aiStateStatus?: AIStateStatus;
+    setAIStateStatus: React.Dispatch<
+        React.SetStateAction<AIStateStatus | undefined>
+    >;
 
-  aiSession: AIState[];
-  setAISession: React.Dispatch<React.SetStateAction<AIState[]>>;
+    aiSessionManager?: AISessionManager;
+    setAISessionManager: React.Dispatch<
+        React.SetStateAction<AISessionManager | undefined>
+    >; // Setter only, no stored value
 
-  invalidated: number;
-  setInvalidated: React.Dispatch<React.SetStateAction<number>>;
+    aiSession: AIState[];
+    setAISession: React.Dispatch<React.SetStateAction<AIState[]>>;
 
-  findAndSetAIState: (
-    aiStateEngineId: AIPromptEngineID,
-    context?: string
-  ) => Promise<AISessionManager | void>;
+    invalidated: number;
+    setInvalidated: React.Dispatch<React.SetStateAction<number>>;
 
-  route?: AIStateRoute;
-  setRoute: React.Dispatch<React.SetStateAction<AIStateRoute | undefined>>;
+    // findAndSetAIAction: (
+    //     aiStateEngineId: AIPromptEngineID,
+    //     context?: string,
+    // ) => Promise<AISessionManager | void>;
 
-  autoExecute: boolean;
-  setAutoExecute: React.Dispatch<React.SetStateAction<boolean>>;
+    route?: AIStateRoute;
+    setRoute: React.Dispatch<React.SetStateAction<AIStateRoute | undefined>>;
 
-  ignoreContextContent: boolean;
-  setIgnoreContextContent: React.Dispatch<React.SetStateAction<boolean>>;
+    autoExecute: boolean;
+    setAutoExecute: React.Dispatch<React.SetStateAction<boolean>>;
+
+    ignoreContextContent: boolean;
+    setIgnoreContextContent: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
+    children,
 }) => {
-  const [aiStateConfig, setAIStateConfig] = useState<AIStateConfig>();
-  const [aiState, setAIState] = useState<AIState>();
-  const [aiStateStatus, setAIStateStatus] = useState<AIStateStatus>();
-  const [autoExecute, setAutoExecute] = useState<boolean>(false);
-  const [ignoreContextContent, setIgnoreContextContent] =
-    useState<boolean>(false);
-  const [aiSessionManager, setAISessionManager] = useState<AISessionManager>(); // No need to store, just setter
-  const [aiSession, setAISession] = useState<AIState[]>([]);
-  const [invalidated, setInvalidated] = useState<number>(0);
-  const [route, setRoute] = useState<AIStateRoute>();
+    const [aiStateConfig, setAIStateConfig] = useState<AIStateConfig>();
+    const [aiAction, setAIAction] = useState<AIAction>();
+    const [aiState, setAIState] = useState<AIState>();
+    const [aiStateStatus, setAIStateStatus] = useState<AIStateStatus>();
+    const [autoExecute, setAutoExecute] = useState<boolean>(false);
+    const [ignoreContextContent, setIgnoreContextContent] =
+        useState<boolean>(false);
+    const [aiSessionManager, setAISessionManager] =
+        useState<AISessionManager>(); // No need to store, just setter
+    const [aiSession, setAISession] = useState<AIState[]>([]);
+    const [invalidated, setInvalidated] = useState<number>(0);
+    const [route, setRoute] = useState<AIStateRoute>();
 
-  const aiStateLookup = new Map();
+    // const aiStateLookup = new Map();
 
-  const findAndSetAIState = async (
-    aiStateEngineId: AIPromptEngineID,
-    context: string = ""
-  ) => {
-    if (aiStateConfig) {
-      const uniqueLookupKey = `${aiStateEngineId}${
-        context ? `-${context}` : ``
-      }`;
-      if (!aiStateLookup.get(uniqueLookupKey)) {
-        const newAIState = new AIState(
-          aiStateConfig,
-          setAIStateStatus,
-          aiStateEngineId,
-          () => setInvalidated((prev) => prev + 1)
-        );
-        aiStateLookup.set(uniqueLookupKey, newAIState);
-      }
-      setAIState(aiStateLookup.get(uniqueLookupKey));
-    }
-  };
+    // const findAndSetAIAction = async (
+    //     aiStateEngineId: AIAction,
+    //     context: string = "",
+    // ) => {
+    //     if (aiStateConfig) {
+    //         const uniqueLookupKey = `${aiStateEngineId}${
+    //             context ? `-${context}` : ``
+    //         }`;
+    //         // if (!aiStateLookup.get(uniqueLookupKey)) {
+    //         //     const newAIState = new AIState(
+    //         //         aiStateConfig,
+    //         //         setAIStateStatus,
+    //         //         aiStateEngineId,
+    //         //         () => setInvalidated((prev) => prev + 1),
+    //         //     );
+    //         //     aiStateLookup.set(uniqueLookupKey, newAIState);
+    //         // }
+    //         // setAIState(aiStateLookup.get(uniqueLookupKey));
+    //     }
+    // };
 
-  useEffect(() => {
-    if (aiState) {
-      aiState.contentChangeEvent = () => setInvalidated((prev) => prev + 1);
-      aiState.setAIStateStatus = setAIStateStatus;
-    }
-  }, [aiState, setInvalidated, setAIStateStatus]);
+    useEffect(() => {
+        if (aiState) {
+            aiState.contentChangeEvent = () =>
+                setInvalidated((prev) => prev + 1);
+            aiState.setAIStateStatus = setAIStateStatus;
+        }
+    }, [aiState, setInvalidated, setAIStateStatus]);
 
-  return (
-    <AIStateContext.Provider
-      value={{
-        aiStateConfig,
-        setAIStateConfig,
-        aiState,
-        setAIState,
-        aiStateStatus,
-        setAIStateStatus,
-        aiSessionManager,
-        setAISessionManager,
-        aiSession,
-        setAISession,
-        invalidated,
-        setInvalidated,
-        findAndSetAIState,
-        route,
-        setRoute,
-        autoExecute,
-        setAutoExecute,
-        ignoreContextContent,
-        setIgnoreContextContent,
-      }}
-    >
-      {children}
-    </AIStateContext.Provider>
-  );
+    return (
+        <AIStateContext.Provider
+            value={{
+                aiStateConfig,
+                setAIStateConfig,
+                aiState,
+                setAIState,
+                aiStateStatus,
+                setAIStateStatus,
+                aiSessionManager,
+                setAISessionManager,
+                aiSession,
+                setAISession,
+                invalidated,
+                setInvalidated,
+                // findAndSetAIAction,
+                route,
+                setRoute,
+                autoExecute,
+                setAutoExecute,
+                ignoreContextContent,
+                setIgnoreContextContent,
+                aiAction,
+                setAIAction,
+            }}
+        >
+            {children}
+        </AIStateContext.Provider>
+    );
 };

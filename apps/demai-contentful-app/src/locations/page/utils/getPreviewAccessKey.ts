@@ -1,13 +1,5 @@
-import {
-  createClient,
-  Environment,
-  PreviewApiKey,
-  Space,
-} from "contentful-management";
-import {
-  DEMAI_PREVIEW_ACCESS_KEY_NAME,
-  DEMAI_SYSTEM_PROPERTY_IDENTIFIER,
-} from "../../../constants";
+import { createClient, PreviewApiKey, Space } from "contentful-management";
+import { DEMAI_SYSTEM_PROPERTY_IDENTIFIER } from "../../../constants";
 
 function getKeyIdentifier(environmentId: string) {
   return `${DEMAI_SYSTEM_PROPERTY_IDENTIFIER}-${environmentId}`;

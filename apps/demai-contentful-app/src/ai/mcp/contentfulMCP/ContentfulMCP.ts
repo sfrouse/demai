@@ -61,7 +61,6 @@ export class ContentfulMCP extends MCPClient {
         },
       };
     });
-    console.log("tools", tools);
     return tools;
   }
 

@@ -96,28 +96,28 @@ const ComponentsContent = () => {
                       comp.fields.description && comp.fields.description
                     }
                     status={getEntryStatus(comp)}
-                    badges={[
-                      {
-                        text: "Definition",
-                        variant: comp.fields.componentDefinition
-                          ? "primary"
-                          : "secondary",
-                      },
-                      {
-                        text: "C.Type",
-                        variant: "secondary",
-                      },
-                      {
-                        text: "Web Comp",
-                        variant: comp.fields.javascript
-                          ? "primary"
-                          : "secondary",
-                      },
-                      {
-                        text: "Bindings",
-                        variant: comp.fields.bindings ? "primary" : "secondary",
-                      },
-                    ]}
+                    // badges={[
+                    //   {
+                    //     text: "Definition",
+                    //     variant: comp.fields.componentDefinition
+                    //       ? "primary"
+                    //       : "secondary",
+                    //   },
+                    //   {
+                    //     text: "C.Type",
+                    //     variant: "secondary",
+                    //   },
+                    //   {
+                    //     text: "Web Comp",
+                    //     variant: comp.fields.javascript
+                    //       ? "primary"
+                    //       : "secondary",
+                    //   },
+                    //   {
+                    //     text: "Bindings",
+                    //     variant: comp.fields.bindings ? "primary" : "secondary",
+                    //   },
+                    // ]}
                   />
                 ))}
             </Flex>

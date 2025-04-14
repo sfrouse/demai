@@ -1,10 +1,10 @@
-import { AIPromptEngine } from "../../AIPromptEngine";
-import { AIPromptConfig } from "../../AIPromptEngineTypes";
+import { AIAction } from "../../AIAction";
+import { AIActionConfig } from "../../AIActionTypes";
 
-export class ContentfulOpenToolingEngine extends AIPromptEngine {
-    constructor(config: AIPromptConfig) {
+export class ContentfulOpenToolingAction extends AIAction {
+    constructor(config: AIActionConfig) {
         super(config);
-
+        this.className = "ContentfulOpenToolingAction";
         this.system = {
             role: "system",
             content: `
@@ -19,5 +19,8 @@ Tell me explicitly what you are about to do including the name of the tool - thi
             "Let’s work with Contentful, what would you like to do?";
         this.placeholder =
             "Describe what you would like to do with Contentful. Try to be descriptive...";
+
+        // testing
+        this.contextContent = () => ["hi there"];
     }
 }
