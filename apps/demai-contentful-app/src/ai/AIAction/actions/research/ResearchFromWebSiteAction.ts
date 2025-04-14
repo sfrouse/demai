@@ -32,6 +32,7 @@ export class ResearchFromWebSiteAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
+        this.name = "Research Brand";
         this.model = AIModels.gpt4oSearchPreview;
         this.introMessage =
             "Let’s do some research. What would you like to do?";

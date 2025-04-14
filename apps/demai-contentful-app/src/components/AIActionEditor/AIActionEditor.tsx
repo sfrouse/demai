@@ -49,7 +49,25 @@ const AIActionEditor = () => {
     }
 
     return (
-        <div style={{ position: "relative", minHeight: 200 }}>
+        <div style={{ position: "relative", minHeight: 160 }}>
+            {aiActionSnapshot.isRunning ? (
+                <Flex
+                    alignItems="center"
+                    justifyContent="center"
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        zIndex: 2000,
+                        backgroundColor: "rgba(240,240,240,0.3)",
+                    }}
+                >
+                    <LoadingIcon />
+                </Flex>
+            ) : null}
+            {/* Prompting for Execution */}
             <AIActionConfirm
                 style={{
                     position: "absolute",
@@ -72,6 +90,7 @@ const AIActionEditor = () => {
                 prompts={aiAction?.prompts}
                 visible={aiActionSnapshot?.phase === AIActionPhase.describing}
             />
+            {/* We are done so show complete */}
             <AIActionConfirm
                 style={{
                     position: "absolute",
@@ -88,8 +107,8 @@ const AIActionEditor = () => {
                     aiAction?.reset();
                 }}
                 prompts={{
-                    cancel: "Let's try this again.",
-                    run: "OK, Done.",
+                    // cancel: "Let's try this again.",
+                    run: "OK, Ready for next action.",
                     cancelIcon: icons.CycleIcon,
                     runIcon: icons.StarIcon,
                 }}
@@ -148,7 +167,6 @@ const AIActionEditor = () => {
                     )}
 
                     <div style={{ flex: 1 }}></div>
-                    {aiActionSnapshot.isRunning ? <LoadingIcon /> : null}
                     <Button
                         onClick={() => {
                             aiAction.updateSnapshot({
@@ -167,8 +185,7 @@ const AIActionEditor = () => {
                                 contentState,
                                 ignoreContextContent,
                                 addError,
-                                false,
-                                // autoExecute,
+                                autoExecute,
                             )
                         }
                         variant="primary"

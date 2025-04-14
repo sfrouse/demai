@@ -4,9 +4,10 @@ import { AIModels } from "../../../openAI/openAIConfig";
 import { AIAction } from "../../AIAction";
 import {
     AIActionConfig,
-    AIActionContextContentSelections,
     AIActionExecuteResults,
+    AIActionPhase,
 } from "../../AIActionTypes";
+import { SaveBrandColorsAction } from "./SaveBrandColorsAction";
 
 const SOURCE_ID = "source";
 const SOURCE_PROSPECT = "the prospect";
@@ -16,6 +17,7 @@ export class StylesFromWebSiteAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
+        this.name = "Brand Colors";
         this.model = AIModels.gpt4oSearchPreview;
         this.introMessage =
             "Let’s do some research. What would you like to do?";
@@ -37,26 +39,23 @@ enough colors to satisfy the request.
         this.toolType = "WebSearch";
 
         // CONTEXT CONTENT
-        this.contextContent = (contentState: ContentState) => [
+        this.contextContent = () => [
             "Find Three Brand Hex Colors from",
             {
                 id: SOURCE_ID,
                 options: [SOURCE_PROSPECT, SOURCE_DESCRIPTION],
                 defaultValue: SOURCE_PROSPECT,
             },
-            ".",
         ];
 
         // CONTENT
         this.content = (contentState: ContentState) => {
-            console.log("content", this.userContent);
             const prospect = contentState.research?.fields.prospect;
             const mainWebsite = contentState.research?.fields.mainWebsite;
             const seDescription =
                 contentState.research?.fields.solutionEngineerDescription;
             const useProspect =
                 this.contextContentSelections[SOURCE_ID] === SOURCE_PROSPECT;
-
             const extra = useProspect
                 ? `The prospect is \`${prospect}\` -- \` ${mainWebsite}\` -- ${seDescription}. Don't pull anymore than a couple paragraphs.`
                 : "";
@@ -68,45 +67,61 @@ enough colors to satisfy the request.
     async runExe(
         contentState: ContentState,
         addError: (err: AppError) => void,
-        chain: boolean = true,
     ) {
         const results = await super.runExe(contentState, addError);
 
-        await this.saveColors(contentState, addError, chain, results);
+        this.updateSnapshot({
+            isRunning: true,
+        });
 
+        await this.saveColors(contentState, addError, results);
+
+        this.updateSnapshot({
+            isRunning: false,
+            phase: AIActionPhase.executed,
+        });
         return results;
+        // this.updateSnapshot({
+        //     startExecutionRunTime: Date.now(),
+        //     isRunning: true,
+        // });
+
+        // return {
+        //     success: false as const,
+        //     errors: [`duh`],
+        //     toolCalls: [] as string[],
+        //     toolResults: [] as any[],
+        // };
     }
 
     async saveColors(
         contentState: ContentState,
         addError: (err: AppError) => void,
-        chain: boolean = true,
         results: AIActionExecuteResults,
     ) {
-        //     if (chain) {
-        //       // add stuff...
-        //       const otherEngine = createAIActionEngine(
-        //         AIActionEngineID.UPDATE_BRAND_COLORS,
-        //         this.config
-        //       );
-        //       const finalResponse = `
-        // The research below should have definitions for primary, secondary, or tertiary colors.
-        // Find them and save to research:
-        // ${response}
-        // `;
-        //       const otherResults = await otherEngine.runExe(
-        //         // aiStateClone,
-        //         request,
-        //         finalResponse,
-        //         addError,
-        //         false
-        //       );
-        //       if (otherResults.success === false) results.success = false;
-        //       results.toolCalls = [...results.toolCalls, ...otherResults.toolCalls];
-        //       results.toolResults = [
-        //         ...results.toolResults,
-        //         ...otherResults.toolResults,
-        //       ];
-        //     }
+        // add stuff...
+        const saveBrandColorAction = new SaveBrandColorsAction(this.config);
+        this.updateSnapshot({
+            chain: [...this.chain, saveBrandColorAction],
+        });
+        saveBrandColorAction.updateSnapshot({
+            response: `
+The research below should have definitions for primary, secondary, or tertiary colors.
+Find them and save to research:
+
+${this.response}
+`,
+        });
+        const saveResults = await saveBrandColorAction.runExe(
+            contentState,
+            addError,
+        );
+
+        if (saveResults.success === false) results.success = false;
+        results.toolCalls = [...results.toolCalls, ...saveResults.toolCalls];
+        results.toolResults = [
+            ...results.toolResults,
+            ...saveResults.toolResults,
+        ];
     }
 }

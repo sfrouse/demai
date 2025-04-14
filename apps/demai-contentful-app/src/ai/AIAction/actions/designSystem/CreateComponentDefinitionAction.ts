@@ -1,15 +1,13 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { CREATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../mcp/designSystemMCP/tools/createComponentDefinition/createComponentDefinition.tool";
 import { AIAction } from "../../AIAction";
-import {
-    AIActionConfig,
-    AIActionContextContentSelections,
-} from "../../AIActionTypes";
+import { AIActionConfig } from "../../AIActionTypes";
 
 export class CreateComponentDefinitionAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
+        this.name = "Create Comp Definition";
         this.system = {
             role: "system",
             content: `

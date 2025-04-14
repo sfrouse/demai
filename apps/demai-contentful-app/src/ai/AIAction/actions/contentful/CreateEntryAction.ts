@@ -1,10 +1,7 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import contentTypeToAI from "../../../AIState/utils/contentTypeToAI";
 import { AIAction } from "../../AIAction";
-import {
-    AIActionConfig,
-    AIActionContextContentSelections,
-} from "../../AIActionTypes";
+import { AIActionConfig } from "../../AIActionTypes";
 
 export class CreateEntryAction extends AIAction {
     static CONTEXT_NUMBER_OF_TYPES = "numberOfCTypes";
@@ -23,6 +20,7 @@ export class CreateEntryAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
+        this.name = "Create Entries";
         this.introMessage =
             "Let’s create some entries, what would you like to do?";
         this.executionPrompt = "Creating your Entries...";

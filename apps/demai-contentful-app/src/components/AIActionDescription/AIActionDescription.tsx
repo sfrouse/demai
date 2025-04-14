@@ -6,6 +6,7 @@ import { Flex } from "@contentful/f36-components";
 import scrollBarStyles from "../utils/ScrollBarMinimal.module.css";
 import AIActionDescriptionTitle from "./components/AIActionDescriptionTitle";
 import { AIActionSnapshot } from "../../ai/AIAction/AIActionTypes";
+import AutoBenchAIAction from "../AutoBench/components/AutoBenchAIAction";
 
 const AIActionDescription = ({
     aiAction,
@@ -70,6 +71,8 @@ const AIActionDescription = ({
             setExecutionResponseHTML(newHTML);
         })();
     }, [aiActionSnapshot.executionResponse]);
+
+    console.log("aiActionSnapshot", aiActionSnapshot);
 
     return (
         <Flex
@@ -194,6 +197,18 @@ const AIActionDescription = ({
                             __html: executionResponseHtml,
                         }}
                     ></span>
+                </div>
+            )}
+            {aiActionSnapshot.chain && (
+                <div
+                    style={{
+                        padding: `0 ${tokens.spacingL}`,
+                    }}
+                >
+                    <AIActionDescriptionTitle title="Actions" />
+                    {aiActionSnapshot.chain.map((subAIAction) => {
+                        return <AutoBenchAIAction aiAction={subAIAction} />;
+                    })}
                 </div>
             )}
             {aiActionSnapshot.errors.length > 0 && (

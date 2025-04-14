@@ -3,15 +3,13 @@ import { ContentState } from "../../../../contexts/ContentStateContext/ContentSt
 import rgbaToHex from "../../../AIState/utils/rgbaToHex";
 import { SAVE_COLOR_SET_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/saveColorSet";
 import { AIAction } from "../../AIAction";
-import {
-    AIActionConfig,
-    AIActionContextContentSelections,
-} from "../../AIActionTypes";
+import { AIActionConfig } from "../../AIActionTypes";
 
 export class ChangeTokenColorSetAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
+        this.name = "Update Color Tokens";
         this.system = {
             role: "system",
             content: `You are an expert in Design Systems and are helping guide a Solutions Engineer navigate customizing the colors on their website for a specific prospect.

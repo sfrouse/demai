@@ -4,6 +4,8 @@ import { AIActionConfig } from "../../AIActionTypes";
 export class ContentfulOpenToolingAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
+
+        this.name = "Contentful Tooling";
         this.className = "ContentfulOpenToolingAction";
         this.system = {
             role: "system",
@@ -21,6 +23,6 @@ Tell me explicitly what you are about to do including the name of the tool - thi
             "Describe what you would like to do with Contentful. Try to be descriptive...";
 
         // testing
-        this.contextContent = () => ["hi there"];
+        this.contextContent = () => [];
     }
 }

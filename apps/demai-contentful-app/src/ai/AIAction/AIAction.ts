@@ -68,6 +68,7 @@ export class AIAction {
     runTime: number | undefined;
     startExecutionRunTime: number | undefined;
     executeRunTime: number | undefined;
+    chain: AIAction[] = [];
 
     // --- AI Clients --------------------------------------------------------------
     model: AIModels = AIModels.gpt4o;
@@ -112,6 +113,7 @@ export class AIAction {
             runTime: this.runTime,
             startExecutionRunTime: this.startExecutionRunTime,
             executeRunTime: this.executeRunTime,
+            chain: this.chain,
         };
     }
 
@@ -154,17 +156,10 @@ export class AIAction {
         );
     }
 
-    test() {
-        this.updateSnapshot({
-            userContent: "test",
-        });
-    }
-
     async run(
         contentState: ContentState,
         ignoreContextContent: boolean = false,
         addError: (err: AppError) => void,
-        // forceExecution: boolean = false,
         autoExecute: boolean = false,
     ) {
         if (
@@ -215,9 +210,8 @@ export class AIAction {
     async runExe(
         contentState: ContentState,
         addError: (err: AppError) => void,
-        chain: boolean = true,
     ): Promise<AIActionExecuteResults> {
-        return runExeAIAction(this, contentState, addError, chain);
+        return runExeAIAction(this, contentState, addError);
     }
 
     preprocessToolRequest(
@@ -233,22 +227,28 @@ export class AIAction {
         contentState: ContentState,
         ignoreContextContent: boolean = false,
     ): string {
-        console.log(
-            "createRequest",
-            userContent,
-            contextContentSelections,
-            contentState,
-            ignoreContextContent,
-        );
         if (ignoreContextContent) {
             return this.content ? this.content(contentState) : "";
         }
+
+        // Figure out selections, defaults and UI updates
+        const defaultSelections =
+            this.getContextContentSelectionDefaults(contentState);
+        this.updateSnapshot({
+            contextContentSelections: {
+                ...defaultSelections,
+                ...this.contextContentSelections,
+            },
+        });
+
+        // Get final context prompt
         const contextPrompt = processContextContent(
             this.contextContent(contentState),
             contextContentSelections,
         );
-        const content = this.content ? this.content(contentState) : "";
 
+        // user prompt can still be augmented...
+        const content = this.content ? this.content(contentState) : "";
         return [...contextPrompt, content].join(" ");
     }
 

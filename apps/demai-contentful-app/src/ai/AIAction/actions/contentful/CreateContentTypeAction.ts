@@ -3,11 +3,7 @@ import { ContentState } from "../../../../contexts/ContentStateContext/ContentSt
 import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { DEMAI_GENERATED_PROPERTY_IDENTIFIER } from "../../../../constants";
 import { AIAction } from "../../AIAction";
-import {
-    AIActionConfig,
-    AIActionContextContentSelections,
-    AIActionExecuteResults,
-} from "../../AIActionTypes";
+import { AIActionConfig, AIActionExecuteResults } from "../../AIActionTypes";
 
 export class CreateContentTypeAction extends AIAction {
     // IDs
@@ -28,6 +24,7 @@ export class CreateContentTypeAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
+        this.name = "Create Content Types";
         this.system = {
             role: "system",
             content: `
@@ -133,9 +130,8 @@ ${contentState.research?.fields.products}
     async runExe(
         contentState: ContentState,
         addError: (err: AppError) => void,
-        chain?: boolean,
     ): Promise<AIActionExecuteResults> {
-        const results = await super.runExe(contentState, addError, chain);
+        const results = await super.runExe(contentState, addError);
         if (results.success === true) {
             const newContentType = results.toolResults?.[0]?.content?.[0]?.text;
 

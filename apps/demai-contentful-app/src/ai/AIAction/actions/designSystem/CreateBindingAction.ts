@@ -3,16 +3,14 @@ import { ContentState } from "../../../../contexts/ContentStateContext/ContentSt
 import { CREATE_BINDING_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/createBinding";
 import contentTypeToAI from "../../../AIState/utils/contentTypeToAI";
 import cDefToAI from "../../../AIState/utils/cDefToAI";
-import {
-    AIActionConfig,
-    AIActionContextContentSelections,
-} from "../../AIActionTypes";
+import { AIActionConfig } from "../../AIActionTypes";
 import { AIAction } from "../../AIAction";
 
 export class CreateBindingAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
+        this.name = "Create Bindings";
         this.system = {
             role: "system",
             content: `

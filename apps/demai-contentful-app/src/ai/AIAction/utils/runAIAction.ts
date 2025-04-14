@@ -22,10 +22,6 @@ export default async function runAIAction(
     try {
         aiAction.updateSnapshot({
             startRunTime: Date.now(),
-            phase:
-                aiAction.toolType === "none"
-                    ? AIActionPhase.answered
-                    : AIActionPhase.describing,
             isRunning: true,
             request: aiAction.createRequest(
                 aiAction.userContent,
@@ -37,7 +33,6 @@ export default async function runAIAction(
 
         // API CHAT COMPLETETIONS
         let tools = await aiAction.getTools(aiAction.toolFilters);
-        console.log("aiAction", aiAction);
         aiArg = {
             model: aiAction.model,
             openAIClient: aiAction.openAIClient,
@@ -72,6 +67,10 @@ export default async function runAIAction(
         aiAction.updateSnapshot({
             runTime: Date.now() - aiAction.startRunTime!,
             isRunning: false,
+            phase:
+                aiAction.toolType === "none"
+                    ? AIActionPhase.answered
+                    : AIActionPhase.describing,
             errors: [],
             response: aiAction.responseContent(
                 `${aiResults.description}`,
@@ -96,6 +95,7 @@ export default async function runAIAction(
         aiAction.updateSnapshot({
             runTime: Date.now() - aiAction.startRunTime!,
             isRunning: false,
+            phase: AIActionPhase.prompting,
             errors: [`${err}`],
             response: aiAction.responseContent(`Error.`, contentState),
         });

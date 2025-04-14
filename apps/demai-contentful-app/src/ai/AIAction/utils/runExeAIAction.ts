@@ -15,7 +15,6 @@ export default async function runExeAIAction(
     aiAction: AIAction,
     contentState: ContentState,
     addError: (err: AppError) => void,
-    chain: boolean = true,
 ): Promise<AIActionExecuteResults> {
     // There are no tools in web search...
     if (aiAction.toolType === "WebSearch") {
@@ -33,8 +32,9 @@ export default async function runExeAIAction(
         aiAction.updateSnapshot({
             startExecutionRunTime: Date.now(),
             isRunning: true,
-            phase: AIActionPhase.executing,
         });
+        console.log("aiAction.getSnapshot()", aiAction.getSnapshot());
+
         // API CHAT COMPLETETIONS
         let tools = await aiAction.getTools(aiAction.toolFilters);
         aiArg = {
@@ -108,6 +108,7 @@ ${aiAction.response}`,
                         executeRunTime:
                             Date.now() - aiAction.startExecutionRunTime!,
                         isRunning: false,
+                        executionResponse: "Error",
                         phase: AIActionPhase.executed,
                         errors: [`${err}`],
                     });
@@ -125,7 +126,7 @@ ${aiAction.response}`,
             executeRunTime: Date.now() - aiAction.startExecutionRunTime!,
             isRunning: false,
             phase: AIActionPhase.executed,
-            executionResponse: `${
+            executionResponse: `Executed: ${
                 result.toolCalls
                     ? result.toolCalls
                           .map((toolCall) => toolCall.function.name)
@@ -161,6 +162,7 @@ ${aiAction.response}`,
         aiAction.updateSnapshot({
             executeRunTime: Date.now() - aiAction.startExecutionRunTime!,
             isRunning: false,
+            executionResponse: "Error",
             phase: AIActionPhase.executed,
             errors: [`${err}`],
         });

@@ -9,6 +9,7 @@ export class SaveBrandColorsAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
+        this.name = "Save Brand Colors";
         this.model = AIModels.gpt4o;
         this.introMessage =
             "Let’s do some research. What would you like to do?";

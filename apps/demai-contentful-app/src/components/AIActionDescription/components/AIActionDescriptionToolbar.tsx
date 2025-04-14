@@ -16,7 +16,7 @@ const AIActionDescriptionToolbar = ({
     aiAction: AIAction;
     aiActionSnapshot: AIActionSnapshot;
 }) => {
-    let bgColor = tokens.gray100;
+    let bgColor = aiActionSnapshot.isRunning ? tokens.green100 : tokens.gray100;
     let foreColor = tokens.gray800;
     let iconVariant: IconVariant = "muted";
 
@@ -27,12 +27,14 @@ const AIActionDescriptionToolbar = ({
                 : tokens.blue100;
             break;
         }
-        case AIActionPhase.executing: {
-            bgColor = tokens.green100;
-            break;
-        }
+        // case AIActionPhase.executing: {
+        //     bgColor = tokens.green100;
+        //     break;
+        // }
         case AIActionPhase.answered: {
-            bgColor = tokens.orange100;
+            bgColor = aiActionSnapshot.isRunning
+                ? tokens.green100
+                : tokens.orange100;
             break;
         }
         case AIActionPhase.executed: {

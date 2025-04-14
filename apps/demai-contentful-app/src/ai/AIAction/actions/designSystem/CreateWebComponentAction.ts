@@ -1,15 +1,13 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { CREATE_WEB_COMPONENT_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/createWebComponent";
 import { AIAction } from "../../AIAction";
-import {
-    AIActionConfig,
-    AIActionContextContentSelections,
-} from "../../AIActionTypes";
+import { AIActionConfig } from "../../AIActionTypes";
 
 export class CreateWebComponentAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
+        this.name = "Create Web Comp";
         this.system = {
             role: "system",
             content: `
