@@ -2,7 +2,8 @@ import { ContentState } from "../../../../contexts/ContentStateContext/ContentSt
 import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { AIModels } from "../../../openAI/openAIConfig";
 import { AIAction } from "../../AIAction";
-import { AIActionConfig, AIActionExecuteResults } from "../../AIActionTypes";
+import { AIActionConfig, AIActionPhase } from "../../AIActionTypes";
+import { SaveBrandColorsAction } from "./SaveBrandColorsAction";
 
 export class ResearchFromWebSiteAction extends AIAction {
     static label = "Research Brand";
@@ -89,42 +90,31 @@ Keep any summary you come up with to a paragraph or two at most.
     async runExe(
         contentState: ContentState,
         addError: (err: AppError) => void,
-        chain: boolean = true,
     ) {
+        this.updateSnapshot({
+            isRunning: true,
+            startExecutionRunTime: Date.now(),
+        });
+
         const results = await super.runExe(contentState, addError);
 
-        await this.saveToneOrStyle(contentState, addError, chain, results);
+        await this.runExeChildAction(
+            SaveBrandColorsAction,
+            `
+The research below defines research on this brand. Use the \`update_brand\` tool and update.
 
+${this.response}
+`,
+            contentState,
+            addError,
+            results,
+        );
+
+        this.updateSnapshot({
+            isRunning: false,
+            phase: AIActionPhase.executed,
+            executeRunTime: Date.now() - this.startExecutionRunTime!,
+        });
         return results;
-    }
-
-    async saveToneOrStyle(
-        contentState: ContentState,
-        addError: (err: AppError) => void,
-        chain: boolean = true,
-        results: AIActionExecuteResults,
-    ) {
-        //     if (chain) {
-        //       // add stuff...
-        //       const otherEngine = createAIActionEngine(
-        //         AIActionEngineID.UPDATE_BRAND_COLORS,
-        //         this.config
-        //       );
-        //       const finalResponse = `
-        // The research below defines research on this brand. Use the \`update_brand\` tool and update.
-        // ${this.response}
-        // `;
-        //       const otherResults = await otherEngine.runExe(
-        //         contentState,
-        //         addError,
-        //         false
-        //       );
-        //       if (otherResults.success === false) results.success = false;
-        //       results.toolCalls = [...results.toolCalls, ...otherResults.toolCalls];
-        //       results.toolResults = [
-        //         ...results.toolResults,
-        //         ...otherResults.toolResults,
-        //       ];
-        //     }
     }
 }

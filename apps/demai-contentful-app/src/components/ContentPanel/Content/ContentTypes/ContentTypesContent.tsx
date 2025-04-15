@@ -8,7 +8,6 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
-import { AIPromptEngineID } from "../../../../ai/AIPromptEngine/AIPromptEngineTypes";
 import LoadingStyles from "../../../Loading/LoadingStyles";
 import { EditContentTypeAction } from "../../../../ai/AIAction/actions/contentful/EditContentTypeAction";
 
@@ -16,9 +15,10 @@ const ContentTypesContent = () => {
     const sdk = useSDK<PageAppSDK>();
     const { contentState, loadProperty, loadingState, setContentType } =
         useContentStateSession();
-    const { invalidated, setRoute } = useAIState();
+    const { invalidated, setRoute, setInvalidated } = useAIState();
     const [localInvalidated, setLocalInvalidated] =
         useState<number>(invalidated);
+    const [localLoading, setLocalLoading] = useState<boolean>(false);
 
     useEffect(() => {
         const forceReload = localInvalidated !== invalidated;
@@ -28,7 +28,33 @@ const ContentTypesContent = () => {
         }
     }, [invalidated]);
 
-    const isLoading = loadingState.contentTypes === true;
+    const isLoading =
+        loadingState.contentTypes === true || localLoading === true;
+
+    const handleDelete = async (contentType: ContentType) => {
+        const doDelete = await sdk.dialogs.openConfirm({
+            title: "Delete Content Type",
+            message: "Are you sure you want to delete this content type?",
+        });
+        if (doDelete) {
+            setLocalLoading(true);
+            try {
+                await sdk.cma.contentType.unpublish({
+                    contentTypeId: contentType.sys.id,
+                });
+                await sdk.cma.contentType.delete({
+                    contentTypeId: contentType.sys.id,
+                });
+                sdk.notifier.success(
+                    `deleted content type with id: ${contentType.sys.id}`,
+                );
+            } catch (err: any) {
+                sdk.notifier.error(`error: ${err.message}`);
+            }
+            setInvalidated((prev) => prev + 1);
+            setLocalLoading(false);
+        }
+    };
 
     return (
         <>
@@ -84,6 +110,9 @@ const ContentTypesContent = () => {
                                         "_blank",
                                     );
                                 }}
+                                deleteOnClick={async () =>
+                                    handleDelete(contentType)
+                                }
                                 title={contentType.name}
                                 id={contentType.sys.id}
                                 description={contentType.description}

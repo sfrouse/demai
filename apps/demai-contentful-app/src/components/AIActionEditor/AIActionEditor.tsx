@@ -61,7 +61,7 @@ const AIActionEditor = () => {
                         right: 0,
                         left: 0,
                         zIndex: 2000,
-                        backgroundColor: "rgba(240,240,240,0.3)",
+                        backgroundColor: "rgba(255,255,255,0.5)",
                     }}
                 >
                     <LoadingIcon />

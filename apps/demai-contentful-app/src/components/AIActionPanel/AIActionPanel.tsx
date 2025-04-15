@@ -15,8 +15,6 @@ const AIActionPanel = () => {
     const { aiAction, route, setRoute } = useAIState();
     const aiActionSnapshot = useAIAction(aiAction);
 
-    console.log("route", route);
-
     return (
         <Flex
             flexDirection="column"

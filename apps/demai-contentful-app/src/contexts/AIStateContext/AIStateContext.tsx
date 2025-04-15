@@ -96,6 +96,14 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     }, [aiState, setInvalidated, setAIStateStatus]);
 
+    useEffect(() => {
+        if (aiAction) {
+            // refresh to latest
+            aiAction.contentChangeEvent = () =>
+                setInvalidated((prev) => prev + 1);
+        }
+    }, [aiAction, setInvalidated]);
+
     return (
         <AIStateContext.Provider
             value={{

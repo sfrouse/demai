@@ -197,18 +197,26 @@ const AIActionDescription = ({
                     ></span>
                 </div>
             )}
-            {aiActionSnapshot.request && aiActionSnapshot.chain.length > 0 && (
-                <div
-                    style={{
-                        padding: `0 ${tokens.spacingL}`,
-                    }}
-                >
-                    <AIActionDescriptionTitle title="Actions" />
-                    {aiActionSnapshot.chain.map((subAIAction) => {
-                        return <AutoBenchAIAction aiAction={subAIAction} />;
-                    })}
-                </div>
-            )}
+            {aiActionSnapshot.request &&
+                aiActionSnapshot.childActions.length > 0 && (
+                    <Flex
+                        flexDirection="column"
+                        style={{
+                            gap: tokens.spacingXs,
+                            padding: `0 ${tokens.spacingL}`,
+                        }}
+                    >
+                        <AIActionDescriptionTitle title="Actions" />
+                        {aiActionSnapshot.childActions.map((subAIAction) => {
+                            return (
+                                <AutoBenchAIAction
+                                    key={`sub-${subAIAction.key}`}
+                                    aiAction={subAIAction}
+                                />
+                            );
+                        })}
+                    </Flex>
+                )}
             {aiActionSnapshot.errors.length > 0 && (
                 <div
                     style={{

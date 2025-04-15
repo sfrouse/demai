@@ -16,19 +16,13 @@ export default async function runAIAction(
     contentState: ContentState,
     ignoreContextContent: boolean = false,
     addError: (err: AppError) => void,
-    chain: boolean = false,
 ): Promise<AIActionRunResults> {
     let aiArg: OpenAIChatCompletionsProps | undefined;
     try {
         aiAction.updateSnapshot({
             startRunTime: Date.now(),
             isRunning: true,
-            request: aiAction.createRequest(
-                aiAction.userContent,
-                aiAction.contextContentSelections,
-                contentState,
-                ignoreContextContent,
-            ),
+            request: aiAction.createRequest(contentState, ignoreContextContent),
         });
 
         // API CHAT COMPLETETIONS

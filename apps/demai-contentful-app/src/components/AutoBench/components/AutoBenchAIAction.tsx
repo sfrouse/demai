@@ -9,28 +9,45 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
     const aiActionSnapshot = useAIAction(aiAction);
 
     if (!aiActionSnapshot) return null;
+
+    let bgColor = aiActionSnapshot.isRunning ? tokens.green100 : tokens.gray100;
+    let foreColor = tokens.gray800;
+    let iconVariant: icons.IconVariant = "muted";
+
+    switch (aiActionSnapshot.phase) {
+        case AIActionPhase.describing: {
+            bgColor = aiActionSnapshot.isRunning
+                ? tokens.green100
+                : tokens.blue100;
+            break;
+        }
+        case AIActionPhase.answered: {
+            bgColor = aiActionSnapshot.isRunning
+                ? tokens.green100
+                : tokens.orange100;
+            break;
+        }
+        case AIActionPhase.executed: {
+            bgColor =
+                aiActionSnapshot.errors.length > 0
+                    ? tokens.colorWarning
+                    : tokens.gray500;
+            foreColor = tokens.colorWhite;
+            iconVariant = "white";
+            break;
+        }
+    }
+
     return (
         <Flex
             flexDirection="row"
             alignItems="center"
             key={aiAction.key}
             style={{
-                padding: `${tokens.spacingXs} ${tokens.spacingS}`,
+                padding: `${tokens.spacingS} ${tokens.spacingXs} ${tokens.spacingS} ${tokens.spacingM}`,
                 borderRadius: tokens.borderRadiusSmall,
-                color:
-                    aiActionSnapshot.phase === AIActionPhase.done
-                        ? tokens.colorWhite
-                        : tokens.gray700,
-                backgroundColor:
-                    aiActionSnapshot.errors.length > 0
-                        ? tokens.red200
-                        : aiActionSnapshot.isRunning
-                        ? tokens.blue200
-                        : aiActionSnapshot.phase === AIActionPhase.prompting
-                        ? tokens.gray200
-                        : aiActionSnapshot.phase === AIActionPhase.done
-                        ? tokens.blue900
-                        : tokens.gray100,
+                color: foreColor,
+                backgroundColor: bgColor,
                 gap: tokens.spacingS,
             }}
         >
@@ -45,24 +62,27 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
                 >
                     {(aiAction.constructor as typeof AIAction).label}
                 </div>
-                <div style={{ position: "relative", height: 12 }}>
-                    <div
-                        style={{
-                            position: "absolute",
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            bottom: 0,
-                            fontSize: 11,
-                            lineHeight: 1.2,
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                        }}
-                    >
-                        {aiActionSnapshot.response}
+                {aiActionSnapshot.response && (
+                    <div style={{ position: "relative", height: 12 }}>
+                        <div
+                            style={{
+                                position: "absolute",
+                                left: 0,
+                                right: 0,
+                                top: 0,
+                                bottom: 0,
+                                fontSize: 11,
+                                lineHeight: 1.2,
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                color: foreColor,
+                            }}
+                        >
+                            {aiActionSnapshot.response}
+                        </div>
                     </div>
-                </div>
+                )}
             </Flex>
             <div style={{ fontSize: 10 }}>
                 {aiActionSnapshot.isRunning ? (
@@ -75,7 +95,7 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
                 size="small"
                 variant="transparent"
                 aria-label="Select the date"
-                icon={<icons.InfoCircleIcon />}
+                icon={<icons.InfoCircleIcon variant={iconVariant} />}
             />
         </Flex>
     );

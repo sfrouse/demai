@@ -112,6 +112,7 @@ ${aiAction.response}`,
                         phase: AIActionPhase.executed,
                         errors: [`${err}`],
                     });
+                    aiAction.contentChangeEvent();
                     return {
                         success: false,
                         errors: [`${err}`],
@@ -135,6 +136,7 @@ ${aiAction.response}`,
             }`,
             errors: [],
         });
+        aiAction.contentChangeEvent();
         return {
             success: true,
             result: aiAction.executionResponse,
@@ -166,6 +168,7 @@ ${aiAction.response}`,
             phase: AIActionPhase.executed,
             errors: [`${err}`],
         });
+        aiAction.contentChangeEvent();
         return {
             success: false,
             errors: [`${err}`],

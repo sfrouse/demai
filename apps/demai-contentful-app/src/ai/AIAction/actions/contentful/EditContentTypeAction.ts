@@ -3,7 +3,7 @@ import { AIAction } from "../../AIAction";
 import { AIActionConfig } from "../../AIActionTypes";
 
 export class EditContentTypeAction extends AIAction {
-    static label = "Edit Content Type";
+    static label = "Update Content Type";
 
     constructor(config: AIActionConfig) {
         super(config);

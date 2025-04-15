@@ -25,12 +25,16 @@ import { processContextContent } from "./utils/processContextContent";
 import { nanoid } from "nanoid";
 import runAIAction from "./utils/runAIAction";
 import runExeAIAction from "./utils/runExeAIAction";
+import { AIActionConstructor } from "../../contexts/AIStateContext/AIStateRouting";
+import runExeChildAction from "./utils/runExeChildAction";
+import runChildAction from "./utils/runChildAction";
 
 export class AIAction {
     static label: string = "Open";
 
     key: string; // Unique key for React lists
     className: string = "AIAction";
+    contentChangeEvent: () => void = () => {};
 
     // --- UI Setup ----------------------------------------------------------------
     contextContent: (contentState: ContentState) => AIActionContentPrefix =
@@ -64,12 +68,11 @@ export class AIAction {
     phase: AIActionPhase = AIActionPhase.prompting;
     isRunning: boolean = false;
     errors: string[] = [];
-    // Timers
     startRunTime: number | undefined;
     runTime: number | undefined;
     startExecutionRunTime: number | undefined;
     executeRunTime: number | undefined;
-    chain: AIAction[] = [];
+    childActions: AIAction[] = [];
 
     // --- AI Clients --------------------------------------------------------------
     model: AIModels = AIModels.gpt4o;
@@ -87,7 +90,7 @@ export class AIAction {
     contentfulMCP: ContentfulMCP | undefined;
     designSystemCMPClient: DesignSystemMCPClient | undefined;
     researchMCP: ResearchMCP | undefined;
-    protected config: AIActionConfig;
+    config: AIActionConfig;
 
     // ======= useSyncExternalStore ==========
     private listeners = new Set<() => void>();
@@ -114,7 +117,7 @@ export class AIAction {
             runTime: this.runTime,
             startExecutionRunTime: this.startExecutionRunTime,
             executeRunTime: this.executeRunTime,
-            chain: this.chain,
+            childActions: this.childActions,
         };
     }
 
@@ -183,14 +186,12 @@ export class AIAction {
         ignoreContextContent: boolean = false,
         addError: (err: AppError) => void,
         autoExecute: boolean = false,
-        chain: boolean = false,
     ): Promise<AIActionRunResults> {
         const runResults = await runAIAction(
             this,
             contentState,
             ignoreContextContent,
             addError,
-            chain,
         );
         if (autoExecute) {
             if (runResults.success) {
@@ -208,11 +209,54 @@ export class AIAction {
         return runResults;
     }
 
+    async runChildAction(
+        childAIActionConstructor: AIActionConstructor,
+        childSnapshot: Partial<AIActionSnapshot>,
+        contentState: ContentState,
+        childGlobalState: {
+            ignoreContextContent: boolean;
+            autoExecute: boolean;
+        } = {
+            ignoreContextContent: false,
+            autoExecute: false,
+        },
+        addError: (err: AppError) => void,
+        runResults: AIActionRunResults,
+    ) {
+        await runChildAction(
+            this,
+            childAIActionConstructor,
+            childSnapshot,
+            contentState,
+            childGlobalState,
+            addError,
+            runResults,
+        );
+    }
+
     async runExe(
         contentState: ContentState,
         addError: (err: AppError) => void,
     ): Promise<AIActionExecuteResults> {
-        return runExeAIAction(this, contentState, addError);
+        const exeResults = await runExeAIAction(this, contentState, addError);
+        return exeResults;
+    }
+
+    async runExeChildAction(
+        childAIActionConstructor: AIActionConstructor,
+        childResponse: string, // TODO: change to childSnapshot
+        contentState: ContentState,
+        addError: (err: AppError) => void,
+        exeResults: AIActionExecuteResults,
+    ) {
+        await runExeChildAction(
+            this,
+            childAIActionConstructor,
+            childResponse,
+            contentState,
+            addError,
+            exeResults,
+        );
     }
 
     preprocessToolRequest(
@@ -223,8 +267,6 @@ export class AIAction {
     }
 
     createRequest(
-        userContent: string,
-        contextContentSelections: AIActionContextContentSelections,
         contentState: ContentState,
         ignoreContextContent: boolean = false,
     ): string {
@@ -245,7 +287,7 @@ export class AIAction {
         // Get final context prompt
         const contextPrompt = processContextContent(
             this.contextContent(contentState),
-            contextContentSelections,
+            this.contextContentSelections,
         );
 
         // user prompt can still be augmented...
@@ -320,7 +362,7 @@ export class AIAction {
             executionResponse: "",
             response: "",
             request: "",
-            chain: [],
+            childActions: [],
             errors: [],
         });
     }
@@ -334,7 +376,7 @@ export class AIAction {
             executionResponse: "",
             response: "",
             request: "",
-            chain: [],
+            childActions: [],
             errors: [],
         });
     }

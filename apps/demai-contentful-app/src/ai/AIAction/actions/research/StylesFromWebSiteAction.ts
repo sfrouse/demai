@@ -73,56 +73,28 @@ enough colors to satisfy the request.
 
         this.updateSnapshot({
             isRunning: true,
+            startExecutionRunTime: Date.now(),
         });
 
-        await this.saveColors(contentState, addError, results);
-
-        this.updateSnapshot({
-            isRunning: false,
-            phase: AIActionPhase.executed,
-        });
-        return results;
-        // this.updateSnapshot({
-        //     startExecutionRunTime: Date.now(),
-        //     isRunning: true,
-        // });
-
-        // return {
-        //     success: false as const,
-        //     errors: [`duh`],
-        //     toolCalls: [] as string[],
-        //     toolResults: [] as any[],
-        // };
-    }
-
-    async saveColors(
-        contentState: ContentState,
-        addError: (err: AppError) => void,
-        results: AIActionExecuteResults,
-    ) {
-        // add stuff...
-        const saveBrandColorAction = new SaveBrandColorsAction(this.config);
-        this.updateSnapshot({
-            chain: [...this.chain, saveBrandColorAction],
-        });
-        saveBrandColorAction.updateSnapshot({
-            response: `
+        await this.runExeChildAction(
+            SaveBrandColorsAction,
+            `
 The research below should have definitions for primary, secondary, or tertiary colors.
 Find them and save to research:
 
 ${this.response}
 `,
-        });
-        const saveResults = await saveBrandColorAction.runExe(
             contentState,
             addError,
+            results,
         );
 
-        if (saveResults.success === false) results.success = false;
-        results.toolCalls = [...results.toolCalls, ...saveResults.toolCalls];
-        results.toolResults = [
-            ...results.toolResults,
-            ...saveResults.toolResults,
-        ];
+        this.updateSnapshot({
+            isRunning: false,
+            phase: AIActionPhase.executed,
+            executeRunTime: Date.now() - this.startExecutionRunTime!,
+        });
+
+        return results;
     }
 }

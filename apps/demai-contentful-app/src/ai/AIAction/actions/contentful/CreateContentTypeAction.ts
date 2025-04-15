@@ -3,7 +3,12 @@ import { ContentState } from "../../../../contexts/ContentStateContext/ContentSt
 import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { DEMAI_GENERATED_PROPERTY_IDENTIFIER } from "../../../../constants";
 import { AIAction } from "../../AIAction";
-import { AIActionConfig, AIActionExecuteResults } from "../../AIActionTypes";
+import {
+    AIActionConfig,
+    AIActionExecuteResults,
+    AIActionPhase,
+} from "../../AIActionTypes";
+import { EditContentTypeAction } from "./EditContentTypeAction";
 
 export class CreateContentTypeAction extends AIAction {
     static label = "Create Content Types";
@@ -134,6 +139,11 @@ ${contentState.research?.fields.products}
     ): Promise<AIActionExecuteResults> {
         const results = await super.runExe(contentState, addError);
         if (results.success === true) {
+            this.updateSnapshot({
+                isRunning: true,
+                startExecutionRunTime: Date.now(),
+            });
+
             const newContentType = results.toolResults?.[0]?.content?.[0]?.text;
 
             let newContentTypeId;
@@ -143,37 +153,22 @@ ${contentState.research?.fields.products}
                     newContentTypeId = newContentTypeObj.sys.id;
                 } catch {}
             }
+            await this.runExeChildAction(
+                EditContentTypeAction,
+                `publish the content type with id ${newContentTypeId}`,
+                contentState,
+                addError,
+                results,
+            );
 
+            console.log("AIAction", this);
+
+            this.updateSnapshot({
+                isRunning: false,
+                phase: AIActionPhase.executed,
+                executeRunTime: Date.now() - this.startExecutionRunTime!,
+            });
             return results;
-
-            // publish as well...
-            // if (newContentTypeId) {
-            //   // =====
-            //   const publishEngine = createAIPromptEngine(
-            //     AIPromptEngineID.EDIT_CONTENT_TYPE, // has publish in it
-            //     this.config
-            //   );
-            //   const otherResults = await publishEngine.runExe(
-            //     request,
-            //     `publish the content type with id ${newContentTypeId}`,
-            //     addError,
-            //     false
-            //   );
-            //   // =====
-
-            //   if (otherResults.success === true) {
-            //     return {
-            //       success: true,
-            //       result: "",
-            //       toolCalls: [...results.toolCalls, ...otherResults.toolCalls],
-            //       toolResults: [...results.toolResults, ...otherResults.toolResults],
-            //     };
-            //   } else {
-            //     return otherResults;
-            //   }
-            // } else {
-            //   return results;
-            // }
         } else {
             return results;
         }

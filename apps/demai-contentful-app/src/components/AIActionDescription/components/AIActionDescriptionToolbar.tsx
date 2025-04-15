@@ -27,10 +27,6 @@ const AIActionDescriptionToolbar = ({
                 : tokens.blue100;
             break;
         }
-        // case AIActionPhase.executing: {
-        //     bgColor = tokens.green100;
-        //     break;
-        // }
         case AIActionPhase.answered: {
             bgColor = aiActionSnapshot.isRunning
                 ? tokens.green100
@@ -94,9 +90,9 @@ const getStats = (
                 {aiAction.constructor.name}, "{aiActionSnapshot.phase}",{" "}
                 {aiActionSnapshot.isRunning ? "running" : "stopped"}
                 {aiActionSnapshot.runTime &&
-                    `, ${(aiActionSnapshot.runTime / 1000).toFixed(2)}s`}
+                    `, run: ${(aiActionSnapshot.runTime / 1000).toFixed(2)}s`}
                 {aiActionSnapshot.executeRunTime &&
-                    ` / ${(aiActionSnapshot.executeRunTime / 1000).toFixed(
+                    `, exe: ${(aiActionSnapshot.executeRunTime / 1000).toFixed(
                         2,
                     )}s`}
             </span>

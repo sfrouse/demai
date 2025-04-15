@@ -17,6 +17,8 @@ import { CreateComponentDefinitionAction } from "../ai/AIAction/actions/designSy
 import { CreateWebComponentAction } from "../ai/AIAction/actions/designSystem/CreateWebComponentAction";
 import { CreateBindingAction } from "../ai/AIAction/actions/designSystem/CreateBindingAction";
 import { AIActionConstructor } from "../contexts/AIStateContext/AIStateRouting";
+import { ContentfulGroupAction } from "../ai/AIAction/actions/contentful/groups/ContentfulGroupAction";
+import { ResearchGroupAction } from "../ai/AIAction/actions/research/groups/ResearchGroupAction";
 
 type NAVIGATION_ENTRY = {
     label: string;
@@ -42,9 +44,9 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         //     AIPromptEngineID.OPEN,
         // ],
         aiActions: [
+            ResearchGroupAction,
             StylesFromWebSiteAction,
             ResearchFromWebSiteAction,
-            ContentfulOpenToolingAction,
         ],
     },
     content_model: {
@@ -54,12 +56,12 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         //     AIPromptEngineID.CONTENT_MODEL,
         //     AIPromptEngineID.CONTENTFUL_OPEN_TOOL,
         // ],
-        aiActions: [CreateContentTypeAction, ContentfulOpenToolingAction],
+        aiActions: [ContentfulGroupAction, CreateContentTypeAction],
     },
     entries: {
         label: "Entries / Content",
         // aiStateEngines: [AIPromptEngineID.ENTRIES],
-        aiActions: [CreateEntryAction, ContentfulOpenToolingAction],
+        aiActions: [CreateEntryAction],
     },
     personalization: {
         label: "Personalization",
@@ -71,7 +73,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         label: "Design Tokens",
         section_header: "Design System",
         // aiStateEngines: [AIPromptEngineID.DESIGN_TOKENS],
-        aiActions: [ChangeTokenColorSetAction, ContentfulOpenToolingAction],
+        aiActions: [ChangeTokenColorSetAction],
     },
     components: {
         label: "Components",
@@ -86,7 +88,6 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
             CreateComponentDefinitionAction,
             CreateWebComponentAction,
             CreateBindingAction,
-            ContentfulOpenToolingAction,
         ],
     },
     pages: {
