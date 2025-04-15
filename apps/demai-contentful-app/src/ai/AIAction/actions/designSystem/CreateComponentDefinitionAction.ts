@@ -1,13 +1,16 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { CREATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../mcp/designSystemMCP/tools/createComponentDefinition/createComponentDefinition.tool";
 import { AIAction } from "../../AIAction";
-import { AIActionConfig } from "../../AIActionTypes";
+import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 
 export class CreateComponentDefinitionAction extends AIAction {
     static label = "Create Comp Definition";
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.system = {
             role: "system",

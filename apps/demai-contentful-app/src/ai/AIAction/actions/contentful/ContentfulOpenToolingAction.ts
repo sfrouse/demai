@@ -1,11 +1,14 @@
 import { AIAction } from "../../AIAction";
-import { AIActionConfig } from "../../AIActionTypes";
+import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 
 export class ContentfulOpenToolingAction extends AIAction {
     static label = "Contentful Tooling";
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.className = "ContentfulOpenToolingAction";
         this.system = {

@@ -73,6 +73,8 @@ export class AIAction {
     startExecutionRunTime: number | undefined;
     executeRunTime: number | undefined;
     childActions: AIAction[] = [];
+    ignoreContextContent: boolean = false;
+    autoExecute: boolean = false;
 
     // --- AI Clients --------------------------------------------------------------
     model: AIModels = AIModels.gpt4o;
@@ -118,10 +120,14 @@ export class AIAction {
             startExecutionRunTime: this.startExecutionRunTime,
             executeRunTime: this.executeRunTime,
             childActions: this.childActions,
+            // local global settings
+            ignoreContextContent: this.ignoreContextContent,
+            autoExecute: this.autoExecute,
         };
     }
 
-    updateSnapshot(updates: Partial<AIActionSnapshot>) {
+    updateSnapshot(updates?: Partial<AIActionSnapshot>) {
+        if (!updates) return;
         for (const [key, value] of Object.entries(updates)) {
             if (value !== undefined) {
                 (this as any)[key] = value;
@@ -136,7 +142,10 @@ export class AIAction {
     getSnapshot = () => this._snapshot;
     // ======= useSyncExternalStore ==========
 
-    constructor(config: AIActionConfig) {
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
         this.key = nanoid();
         this.config = config;
         this.openAIClient = getOpeAIClient(this.config.openAiApiKey);
@@ -158,13 +167,16 @@ export class AIAction {
             this.config.environmentId,
             this.config.cpa,
         );
+
+        if (snapshotOverrides) {
+            this.updateSnapshot(snapshotOverrides);
+        }
     }
 
     async run(
         contentState: ContentState,
-        ignoreContextContent: boolean = false,
         addError: (err: AppError) => void,
-        autoExecute: boolean = false,
+        snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
         if (
             // forceExecution === true ||
@@ -174,26 +186,25 @@ export class AIAction {
         } else {
             await this.runAnswerOrDescribe(
                 contentState,
-                ignoreContextContent,
                 addError,
-                autoExecute,
+                snapshotOverrides,
             );
         }
     }
 
     async runAnswerOrDescribe(
         contentState: ContentState,
-        ignoreContextContent: boolean = false,
         addError: (err: AppError) => void,
-        autoExecute: boolean = false,
+        snapshotOverrides: Partial<AIActionSnapshot> = {},
     ): Promise<AIActionRunResults> {
+        this.updateSnapshot(snapshotOverrides);
         const runResults = await runAIAction(
             this,
             contentState,
-            ignoreContextContent,
             addError,
+            snapshotOverrides,
         );
-        if (autoExecute) {
+        if (this.autoExecute) {
             if (runResults.success) {
                 this.updateSnapshot({
                     response: this.responseContent(
@@ -209,55 +220,84 @@ export class AIAction {
         return runResults;
     }
 
-    async runChildAction(
-        childAIActionConstructor: AIActionConstructor,
-        childSnapshot: Partial<AIActionSnapshot>,
-        contentState: ContentState,
-        childGlobalState: {
-            ignoreContextContent: boolean;
-            autoExecute: boolean;
-        } = {
-            ignoreContextContent: false,
-            autoExecute: false,
-        },
-        addError: (err: AppError) => void,
-        runResults: AIActionRunResults,
-    ) {
-        await runChildAction(
-            this,
-            childAIActionConstructor,
-            childSnapshot,
-            contentState,
-            childGlobalState,
-            addError,
-            runResults,
-        );
-    }
-
     async runExe(
         contentState: ContentState,
         addError: (err: AppError) => void,
+        snapshotOverrides: Partial<AIActionSnapshot> = {},
     ): Promise<AIActionExecuteResults> {
+        this.updateSnapshot(snapshotOverrides);
         const exeResults = await runExeAIAction(this, contentState, addError);
         return exeResults;
     }
 
-    async runExeChildAction(
-        childAIActionConstructor: AIActionConstructor,
-        childResponse: string, // TODO: change to childSnapshot
+    // ==== GROUPS =======================
+    addChildActions(childActions: AIAction[]) {
+        this.updateSnapshot({
+            childActions: [...this.childActions, ...childActions],
+        });
+    }
+
+    async runChildAction(
+        childAIAction: AIAction,
         contentState: ContentState,
         addError: (err: AppError) => void,
-        exeResults: AIActionExecuteResults,
+        snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
-        await runExeChildAction(
-            this,
-            childAIActionConstructor,
-            childResponse,
+        this.updateSnapshot({
+            childActions: [...this.childActions, childAIAction],
+        });
+        childAIAction.contentChangeEvent = this.contentChangeEvent;
+        await childAIAction.runAnswerOrDescribe(
             contentState,
             addError,
-            exeResults,
+            snapshotOverrides,
         );
     }
+
+    async runExeChildAction(
+        childAIAction: AIAction,
+        contentState: ContentState,
+        addError: (err: AppError) => void,
+        snapshotOverrides: Partial<AIActionSnapshot> = {},
+    ) {
+        this.updateSnapshot({
+            childActions: [...this.childActions, childAIAction],
+        });
+        childAIAction.contentChangeEvent = this.contentChangeEvent;
+        await childAIAction.runExe(contentState, addError, snapshotOverrides);
+    }
+
+    async runAllChildren(
+        contentState: ContentState,
+        addError: (err: AppError) => void,
+        snapshotOverrides: Partial<AIActionSnapshot> = {},
+    ) {
+        for (const childAIAction of this.childActions) {
+            childAIAction.contentChangeEvent = this.contentChangeEvent;
+            await childAIAction.runAnswerOrDescribe(
+                contentState,
+                addError,
+                snapshotOverrides,
+            );
+            // await new Promise((resolve) => setTimeout(resolve, 2000));
+        }
+    }
+
+    async runExeAllChildren(
+        contentState: ContentState,
+        addError: (err: AppError) => void,
+        snapshotOverrides: Partial<AIActionSnapshot> = {},
+    ) {
+        for (const childAIAction of this.childActions) {
+            childAIAction.contentChangeEvent = this.contentChangeEvent;
+            await childAIAction.runExe(
+                contentState,
+                addError,
+                snapshotOverrides,
+            );
+        }
+    }
+    // ====== GROUPS ====================
 
     preprocessToolRequest(
         tool: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,

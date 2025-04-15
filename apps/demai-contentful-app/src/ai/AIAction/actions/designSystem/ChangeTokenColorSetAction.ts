@@ -3,13 +3,16 @@ import { ContentState } from "../../../../contexts/ContentStateContext/ContentSt
 import rgbaToHex from "../../../AIState/utils/rgbaToHex";
 import { SAVE_COLOR_SET_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/saveColorSet";
 import { AIAction } from "../../AIAction";
-import { AIActionConfig } from "../../AIActionTypes";
+import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 
 export class ChangeTokenColorSetAction extends AIAction {
     static label = "Update Color Tokens";
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.system = {
             role: "system",

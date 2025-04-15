@@ -9,20 +9,30 @@ import {
     OPEN_AI_TOP_P,
 } from "../../openAI/openAIConfig";
 import { AIAction } from "../AIAction";
-import { AIActionPhase, AIActionRunResults } from "../AIActionTypes";
+import {
+    AIActionPhase,
+    AIActionRunResults,
+    AIActionSnapshot,
+} from "../AIActionTypes";
 
 export default async function runAIAction(
     aiAction: AIAction,
     contentState: ContentState,
-    ignoreContextContent: boolean = false,
     addError: (err: AppError) => void,
+    snapshotOverrides: Partial<AIActionSnapshot> = {},
+    // ignoreContextContent: boolean = false,
 ): Promise<AIActionRunResults> {
     let aiArg: OpenAIChatCompletionsProps | undefined;
     try {
+        aiAction.updateSnapshot(snapshotOverrides);
+
         aiAction.updateSnapshot({
             startRunTime: Date.now(),
             isRunning: true,
-            request: aiAction.createRequest(contentState, ignoreContextContent),
+            request: aiAction.createRequest(
+                contentState,
+                aiAction.ignoreContextContent,
+            ),
         });
 
         // API CHAT COMPLETETIONS

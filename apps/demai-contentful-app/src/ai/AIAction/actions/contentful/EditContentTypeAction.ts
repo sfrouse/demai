@@ -1,12 +1,15 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { AIAction } from "../../AIAction";
-import { AIActionConfig } from "../../AIActionTypes";
+import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 
 export class EditContentTypeAction extends AIAction {
     static label = "Update Content Type";
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.introMessage = "What would you like to do to this content type?";
         this.executionPrompt = "Updated your Content Types...";

@@ -43,11 +43,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         //     AIPromptEngineID.RESEARCH_BRAND,
         //     AIPromptEngineID.OPEN,
         // ],
-        aiActions: [
-            ResearchGroupAction,
-            StylesFromWebSiteAction,
-            ResearchFromWebSiteAction,
-        ],
+        aiActions: [StylesFromWebSiteAction, ResearchFromWebSiteAction],
     },
     content_model: {
         label: "Content Types",
@@ -56,7 +52,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         //     AIPromptEngineID.CONTENT_MODEL,
         //     AIPromptEngineID.CONTENTFUL_OPEN_TOOL,
         // ],
-        aiActions: [ContentfulGroupAction, CreateContentTypeAction],
+        aiActions: [CreateContentTypeAction],
     },
     entries: {
         label: "Entries / Content",
@@ -109,7 +105,7 @@ export type PromptAreas = keyof typeof NAVIGATION;
 
 const MainNav = () => {
     const { spaceStatus } = useContentStateSession();
-    const { route, setRoute, aiStateConfig } = useAIState();
+    const { route, setRoute } = useAIState();
     const { errors } = useError();
     const navEntries = Object.entries(NAVIGATION) as [
         PromptAreas,

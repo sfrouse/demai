@@ -2,7 +2,11 @@ import { ContentState } from "../../../../contexts/ContentStateContext/ContentSt
 import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { AIModels } from "../../../openAI/openAIConfig";
 import { AIAction } from "../../AIAction";
-import { AIActionConfig, AIActionPhase } from "../../AIActionTypes";
+import {
+    AIActionConfig,
+    AIActionPhase,
+    AIActionSnapshot,
+} from "../../AIActionTypes";
 import { SaveBrandColorsAction } from "./SaveBrandColorsAction";
 
 export class ResearchFromWebSiteAction extends AIAction {
@@ -28,8 +32,11 @@ export class ResearchFromWebSiteAction extends AIAction {
         ResearchFromWebSiteAction.SOURCE_RESEARCH_DESCRIPTION,
     ];
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.model = AIModels.gpt4oSearchPreview;
         this.introMessage =
@@ -99,15 +106,17 @@ Keep any summary you come up with to a paragraph or two at most.
         const results = await super.runExe(contentState, addError);
 
         await this.runExeChildAction(
-            SaveBrandColorsAction,
-            `
+            new SaveBrandColorsAction(this.config, {
+                response: `
 The research below defines research on this brand. Use the \`update_brand\` tool and update.
 
 ${this.response}
 `,
+            }),
+
             contentState,
             addError,
-            results,
+            // results,
         );
 
         this.updateSnapshot({

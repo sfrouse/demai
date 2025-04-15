@@ -23,6 +23,7 @@ import { AIAction, useAIAction } from "../../ai/AIAction/AIAction";
 import LoadingIcon from "../Loading/LoadingIcon";
 import { useError } from "../../contexts/ErrorContext/ErrorContext";
 import AIActionConfirm from "./components/AIActionConfirm";
+import LoadingStyles from "../Loading/LoadingStyles";
 
 const AIActionEditor = () => {
     const { contentState, loadingState, spaceStatus } =
@@ -37,83 +38,18 @@ const AIActionEditor = () => {
     const { addError } = useError();
 
     const isLoading = Object.values(loadingState).includes(true);
-    const isReady = aiAction && spaceStatus?.valid;
     const aiActionSnapshot = useAIAction(aiAction);
 
-    if (!isReady || !aiActionSnapshot) {
+    if (!aiActionSnapshot || !aiAction) {
         return (
-            <div style={{ position: "relative", minHeight: 200 }}>
+            <div style={{ position: "relative", minHeight: 160 }}>
                 <LoadingPage />
             </div>
         );
     }
 
     return (
-        <div style={{ position: "relative", minHeight: 160 }}>
-            {aiActionSnapshot.isRunning ? (
-                <Flex
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{
-                        position: "absolute",
-                        top: 0,
-                        bottom: 0,
-                        right: 0,
-                        left: 0,
-                        zIndex: 2000,
-                        backgroundColor: "rgba(255,255,255,0.5)",
-                    }}
-                >
-                    <LoadingIcon />
-                </Flex>
-            ) : null}
-            {/* Prompting for Execution */}
-            <AIActionConfirm
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    bottom: 0,
-                    right: 0,
-                    left: 0,
-                    zIndex: 1000,
-                }}
-                onCancel={() => {
-                    aiAction?.reset();
-                }}
-                onConfirm={async () => {
-                    await aiAction?.run(
-                        contentState,
-                        ignoreContextContent,
-                        addError,
-                    );
-                }}
-                prompts={aiAction?.prompts}
-                visible={aiActionSnapshot?.phase === AIActionPhase.describing}
-            />
-            {/* We are done so show complete */}
-            <AIActionConfirm
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    bottom: 0,
-                    right: 0,
-                    left: 0,
-                    zIndex: 1000,
-                }}
-                onCancel={() => {
-                    aiAction?.redo();
-                }}
-                onConfirm={async () => {
-                    aiAction?.reset();
-                }}
-                prompts={{
-                    // cancel: "Let's try this again.",
-                    run: "OK, Ready for next action.",
-                    cancelIcon: icons.CycleIcon,
-                    runIcon: icons.StarIcon,
-                }}
-                visible={aiActionSnapshot?.phase === AIActionPhase.executed}
-            />
+        <div style={{ position: "relative" }}>
             <Flex
                 flexDirection="column"
                 style={{
@@ -121,9 +57,9 @@ const AIActionEditor = () => {
                     paddingRight: tokens.spacingL,
                     paddingTop: 0,
                     paddingBottom: tokens.spacingM,
-                    minHeight: isLoading ? 200 : 0,
+                    // minHeight: isLoading ? 200 : 0,
                     position: "relative",
-                    // ...LoadingStyles(isLoading),
+                    ...LoadingStyles(!spaceStatus?.valid),
                 }}
             >
                 {renderContextContent(
@@ -181,12 +117,10 @@ const AIActionEditor = () => {
                     <Button
                         startIcon={<icons.StarIcon />}
                         onClick={() =>
-                            aiAction?.run(
-                                contentState,
+                            aiAction?.run(contentState, addError, {
                                 ignoreContextContent,
-                                addError,
                                 autoExecute,
-                            )
+                            })
                         }
                         variant="primary"
                     >
@@ -194,6 +128,68 @@ const AIActionEditor = () => {
                     </Button>
                 </Flex>
             </Flex>
+            {/* Prompting for Execution */}
+            <AIActionConfirm
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    zIndex: tokens.zIndexDefault,
+                }}
+                onCancel={() => {
+                    aiAction?.reset();
+                }}
+                onConfirm={async () => {
+                    await aiAction?.run(contentState, addError, {
+                        ignoreContextContent,
+                    });
+                }}
+                prompts={aiAction?.prompts}
+                visible={aiActionSnapshot?.phase === AIActionPhase.describing}
+            />
+            {/* We are done so show complete */}
+            <AIActionConfirm
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    zIndex: tokens.zIndexDefault,
+                }}
+                onCancel={() => {
+                    aiAction?.redo();
+                }}
+                onConfirm={async () => {
+                    aiAction?.reset();
+                }}
+                prompts={{
+                    // cancel: "Let's try this again.",
+                    run: "OK, Ready for next action.",
+                    cancelIcon: icons.CycleIcon,
+                    runIcon: icons.StarIcon,
+                }}
+                visible={aiActionSnapshot?.phase === AIActionPhase.executed}
+            />
+            {aiActionSnapshot.isRunning ? (
+                <Flex
+                    alignItems="center"
+                    justifyContent="center"
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        zIndex: tokens.zIndexDefault,
+                        backgroundColor: "rgba(255,255,255,0.5)",
+                    }}
+                >
+                    <LoadingIcon />
+                </Flex>
+            ) : null}
         </div>
     );
 };

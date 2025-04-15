@@ -10,10 +10,26 @@ import Divider from "../Divider";
 import AIActionDescription from "../AIActionDescription/AIActionDescription";
 import AIActionDescriptionToolbar from "../AIActionDescription/components/AIActionDescriptionToolbar";
 import LoadingPage from "../Loading/LoadingPage";
+import { useEffect, useRef, useState } from "react";
+import AIActionAutoBench from "../AIActionAutoBench/AIActionAutoBench";
 
 const AIActionPanel = () => {
-    const { aiAction, route, setRoute } = useAIState();
+    const { aiAction, route, setRoute, invalidated } = useAIState();
     const aiActionSnapshot = useAIAction(aiAction);
+    const [showWorkBench, setShowWorkBench] = useState<boolean>(false);
+    const scrollBottomRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setTimeout(() => {
+            scrollBottomRef.current?.scrollIntoView();
+        }, 0);
+    }, [aiAction]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            scrollBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 200);
+    }, [aiActionSnapshot, invalidated]);
 
     return (
         <Flex
@@ -29,69 +45,87 @@ const AIActionPanel = () => {
                 <LoadingPage />
             ) : (
                 <>
-                    <ContentPanelHeader
-                        title="Workbench"
-                        childrenLeft={
-                            route?.aiActions && route?.aiActions?.length > 1 ? (
-                                <Select
-                                    value={`${route.aiActionFocus}`}
-                                    onChange={(e) => {
-                                        setRoute({
-                                            ...route,
-                                            aiActionFocus: Number(
-                                                e.target.value,
-                                            ),
-                                        });
+                    {showWorkBench ? (
+                        <AIActionAutoBench
+                            setShowWorkBench={setShowWorkBench}
+                        />
+                    ) : (
+                        <>
+                            <ContentPanelHeader
+                                title="Workbench"
+                                childrenLeft={
+                                    route?.aiActions &&
+                                    route?.aiActions?.length > 1 ? (
+                                        <Select
+                                            value={`${route.aiActionFocus}`}
+                                            onChange={(e) => {
+                                                setRoute({
+                                                    ...route,
+                                                    aiActionFocus: Number(
+                                                        e.target.value,
+                                                    ),
+                                                });
+                                            }}
+                                        >
+                                            {route?.aiActions.map(
+                                                (action, index) => (
+                                                    <Select.Option
+                                                        key={`${action.name}`}
+                                                        value={`${index}`}
+                                                    >
+                                                        {
+                                                            (
+                                                                action as typeof AIAction
+                                                            ).label
+                                                        }
+                                                    </Select.Option>
+                                                ),
+                                            )}
+                                        </Select>
+                                    ) : null
+                                }
+                            >
+                                <Button
+                                    startIcon={<icons.DiamondIcon />}
+                                    variant="transparent"
+                                    size="small"
+                                    onClick={() => {
+                                        setShowWorkBench((prev) => !prev);
                                     }}
                                 >
-                                    {route?.aiActions.map((action, index) => (
-                                        <Select.Option
-                                            key={`${action.name}`}
-                                            value={`${index}`}
-                                        >
-                                            {(action as typeof AIAction).label}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            ) : null
-                        }
-                    >
-                        <Button
-                            startIcon={<icons.DiamondIcon />}
-                            variant="transparent"
-                            size="small"
-                            onClick={() => {
-                                // setShowWorkBench((prev) => !prev)
-                            }}
-                        >
-                            AutoBench
-                        </Button>
-                    </ContentPanelHeader>
-                    <div
-                        className={classNames(
-                            scrollBarStyles["scrollbar-minimal"],
-                        )}
-                        style={{
-                            flex: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                            overflowY: "scroll",
-                            // ...LoadingStyles(isLoading),
-                        }}
-                    >
-                        <AIActionDescription
-                            aiAction={aiAction}
-                            aiActionSnapshot={aiActionSnapshot}
-                        />
-                    </div>
-                    {aiAction && (
-                        <AIActionDescriptionToolbar
-                            aiAction={aiAction}
-                            aiActionSnapshot={aiActionSnapshot}
-                        />
+                                    AutoBench
+                                </Button>
+                            </ContentPanelHeader>
+                            <div
+                                className={classNames(
+                                    scrollBarStyles["scrollbar-minimal"],
+                                )}
+                                style={{
+                                    flex: 1,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    overflowY: "scroll",
+                                    // ...LoadingStyles(isLoading),
+                                }}
+                            >
+                                <AIActionDescription
+                                    aiAction={aiAction}
+                                    aiActionSnapshot={aiActionSnapshot}
+                                />
+                                <div ref={scrollBottomRef}></div>
+                            </div>
+                            {aiAction && (
+                                <AIActionDescriptionToolbar
+                                    aiAction={aiAction}
+                                    aiActionSnapshot={aiActionSnapshot}
+                                />
+                            )}
+                            <Divider
+                                style={{ marginBottom: 0, marginTop: 0 }}
+                            />
+                            <AIActionEditor />
+                        </>
                     )}
-                    <Divider style={{ marginBottom: 0, marginTop: 0 }} />
-                    <AIActionEditor />
                 </>
             )}
         </Flex>

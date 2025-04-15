@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { AIAction } from "../../ai/AIAction/AIAction";
 import convertMarkdown from "./util/convertMarkdown";
 import tokens from "@contentful/f36-tokens";
@@ -6,15 +6,15 @@ import { Flex } from "@contentful/f36-components";
 import scrollBarStyles from "../utils/ScrollBarMinimal.module.css";
 import AIActionDescriptionTitle from "./components/AIActionDescriptionTitle";
 import { AIActionSnapshot } from "../../ai/AIAction/AIActionTypes";
-import AutoBenchAIAction from "../AutoBench/components/AutoBenchAIAction";
+import AutoBenchAIAction from "../AIActionAutoBench/components/AutoBenchAIAction";
 
-const AIActionDescription = ({
-    aiAction,
-    aiActionSnapshot,
-}: {
-    aiAction: AIAction;
-    aiActionSnapshot: AIActionSnapshot;
-}) => {
+const AIActionDescription = forwardRef<
+    HTMLDivElement,
+    {
+        aiAction: AIAction;
+        aiActionSnapshot: AIActionSnapshot;
+    }
+>(({ aiAction, aiActionSnapshot }, ref) => {
     if (!aiAction) return null;
     const [systemHtml, setSystemHtml] = useState<string>("");
     const [userContentHTML, setUserContentHTML] = useState<string>("");
@@ -74,6 +74,7 @@ const AIActionDescription = ({
 
     return (
         <Flex
+            ref={ref}
             flexDirection="column"
             className={scrollBarStyles["scrollbar-minimal"]}
             style={{
@@ -231,6 +232,6 @@ const AIActionDescription = ({
             )}
         </Flex>
     );
-};
+});
 
 export default AIActionDescription;

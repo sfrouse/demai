@@ -4,8 +4,10 @@ import { AIAction, useAIAction } from "../../../ai/AIAction/AIAction";
 import { AIActionPhase } from "../../../ai/AIAction/AIActionTypes";
 import LoadingIcon from "../../Loading/LoadingIcon";
 import * as icons from "@contentful/f36-icons";
+import useAIState from "../../../contexts/AIStateContext/useAIState";
 
 const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
+    const { setInspectedAIAction } = useAIState();
     const aiActionSnapshot = useAIAction(aiAction);
 
     if (!aiActionSnapshot) return null;
@@ -62,7 +64,7 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
                 >
                     {(aiAction.constructor as typeof AIAction).label}
                 </div>
-                {aiActionSnapshot.response && (
+                {aiActionSnapshot.request && (
                     <div style={{ position: "relative", height: 12 }}>
                         <div
                             style={{
@@ -79,7 +81,7 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
                                 color: foreColor,
                             }}
                         >
-                            {aiActionSnapshot.response}
+                            {aiActionSnapshot.request}
                         </div>
                     </div>
                 )}
@@ -96,6 +98,9 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
                 variant="transparent"
                 aria-label="Select the date"
                 icon={<icons.InfoCircleIcon variant={iconVariant} />}
+                onClick={() => {
+                    setInspectedAIAction(aiAction);
+                }}
             />
         </Flex>
     );

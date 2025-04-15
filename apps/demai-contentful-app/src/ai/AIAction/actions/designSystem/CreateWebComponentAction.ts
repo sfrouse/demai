@@ -1,13 +1,16 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { CREATE_WEB_COMPONENT_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/createWebComponent";
 import { AIAction } from "../../AIAction";
-import { AIActionConfig } from "../../AIActionTypes";
+import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 
 export class CreateWebComponentAction extends AIAction {
     static label = "Create Web Component";
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.system = {
             role: "system",

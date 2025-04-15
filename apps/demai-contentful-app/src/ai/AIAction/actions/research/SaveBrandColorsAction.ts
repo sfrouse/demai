@@ -3,13 +3,16 @@ import updateBrandColors from "../../../mcp/researchMCP/tools/updateBrandColors"
 import updateResearch from "../../../mcp/researchMCP/tools/updateResearch";
 import { AIModels } from "../../../openAI/openAIConfig";
 import { AIAction } from "../../AIAction";
-import { AIActionConfig } from "../../AIActionTypes";
+import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 
 export class SaveBrandColorsAction extends AIAction {
     static label = "Save Brand Colors";
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.model = AIModels.gpt4o;
         this.introMessage =

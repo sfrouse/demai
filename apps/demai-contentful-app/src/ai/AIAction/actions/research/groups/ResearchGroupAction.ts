@@ -4,15 +4,14 @@ import { ResearchFromWebSiteEngine } from "../../../../AIPromptEngine/promptEngi
 import { AIAction } from "../../../AIAction";
 import { AIActionPhase, AIActionRunResults } from "../../../AIActionTypes";
 import { ResearchFromWebSiteAction } from "../ResearchFromWebSiteAction";
+import { StylesFromWebSiteAction } from "../StylesFromWebSiteAction";
 
 export class ResearchGroupAction extends AIAction {
     static label = "Research Group";
 
     async runAnswerOrDescribe(
         contentState: ContentState,
-        ignoreContextContent: boolean = false,
         addError: (err: AppError) => void,
-        autoExecute: boolean = false,
     ): Promise<AIActionRunResults> {
         const results: AIActionRunResults = {
             success: true,
@@ -26,46 +25,38 @@ export class ResearchGroupAction extends AIAction {
             startExecutionRunTime: Date.now(),
         });
 
-        // const results = super.runAnswerOrDescribe(
-        //     contentState,
-        //     ignoreContextContent,
-        //     addError,
-        //     autoExecute,
-        // );
-
-        await this.runChildAction(
-            ResearchFromWebSiteAction,
-            {
+        this.addChildActions([
+            new StylesFromWebSiteAction(this.config),
+            new ResearchFromWebSiteAction(this.config, {
                 contextContentSelections: {
                     [ResearchFromWebSiteEngine.ACTION_RESEARCH_ID]:
                         ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_DESCRIPTION,
                 },
-            },
-            contentState,
-            {
-                ignoreContextContent: false,
-                autoExecute: false,
-            },
-            addError,
-            results,
-        );
-
-        await this.runChildAction(
-            ResearchFromWebSiteAction,
-            {
+            }),
+            new ResearchFromWebSiteAction(this.config, {
                 contextContentSelections: {
                     [ResearchFromWebSiteEngine.ACTION_RESEARCH_ID]:
                         ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_PRODUCT,
                 },
-            },
-            contentState,
-            {
-                ignoreContextContent: false,
-                autoExecute: false,
-            },
-            addError,
-            results,
-        );
+            }),
+            new ResearchFromWebSiteAction(this.config, {
+                contextContentSelections: {
+                    [ResearchFromWebSiteEngine.ACTION_RESEARCH_ID]:
+                        ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_STYLE,
+                },
+            }),
+            new ResearchFromWebSiteAction(this.config, {
+                contextContentSelections: {
+                    [ResearchFromWebSiteEngine.ACTION_RESEARCH_ID]:
+                        ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_TONE,
+                },
+            }),
+        ]);
+
+        await this.runAllChildren(contentState, addError, {
+            ignoreContextContent: false,
+            autoExecute: true, // false,
+        });
 
         this.updateSnapshot({
             isRunning: false,

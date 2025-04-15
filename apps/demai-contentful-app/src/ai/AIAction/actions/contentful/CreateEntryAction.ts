@@ -1,7 +1,7 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import contentTypeToAI from "../../../AIState/utils/contentTypeToAI";
 import { AIAction } from "../../AIAction";
-import { AIActionConfig } from "../../AIActionTypes";
+import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 
 export class CreateEntryAction extends AIAction {
     static label = "Create Entries";
@@ -19,8 +19,11 @@ export class CreateEntryAction extends AIAction {
     static CONTEXT_TONE_AND_STYLE_DEFAULT =
         CreateEntryAction.CONTEXT_TONE_AND_STYLE_BRAND;
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.introMessage =
             "Let’s create some entries, what would you like to do?";

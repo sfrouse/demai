@@ -4,8 +4,8 @@ import { AIModels } from "../../../openAI/openAIConfig";
 import { AIAction } from "../../AIAction";
 import {
     AIActionConfig,
-    AIActionExecuteResults,
     AIActionPhase,
+    AIActionSnapshot,
 } from "../../AIActionTypes";
 import { SaveBrandColorsAction } from "./SaveBrandColorsAction";
 
@@ -16,8 +16,11 @@ const SOURCE_DESCRIPTION = "following description";
 export class StylesFromWebSiteAction extends AIAction {
     static label = "Brand Colors";
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.model = AIModels.gpt4oSearchPreview;
         this.introMessage =
@@ -77,16 +80,18 @@ enough colors to satisfy the request.
         });
 
         await this.runExeChildAction(
-            SaveBrandColorsAction,
-            `
+            new SaveBrandColorsAction(this.config, {
+                response: `
 The research below should have definitions for primary, secondary, or tertiary colors.
 Find them and save to research:
 
 ${this.response}
 `,
+            }),
+
             contentState,
             addError,
-            results,
+            // results,
         );
 
         this.updateSnapshot({

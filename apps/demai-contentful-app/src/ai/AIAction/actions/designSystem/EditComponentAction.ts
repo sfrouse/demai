@@ -2,10 +2,7 @@ import { ContentState } from "../../../../contexts/ContentStateContext/ContentSt
 import cDefToAI from "../../../AIState/utils/cDefToAI";
 import { UPDATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../mcp/designSystemMCP/tools/updateComponentDefinition/updateComponentDefinition.tool";
 import { AIAction } from "../../AIAction";
-import {
-    AIActionConfig,
-    AIActionContextContentSelections,
-} from "../../AIActionTypes";
+import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 
 const EDIT_COMP_ACTION = "compAction";
 const EDIT_COMP_ACTION_DEFITION = "Component Definition";
@@ -15,8 +12,11 @@ const EDIT_COMP_ACTION_BINDING = "Binding";
 export class EditComponentAction extends AIAction {
     static label = "Edit Comp Definition";
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.introMessage =
             "Let's edit this component definition, what would you like to do?";

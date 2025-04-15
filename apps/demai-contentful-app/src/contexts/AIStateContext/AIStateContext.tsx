@@ -17,6 +17,11 @@ export interface AIStateContextType {
     aiAction?: AIAction;
     setAIAction: React.Dispatch<React.SetStateAction<AIAction | undefined>>;
 
+    inspectedAIAction?: AIAction;
+    setInspectedAIAction: React.Dispatch<
+        React.SetStateAction<AIAction | undefined>
+    >;
+
     aiState?: AIState;
     setAIState: React.Dispatch<React.SetStateAction<AIState | undefined>>;
 
@@ -58,6 +63,7 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
     const [aiStateConfig, setAIStateConfig] = useState<AIStateConfig>();
     const [aiAction, setAIAction] = useState<AIAction>();
+    const [inspectedAIAction, setInspectedAIAction] = useState<AIAction>();
     const [aiState, setAIState] = useState<AIState>();
     const [aiStateStatus, setAIStateStatus] = useState<AIStateStatus>();
     const [autoExecute, setAutoExecute] = useState<boolean>(false);
@@ -128,6 +134,8 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
                 setIgnoreContextContent,
                 aiAction,
                 setAIAction,
+                inspectedAIAction,
+                setInspectedAIAction,
             }}
         >
             {children}

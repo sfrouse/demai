@@ -9,8 +9,7 @@ export default async function runChildAction(
     childAIActionConstructor: AIActionConstructor,
     childSnapshot: Partial<AIActionSnapshot>,
     contentState: ContentState,
-    // childIgnoreContextContent: boolean = false,
-    childGlobalState: {
+    snapshotOverrides: {
         ignoreContextContent: boolean;
         autoExecute: boolean;
     } = {
@@ -28,10 +27,8 @@ export default async function runChildAction(
     childAIAction.updateSnapshot(childSnapshot);
     const runResults = await childAIAction.runAnswerOrDescribe(
         contentState,
-        childGlobalState.ignoreContextContent,
         addError,
-        childGlobalState.autoExecute,
+        snapshotOverrides,
     );
-
     if (runResults.success === false) results.success = false;
 }

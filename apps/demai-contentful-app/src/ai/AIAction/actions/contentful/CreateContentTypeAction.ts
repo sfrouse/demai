@@ -7,8 +7,27 @@ import {
     AIActionConfig,
     AIActionExecuteResults,
     AIActionPhase,
+    AIActionSnapshot,
 } from "../../AIActionTypes";
 import { EditContentTypeAction } from "./EditContentTypeAction";
+
+// function makeVar<T>(fn: (obj: T) => any): string {
+//     const path: string[] = [];
+
+//     const proxy = new Proxy(
+//         {},
+//         {
+//             get(_, prop) {
+//                 path.push(String(prop));
+//                 return proxy;
+//             },
+//         },
+//     );
+
+//     fn(proxy as any);
+//     return `{${path.join(".")}}`;
+// }
+// makeVar<ContentState>((v) => v.research?.fields.description),
 
 export class CreateContentTypeAction extends AIAction {
     static label = "Create Content Types";
@@ -28,8 +47,11 @@ export class CreateContentTypeAction extends AIAction {
     static SOURCE_RESEARCH_DEFAULT =
         CreateContentTypeAction.SOURCE_RESEARCH_OPTIONS_PROSPECT;
 
-    constructor(config: AIActionConfig) {
-        super(config);
+    constructor(
+        config: AIActionConfig,
+        snapshotOverrides?: Partial<AIActionSnapshot>,
+    ) {
+        super(config, snapshotOverrides);
 
         this.system = {
             role: "system",
@@ -40,6 +62,7 @@ If you find that a tool would be useful, render that tool name in the output.
         };
         this.toolType = "Contentful";
         this.toolFilters = ["create_content_type", "publish_content_type"];
+
         this.contextContent = () => [
             "Create",
             {
@@ -48,14 +71,12 @@ If you find that a tool would be useful, render that tool name in the output.
                 defaultValue:
                     CreateContentTypeAction.ACTION_CREATE_CTYPES_DEFAULT,
             },
-            "content types.",
-            "of this brand from",
+            "content types from",
             {
                 id: CreateContentTypeAction.SOURCE_RESEARCH_ID,
                 options: CreateContentTypeAction.SOURCE_RESEARCH_OPTIONS,
                 defaultValue: CreateContentTypeAction.SOURCE_RESEARCH_DEFAULT,
             },
-            ".",
         ];
         this.introMessage =
             "Let’s work with Content Types, what would you like to do?";
@@ -143,9 +164,7 @@ ${contentState.research?.fields.products}
                 isRunning: true,
                 startExecutionRunTime: Date.now(),
             });
-
             const newContentType = results.toolResults?.[0]?.content?.[0]?.text;
-
             let newContentTypeId;
             if (newContentType) {
                 try {
@@ -154,15 +173,12 @@ ${contentState.research?.fields.products}
                 } catch {}
             }
             await this.runExeChildAction(
-                EditContentTypeAction,
-                `publish the content type with id ${newContentTypeId}`,
+                new EditContentTypeAction(this.config, {
+                    response: `publish the content type with id ${newContentTypeId}`,
+                }),
                 contentState,
                 addError,
-                results,
             );
-
-            console.log("AIAction", this);
-
             this.updateSnapshot({
                 isRunning: false,
                 phase: AIActionPhase.executed,

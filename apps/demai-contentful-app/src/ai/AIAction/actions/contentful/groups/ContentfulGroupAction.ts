@@ -2,15 +2,15 @@ import { ContentState } from "../../../../../contexts/ContentStateContext/Conten
 import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
 import { AIAction } from "../../../AIAction";
 import { AIActionPhase, AIActionRunResults } from "../../../AIActionTypes";
+import { CreateContentTypeAction } from "../CreateContentTypeAction";
+import { CreateEntryAction } from "../CreateEntryAction";
 
 export class ContentfulGroupAction extends AIAction {
     static label = "Contentful Group";
 
     async runAnswerOrDescribe(
         contentState: ContentState,
-        ignoreContextContent: boolean = false,
         addError: (err: AppError) => void,
-        autoExecute: boolean = false,
     ): Promise<AIActionRunResults> {
         const results: AIActionRunResults = {
             success: true,
@@ -19,16 +19,29 @@ export class ContentfulGroupAction extends AIAction {
 
         this.updateSnapshot({
             isRunning: true,
+            request: "Run contentful group",
             startRunTime: Date.now(),
             startExecutionRunTime: Date.now(),
         });
 
-        // const results = super.runAnswerOrDescribe(
-        //     contentState,
-        //     ignoreContextContent,
-        //     addError,
-        //     autoExecute,
-        // );
+        this.addChildActions([
+            new CreateContentTypeAction(this.config, {
+                contextContentSelections: {
+                    [CreateContentTypeAction.ACTION_CREATE_CTYPES_ID]:
+                        CreateContentTypeAction.ACTION_CREATE_CTYPES_OPTIONS[3],
+                },
+            }),
+            // new CreateEntryAction(this.config, {
+            //     contextContentSelections: {
+            //         [CreateEntryAction.CONTEXT_NUMBER_OF_TYPES]: "4",
+            //     },
+            // }),
+        ]);
+
+        await this.runAllChildren(contentState, addError, {
+            ignoreContextContent: false,
+            autoExecute: true, // false,
+        });
 
         this.updateSnapshot({
             isRunning: false,

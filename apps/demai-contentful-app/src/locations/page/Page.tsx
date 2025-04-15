@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Flex, Heading } from "@contentful/f36-components";
+import { Flex, Heading, Modal } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { AppInstallationParameters } from "../config/ConfigScreen";
@@ -14,6 +14,7 @@ import testCPA from "./utils/testCPA";
 import getPreviewAccessKey from "./utils/getPreviewAccessKey";
 import { useError } from "../../contexts/ErrorContext/ErrorContext";
 import AIActionPanel from "../../components/AIActionPanel/AIActionPanel";
+import AIActionInspector from "../../components/AIActionInspector/AIActionInspector";
 
 const Page = () => {
     const sdk = useSDK<PageAppSDK>();
@@ -139,6 +140,7 @@ const Page = () => {
             }}
             alignItems="stretch"
         >
+            <AIActionInspector />
             <Flex
                 style={{
                     position: "absolute",
