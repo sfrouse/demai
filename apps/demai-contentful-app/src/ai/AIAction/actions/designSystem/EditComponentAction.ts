@@ -13,10 +13,11 @@ const EDIT_COMP_ACTION_WEB_COMP = "Web Component";
 const EDIT_COMP_ACTION_BINDING = "Binding";
 
 export class EditComponentAction extends AIAction {
+    static label = "Edit Comp Definition";
+
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Edit Comp Definition";
         this.introMessage =
             "Let's edit this component definition, what would you like to do?";
         this.executionPrompt = "Creating a component definition...";

@@ -1,6 +1,6 @@
-import { Button, Flex } from "@contentful/f36-components";
+import { Button, Flex, Select } from "@contentful/f36-components";
 import useAIState from "../../contexts/AIStateContext/useAIState";
-import { useAIAction } from "../../ai/AIAction/AIAction";
+import { AIAction, useAIAction } from "../../ai/AIAction/AIAction";
 import ContentPanelHeader from "../ContentPanel/ContentPanelHeader";
 import * as icons from "@contentful/f36-icons";
 import classNames from "../utils/classNames";
@@ -12,8 +12,10 @@ import AIActionDescriptionToolbar from "../AIActionDescription/components/AIActi
 import LoadingPage from "../Loading/LoadingPage";
 
 const AIActionPanel = () => {
-    const { aiAction } = useAIState();
-    const aiActionSnapshot = aiAction ? useAIAction(aiAction) : undefined;
+    const { aiAction, route, setRoute } = useAIState();
+    const aiActionSnapshot = useAIAction(aiAction);
+
+    console.log("route", route);
 
     return (
         <Flex
@@ -29,7 +31,33 @@ const AIActionPanel = () => {
                 <LoadingPage />
             ) : (
                 <>
-                    <ContentPanelHeader title="Workbench">
+                    <ContentPanelHeader
+                        title="Workbench"
+                        childrenLeft={
+                            route?.aiActions && route?.aiActions?.length > 1 ? (
+                                <Select
+                                    value={`${route.aiActionFocus}`}
+                                    onChange={(e) => {
+                                        setRoute({
+                                            ...route,
+                                            aiActionFocus: Number(
+                                                e.target.value,
+                                            ),
+                                        });
+                                    }}
+                                >
+                                    {route?.aiActions.map((action, index) => (
+                                        <Select.Option
+                                            key={`${action.name}`}
+                                            value={`${index}`}
+                                        >
+                                            {(action as typeof AIAction).label}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            ) : null
+                        }
+                    >
                         <Button
                             startIcon={<icons.DiamondIcon />}
                             variant="transparent"

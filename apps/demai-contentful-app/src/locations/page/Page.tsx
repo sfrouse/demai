@@ -19,7 +19,7 @@ const Page = () => {
     const sdk = useSDK<PageAppSDK>();
     const { spaceStatus, validateSpace, setCPA } = useContentStateSession();
     const { addError, errors } = useError();
-    const { setAIStateConfig, setRoute, route, setAIAction, aiStateConfig } =
+    const { setAIStateConfig, setRoute, route, findAndSetAIAction } =
         useAIState();
     const [configReady, setConfigReady] = useState<boolean>(false);
 
@@ -29,7 +29,7 @@ const Page = () => {
             if (route.aiActions.length > 0) {
                 const newAIActionConstructor =
                     route.aiActions[route.aiActionFocus || 0];
-                setAIAction(new newAIActionConstructor(aiStateConfig));
+                findAndSetAIAction(newAIActionConstructor, route);
             }
         }
     }, [route]);

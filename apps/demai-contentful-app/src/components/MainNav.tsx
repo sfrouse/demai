@@ -31,7 +31,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         label: "Prospect",
         section_header: "Prospect Research",
         // aiStateEngines: [AIPromptEngineID.OPEN],
-        aiActions: [ContentfulOpenToolingAction, ContentfulOpenToolingAction],
+        aiActions: [ContentfulOpenToolingAction],
     },
     research: {
         label: "Research",

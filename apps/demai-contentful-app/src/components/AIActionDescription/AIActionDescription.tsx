@@ -72,8 +72,6 @@ const AIActionDescription = ({
         })();
     }, [aiActionSnapshot.executionResponse]);
 
-    console.log("aiActionSnapshot", aiActionSnapshot);
-
     return (
         <Flex
             flexDirection="column"
@@ -199,7 +197,7 @@ const AIActionDescription = ({
                     ></span>
                 </div>
             )}
-            {aiActionSnapshot.chain && (
+            {aiActionSnapshot.request && aiActionSnapshot.chain.length > 0 && (
                 <div
                     style={{
                         padding: `0 ${tokens.spacingL}`,
@@ -223,7 +221,6 @@ const AIActionDescription = ({
                     </span>
                 </div>
             )}
-            {/* <ConversationToolbar aiAction={aiAction} setShowSystem={setShowSystem} /> */}
         </Flex>
     );
 };

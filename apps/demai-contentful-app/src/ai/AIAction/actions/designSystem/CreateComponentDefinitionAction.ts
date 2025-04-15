@@ -4,10 +4,11 @@ import { AIAction } from "../../AIAction";
 import { AIActionConfig } from "../../AIActionTypes";
 
 export class CreateComponentDefinitionAction extends AIAction {
+    static label = "Create Comp Definition";
+
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Create Comp Definition";
         this.system = {
             role: "system",
             content: `

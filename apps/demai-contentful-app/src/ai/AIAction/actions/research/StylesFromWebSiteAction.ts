@@ -14,10 +14,11 @@ const SOURCE_PROSPECT = "the prospect";
 const SOURCE_DESCRIPTION = "following description";
 
 export class StylesFromWebSiteAction extends AIAction {
+    static label = "Brand Colors";
+
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Brand Colors";
         this.model = AIModels.gpt4oSearchPreview;
         this.introMessage =
             "Let’s do some research. What would you like to do?";

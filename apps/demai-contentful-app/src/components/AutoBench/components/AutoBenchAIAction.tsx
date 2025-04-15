@@ -1,14 +1,18 @@
-import { Flex } from "@contentful/f36-components";
+import { Flex, IconButton } from "@contentful/f36-components";
 import tokens from "@contentful/f36-tokens";
 import { AIAction, useAIAction } from "../../../ai/AIAction/AIAction";
 import { AIActionPhase } from "../../../ai/AIAction/AIActionTypes";
 import LoadingIcon from "../../Loading/LoadingIcon";
+import * as icons from "@contentful/f36-icons";
 
 const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
     const aiActionSnapshot = useAIAction(aiAction);
+
+    if (!aiActionSnapshot) return null;
     return (
         <Flex
-            flexDirection="column"
+            flexDirection="row"
+            alignItems="center"
             key={aiAction.key}
             style={{
                 padding: `${tokens.spacingXs} ${tokens.spacingS}`,
@@ -27,9 +31,10 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
                         : aiActionSnapshot.phase === AIActionPhase.done
                         ? tokens.blue900
                         : tokens.gray100,
+                gap: tokens.spacingS,
             }}
         >
-            <Flex flexDirection="row" alignItems="center">
+            <Flex flexDirection="column" style={{ flex: 1 }}>
                 <div
                     style={{
                         flex: 1,
@@ -38,20 +43,40 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
                         fontWeight: tokens.fontWeightDemiBold,
                     }}
                 >
-                    {aiAction.name}
+                    {(aiAction.constructor as typeof AIAction).label}
                 </div>
-                <div style={{ fontSize: 10 }}>
-                    {aiActionSnapshot.isRunning ? (
-                        <LoadingIcon />
-                    ) : (
-                        aiActionSnapshot.phase
-                    )}
+                <div style={{ position: "relative", height: 12 }}>
+                    <div
+                        style={{
+                            position: "absolute",
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            fontSize: 11,
+                            lineHeight: 1.2,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                        }}
+                    >
+                        {aiActionSnapshot.response}
+                    </div>
                 </div>
             </Flex>
-            <div style={{ fontSize: 11, lineHeight: 1.2 }}>
-                {aiActionSnapshot.response.substring(0, 100)}
-                {aiActionSnapshot.response.length > 100 ? "..." : ""}
+            <div style={{ fontSize: 10 }}>
+                {aiActionSnapshot.isRunning ? (
+                    <LoadingIcon />
+                ) : (
+                    aiActionSnapshot.phase
+                )}
             </div>
+            <IconButton
+                size="small"
+                variant="transparent"
+                aria-label="Select the date"
+                icon={<icons.InfoCircleIcon />}
+            />
         </Flex>
     );
 };

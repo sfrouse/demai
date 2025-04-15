@@ -27,9 +27,10 @@ import runAIAction from "./utils/runAIAction";
 import runExeAIAction from "./utils/runExeAIAction";
 
 export class AIAction {
+    static label: string = "Open";
+
     key: string; // Unique key for React lists
     className: string = "AIAction";
-    name: string = "Open";
 
     // --- UI Setup ----------------------------------------------------------------
     contextContent: (contentState: ContentState) => AIActionContentPrefix =
@@ -319,6 +320,7 @@ export class AIAction {
             executionResponse: "",
             response: "",
             request: "",
+            chain: [],
             errors: [],
         });
     }
@@ -332,11 +334,15 @@ export class AIAction {
             executionResponse: "",
             response: "",
             request: "",
+            chain: [],
             errors: [],
         });
     }
 }
 
-export function useAIAction(aiAction: AIAction) {
-    return useSyncExternalStore(aiAction.subscribe, aiAction.getSnapshot);
+export function useAIAction(aiAction?: AIAction) {
+    return useSyncExternalStore(
+        aiAction?.subscribe ?? (() => () => {}),
+        aiAction?.getSnapshot ?? (() => undefined),
+    );
 }

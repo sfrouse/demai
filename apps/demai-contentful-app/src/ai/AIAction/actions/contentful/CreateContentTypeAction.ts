@@ -6,6 +6,8 @@ import { AIAction } from "../../AIAction";
 import { AIActionConfig, AIActionExecuteResults } from "../../AIActionTypes";
 
 export class CreateContentTypeAction extends AIAction {
+    static label = "Create Content Types";
+
     // IDs
     static ACTION_CREATE_CTYPES_ID = "numberOfCTypes";
     static ACTION_CREATE_CTYPES_OPTIONS = ["1", "2", "3", "4", "5", "6"];
@@ -24,7 +26,6 @@ export class CreateContentTypeAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Create Content Types";
         this.system = {
             role: "system",
             content: `

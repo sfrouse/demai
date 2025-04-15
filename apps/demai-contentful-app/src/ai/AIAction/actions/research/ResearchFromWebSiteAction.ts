@@ -2,13 +2,11 @@ import { ContentState } from "../../../../contexts/ContentStateContext/ContentSt
 import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { AIModels } from "../../../openAI/openAIConfig";
 import { AIAction } from "../../AIAction";
-import {
-    AIActionConfig,
-    AIActionContextContentSelections,
-    AIActionExecuteResults,
-} from "../../AIActionTypes";
+import { AIActionConfig, AIActionExecuteResults } from "../../AIActionTypes";
 
 export class ResearchFromWebSiteAction extends AIAction {
+    static label = "Research Brand";
+
     static ACTION_RESEARCH_ID = "action";
     static ACTION_RESEARCH_BRAND_TONE = "Tone";
     static ACTION_RESEARCH_BRAND_STYLE = "Writing Style";
@@ -32,7 +30,6 @@ export class ResearchFromWebSiteAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Research Brand";
         this.model = AIModels.gpt4oSearchPreview;
         this.introMessage =
             "Let’s do some research. What would you like to do?";

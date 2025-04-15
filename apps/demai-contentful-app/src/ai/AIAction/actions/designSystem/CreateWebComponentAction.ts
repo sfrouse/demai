@@ -4,10 +4,11 @@ import { AIAction } from "../../AIAction";
 import { AIActionConfig } from "../../AIActionTypes";
 
 export class CreateWebComponentAction extends AIAction {
+    static label = "Create Web Component";
+
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Create Web Comp";
         this.system = {
             role: "system",
             content: `

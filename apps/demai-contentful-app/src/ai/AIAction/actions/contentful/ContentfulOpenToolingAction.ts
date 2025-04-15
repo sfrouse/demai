@@ -2,10 +2,11 @@ import { AIAction } from "../../AIAction";
 import { AIActionConfig } from "../../AIActionTypes";
 
 export class ContentfulOpenToolingAction extends AIAction {
+    static label = "Contentful Tooling";
+
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Contentful Tooling";
         this.className = "ContentfulOpenToolingAction";
         this.system = {
             role: "system",

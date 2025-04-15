@@ -7,10 +7,11 @@ import { AIActionConfig } from "../../AIActionTypes";
 import { AIAction } from "../../AIAction";
 
 export class CreateBindingAction extends AIAction {
+    static label = "Create Bindings";
+
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Create Bindings";
         this.system = {
             role: "system",
             content: `

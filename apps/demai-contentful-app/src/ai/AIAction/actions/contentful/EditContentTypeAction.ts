@@ -3,10 +3,11 @@ import { AIAction } from "../../AIAction";
 import { AIActionConfig } from "../../AIActionTypes";
 
 export class EditContentTypeAction extends AIAction {
+    static label = "Edit Content Type";
+
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Edit Content Type";
         this.introMessage = "What would you like to do to this content type?";
         this.executionPrompt = "Updated your Content Types...";
         this.placeholder =

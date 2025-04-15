@@ -4,6 +4,8 @@ import { AIAction } from "../../AIAction";
 import { AIActionConfig } from "../../AIActionTypes";
 
 export class CreateEntryAction extends AIAction {
+    static label = "Create Entries";
+
     static CONTEXT_NUMBER_OF_TYPES = "numberOfCTypes";
     static CONTEXT_CTYPE_ID = "ctypeId";
 
@@ -20,7 +22,6 @@ export class CreateEntryAction extends AIAction {
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Create Entries";
         this.introMessage =
             "Let’s create some entries, what would you like to do?";
         this.executionPrompt = "Creating your Entries...";

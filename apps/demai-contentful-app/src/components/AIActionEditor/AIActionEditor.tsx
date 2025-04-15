@@ -38,7 +38,7 @@ const AIActionEditor = () => {
 
     const isLoading = Object.values(loadingState).includes(true);
     const isReady = aiAction && spaceStatus?.valid;
-    const aiActionSnapshot = aiAction ? useAIAction(aiAction) : null;
+    const aiActionSnapshot = useAIAction(aiAction);
 
     if (!isReady || !aiActionSnapshot) {
         return (

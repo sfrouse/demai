@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import AIState from "../../ai/AIState/AIState";
 import AISessionManager from "../../ai/AIState/AISessionManager";
 import { AIStateConfig, AIStateStatus } from "../../ai/AIState/AIStateTypes";
-import { AIStateRoute } from "./AIStateRouting";
+import { AIActionConstructor, AIStateRoute } from "./AIStateRouting";
 import { AIStateContext } from "./useAIState";
 // import { AIPromptEngineID } from "../../ai/AIPromptEngine/AIPromptEngineTypes";
 import { AIAction } from "../../ai/AIAction/AIAction";
@@ -36,10 +36,10 @@ export interface AIStateContextType {
     invalidated: number;
     setInvalidated: React.Dispatch<React.SetStateAction<number>>;
 
-    // findAndSetAIAction: (
-    //     aiStateEngineId: AIPromptEngineID,
-    //     context?: string,
-    // ) => Promise<AISessionManager | void>;
+    findAndSetAIAction: (
+        aiConstructor: AIActionConstructor,
+        route: AIStateRoute,
+    ) => Promise<AISessionManager | void>;
 
     route?: AIStateRoute;
     setRoute: React.Dispatch<React.SetStateAction<AIStateRoute | undefined>>;
@@ -50,6 +50,8 @@ export interface AIStateContextType {
     ignoreContextContent: boolean;
     setIgnoreContextContent: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+const aiActionLookup = new Map<string, AIAction>();
 
 export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
@@ -67,28 +69,24 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
     const [invalidated, setInvalidated] = useState<number>(0);
     const [route, setRoute] = useState<AIStateRoute>();
 
-    // const aiStateLookup = new Map();
-
-    // const findAndSetAIAction = async (
-    //     aiStateEngineId: AIAction,
-    //     context: string = "",
-    // ) => {
-    //     if (aiStateConfig) {
-    //         const uniqueLookupKey = `${aiStateEngineId}${
-    //             context ? `-${context}` : ``
-    //         }`;
-    //         // if (!aiStateLookup.get(uniqueLookupKey)) {
-    //         //     const newAIState = new AIState(
-    //         //         aiStateConfig,
-    //         //         setAIStateStatus,
-    //         //         aiStateEngineId,
-    //         //         () => setInvalidated((prev) => prev + 1),
-    //         //     );
-    //         //     aiStateLookup.set(uniqueLookupKey, newAIState);
-    //         // }
-    //         // setAIState(aiStateLookup.get(uniqueLookupKey));
-    //     }
-    // };
+    const findAndSetAIAction = async (
+        aiConstructor: AIActionConstructor,
+        route: AIStateRoute,
+    ) => {
+        if (aiStateConfig) {
+            const uniqueLookupKey = `${aiConstructor.name}-${JSON.stringify({
+                ...route,
+                aiActions: undefined,
+            })}`;
+            if (!aiActionLookup.get(uniqueLookupKey)) {
+                const newAIAction = new aiConstructor(aiStateConfig);
+                setAIAction(newAIAction);
+                aiActionLookup.set(uniqueLookupKey, newAIAction);
+            }
+            const newAIAction = aiActionLookup.get(uniqueLookupKey);
+            setAIAction(newAIAction);
+        }
+    };
 
     useEffect(() => {
         if (aiState) {
@@ -113,7 +111,7 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
                 setAISession,
                 invalidated,
                 setInvalidated,
-                // findAndSetAIAction,
+                findAndSetAIAction,
                 route,
                 setRoute,
                 autoExecute,

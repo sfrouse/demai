@@ -6,10 +6,11 @@ import { AIAction } from "../../AIAction";
 import { AIActionConfig } from "../../AIActionTypes";
 
 export class SaveBrandColorsAction extends AIAction {
+    static label = "Save Brand Colors";
+
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Save Brand Colors";
         this.model = AIModels.gpt4o;
         this.introMessage =
             "Let’s do some research. What would you like to do?";

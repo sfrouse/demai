@@ -6,10 +6,11 @@ import { AIAction } from "../../AIAction";
 import { AIActionConfig } from "../../AIActionTypes";
 
 export class ChangeTokenColorSetAction extends AIAction {
+    static label = "Update Color Tokens";
+
     constructor(config: AIActionConfig) {
         super(config);
 
-        this.name = "Update Color Tokens";
         this.system = {
             role: "system",
             content: `You are an expert in Design Systems and are helping guide a Solutions Engineer navigate customizing the colors on their website for a specific prospect.
