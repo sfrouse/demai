@@ -8,7 +8,7 @@ import {
 import * as icons from "@contentful/f36-icons";
 import { ReactNode } from "react";
 import Divider from "../Divider";
-import useAIState from "../../contexts/AIStateContext/useAIState";
+import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
 
 interface ContentPanelHeaderProps {
     title: string;
@@ -30,7 +30,7 @@ const ContentPanelHeader = ({
     childrenLeft,
     goBack,
 }: ContentPanelHeaderProps) => {
-    const { setInvalidated } = useAIState();
+    const { resetContentState } = useContentStateSession();
     return (
         <Flex
             flexDirection="column"
@@ -89,7 +89,7 @@ const ContentPanelHeader = ({
                         variant="transparent"
                         aria-label="Select the date"
                         icon={<icons.CycleIcon />}
-                        onClick={() => setInvalidated((p) => p + 1)}
+                        onClick={() => resetContentState()}
                     />
                 ) : null}
             </Flex>

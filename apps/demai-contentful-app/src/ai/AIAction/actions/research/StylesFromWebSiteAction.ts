@@ -20,9 +20,16 @@ export class StylesFromWebSiteAction extends AIAction {
         config: AIActionConfig,
         contentChangeEvent: () => void,
         getContentState: () => ContentState,
+        loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, contentChangeEvent, getContentState, snapshotOverrides);
+        super(
+            config,
+            contentChangeEvent,
+            getContentState,
+            loadProperty,
+            snapshotOverrides,
+        );
 
         this.model = AIModels.gpt4oSearchPreview;
         this.introMessage =
@@ -70,6 +77,10 @@ enough colors to satisfy the request.
         };
     }
 
+    async loadNeededData() {
+        await this.loadProperty("research");
+    }
+
     async runExe(addError: (err: AppError) => void) {
         const results = await super.runExe(addError);
 
@@ -83,6 +94,7 @@ enough colors to satisfy the request.
                 this.config,
                 this.contentChangeEvent,
                 this.getContentState,
+                this.loadProperty,
                 {
                     response: `
 The research below should have definitions for primary, secondary, or tertiary colors.

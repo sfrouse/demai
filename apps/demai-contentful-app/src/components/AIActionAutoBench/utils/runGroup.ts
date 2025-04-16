@@ -15,8 +15,9 @@ export default async function runGroup(
     groupId: string,
     setRoute: React.Dispatch<React.SetStateAction<AIStateRoute | undefined>>,
     aiActionConfig: AIActionConfig,
-    bumpInvalidated: () => void,
+    resetContentState: () => void,
     getContentState: () => ContentState,
+    loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setLocalAIAction: React.Dispatch<
         React.SetStateAction<AIAction | undefined>
@@ -65,8 +66,9 @@ export default async function runGroup(
     if (newLocalAIActionConstructor) {
         const newLocalAIAction = new newLocalAIActionConstructor(
             aiActionConfig,
-            bumpInvalidated,
+            resetContentState,
             getContentState,
+            loadProperty,
         );
         if (notifyFirst) {
             const answer = await sdk.dialogs.openConfirm({
@@ -79,7 +81,7 @@ export default async function runGroup(
                 await newLocalAIAction.run(addError);
                 if (validateDemAI) {
                     await validateSpace();
-                    bumpInvalidated();
+                    resetContentState();
                 }
                 setIsLoading(false);
             }

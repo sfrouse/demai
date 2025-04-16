@@ -12,13 +12,24 @@ const EDIT_COMP_ACTION_BINDING = "Binding";
 export class EditComponentAction extends AIAction {
     static label = "Edit Comp Definition";
 
+    async loadNeededData() {
+        await this.loadProperty("components");
+    }
+
     constructor(
         config: AIActionConfig,
         contentChangeEvent: () => void,
         getContentState: () => ContentState,
+        loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, contentChangeEvent, getContentState, snapshotOverrides);
+        super(
+            config,
+            contentChangeEvent,
+            getContentState,
+            loadProperty,
+            snapshotOverrides,
+        );
 
         this.introMessage =
             "Let's edit this component definition, what would you like to do?";

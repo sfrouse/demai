@@ -5,7 +5,6 @@ import {
     AIActionExecuteResults,
     AIActionPhase,
     AIActionRunResults,
-    AIActionSnapshot,
 } from "../../../AIActionTypes";
 import { CreateEntryAction } from "../CreateEntryAction";
 
@@ -36,6 +35,7 @@ export class ContentfulEntryPerCTypeAction extends AIAction {
                         this.config,
                         this.contentChangeEvent,
                         this.getContentState,
+                        this.loadProperty,
                         {
                             contextContentSelections: {
                                 [CreateEntryAction.CONTEXT_NUMBER_OF_TYPES]:

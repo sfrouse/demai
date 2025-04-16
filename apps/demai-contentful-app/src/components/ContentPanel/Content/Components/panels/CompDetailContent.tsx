@@ -26,8 +26,8 @@ export enum COMP_DETAIL_NAVIGATION {
 
 export default function CompDetailContent() {
     const sdk = useSDK<PageAppSDK>();
-    const { contentState } = useContentStateSession();
-    const { setRoute, route, setInvalidated, aiState } = useAIState();
+    const { contentState, resetContentState } = useContentStateSession();
+    const { setRoute, route, aiAction } = useAIState();
     const [comp, setComp] = useState<any>(); // typings are getting CMA and Contentful confused...
     const [localCDef, setLocalCDef] = useState<string>("");
     const [localJavaScript, setLocalJavaScript] = useState<string>("");
@@ -85,7 +85,7 @@ export default function CompDetailContent() {
                 localJavaScript,
             );
             setIsSaving(false);
-            setInvalidated((p) => p + 1);
+            resetContentState();
         }
     }, [localBindings, localCDef, localJavaScript, sdk, comp]);
 
@@ -214,11 +214,11 @@ export default function CompDetailContent() {
                     onClick={async () => {
                         setIsSaving(true);
                         const cdef = JSON.parse(localCDef);
-                        if (aiState && cdef) {
+                        if (aiAction && cdef) {
                             await createCTypeFromCDef(
-                                aiState?.config.cma,
-                                aiState?.config.spaceId,
-                                aiState?.config.environmentId,
+                                aiAction.config.cma,
+                                aiAction.config.spaceId,
+                                aiAction.config.environmentId,
                                 cdef,
                             );
                         }

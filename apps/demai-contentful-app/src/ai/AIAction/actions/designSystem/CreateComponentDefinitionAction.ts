@@ -6,13 +6,25 @@ import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 export class CreateComponentDefinitionAction extends AIAction {
     static label = "Create Comp Definition";
 
+    async loadNeededData() {
+        await this.loadProperty("components");
+        await this.loadProperty("tokens");
+    }
+
     constructor(
         config: AIActionConfig,
         contentChangeEvent: () => void,
         getContentState: () => ContentState,
+        loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, contentChangeEvent, getContentState, snapshotOverrides);
+        super(
+            config,
+            contentChangeEvent,
+            getContentState,
+            loadProperty,
+            snapshotOverrides,
+        );
 
         this.system = {
             role: "system",

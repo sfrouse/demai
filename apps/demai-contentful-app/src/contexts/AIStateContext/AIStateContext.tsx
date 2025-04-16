@@ -24,10 +24,6 @@ export interface AIStateContextType {
         React.SetStateAction<string | undefined>
     >;
 
-    invalidated: number;
-    setInvalidated: React.Dispatch<React.SetStateAction<number>>;
-    bumpInvalidated: () => void;
-
     route?: AIStateRoute;
     setRoute: React.Dispatch<React.SetStateAction<AIStateRoute | undefined>>;
 
@@ -49,8 +45,6 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
     const [autoExecute, setAutoExecute] = useState<boolean>(false);
     const [ignoreContextContent, setIgnoreContextContent] =
         useState<boolean>(false);
-    const [invalidated, setInvalidated] = useState<number>(0);
-    const bumpInvalidated = () => setInvalidated((prev) => prev + 1);
     const [route, setRoute] = useState<AIStateRoute>();
     const [inspectedContent, setInspectedContent] = useState<string>();
 
@@ -59,9 +53,6 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
             value={{
                 aiActionConfig,
                 setAIActionConfig,
-                invalidated,
-                setInvalidated,
-                bumpInvalidated,
                 route,
                 setRoute,
                 autoExecute,

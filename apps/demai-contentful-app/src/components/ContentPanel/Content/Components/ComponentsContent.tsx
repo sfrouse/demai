@@ -15,29 +15,14 @@ import { EditComponentAction } from "../../../../ai/AIAction/actions/designSyste
 const ComponentsContent = () => {
     const { contentState, loadProperty, loadingState, setComponent } =
         useContentStateSession();
-    const { invalidated, setRoute, route } = useAIState();
-    const [localInvalidated, setLocalInvalidated] =
-        useState<number>(invalidated);
+    const { setRoute, route } = useAIState();
 
     useEffect(() => {
-        const forceReload = localInvalidated !== invalidated;
-        if (!contentState.components || forceReload) {
-            if (!forceReload) setLocalInvalidated(invalidated);
-            loadProperty("components", forceReload);
-        }
-        if (!contentState.ai || forceReload) {
-            if (!forceReload) setLocalInvalidated(invalidated);
-            loadProperty("ai", forceReload);
-        }
-        if (!contentState.contentTypes || forceReload) {
-            if (!forceReload) setLocalInvalidated(invalidated);
-            loadProperty("contentTypes", forceReload);
-        }
-        if (!contentState.css || forceReload) {
-            if (!forceReload) setLocalInvalidated(invalidated);
-            loadProperty("css", forceReload);
-        }
-    }, [invalidated]);
+        loadProperty("components");
+        loadProperty("ai");
+        loadProperty("contentTypes");
+        loadProperty("css");
+    }, [contentState]);
 
     const isLoading =
         loadingState.components === true ||

@@ -29,13 +29,24 @@ export class CreateContentTypeAction extends AIAction {
     static SOURCE_RESEARCH_DEFAULT =
         CreateContentTypeAction.SOURCE_RESEARCH_OPTIONS_PROSPECT;
 
+    async loadNeededData() {
+        await this.loadProperty("research");
+    }
+
     constructor(
         config: AIActionConfig,
         contentChangeEvent: () => void,
         getContentState: () => ContentState,
+        loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, contentChangeEvent, getContentState, snapshotOverrides);
+        super(
+            config,
+            contentChangeEvent,
+            getContentState,
+            loadProperty,
+            snapshotOverrides,
+        );
 
         this.system = {
             role: "system",
@@ -160,6 +171,7 @@ ${contentState.research?.fields.products}
                     this.config,
                     this.contentChangeEvent,
                     this.getContentState,
+                    this.loadProperty,
                     {
                         response: `publish the content type with id ${newContentTypeId}`,
                     },

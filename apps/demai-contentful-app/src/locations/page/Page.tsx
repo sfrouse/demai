@@ -20,17 +20,17 @@ import AIActionInspectorModalModal from "../../components/AIActionInspectorModal
 
 const Page = () => {
     const sdk = useSDK<PageAppSDK>();
-    const { spaceStatus, validateSpace, setCPA, getContentState } =
-        useContentStateSession();
-    const { addError, errors } = useError();
     const {
-        setAIActionConfig,
-        aiActionConfig,
-        setRoute,
-        setAIAction,
-        route,
-        bumpInvalidated,
-    } = useAIState();
+        spaceStatus,
+        validateSpace,
+        setCPA,
+        getContentState,
+        loadProperty,
+        resetContentState,
+    } = useContentStateSession();
+    const { addError, errors } = useError();
+    const { setAIActionConfig, aiActionConfig, setRoute, setAIAction, route } =
+        useAIState();
     const [configReady, setConfigReady] = useState<boolean>(false);
 
     // MAIN AISTATE MANEGEMENT
@@ -41,7 +41,8 @@ const Page = () => {
                     aiActionConfig,
                     route,
                     setAIAction,
-                    bumpInvalidated,
+                    loadProperty,
+                    resetContentState,
                     getContentState,
                 );
             }
@@ -51,11 +52,6 @@ const Page = () => {
     useEffect(() => {
         const dialogError = errors.find((error) => error.showDialog === true);
         if (dialogError) {
-            // sdk.dialogs.openAlert({
-            //   title: `${error.service}`,
-            //   message: error.message,
-            //   confirmLabel: "OK",
-            // });
             sdk.notifier.error(
                 `${dialogError.service}: ${dialogError.message}`,
             );

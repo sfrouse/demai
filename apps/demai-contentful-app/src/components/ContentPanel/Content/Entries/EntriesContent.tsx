@@ -3,7 +3,6 @@ import { Flex, Select, Text } from "@contentful/f36-components";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import tokens from "@contentful/f36-tokens";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
-import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
@@ -15,30 +14,16 @@ import LoadingStyles from "../../../Loading/LoadingStyles";
 
 const EntriesContent = () => {
     const sdk = useSDK<PageAppSDK>();
-    const { contentState, loadProperty, loadingState } =
+    const { contentState, loadProperty, loadingState, resetContentState } =
         useContentStateSession();
-    const { invalidated, setInvalidated } = useAIState();
-    const [localInvalidated, setLocalInvalidated] =
-        useState<number>(invalidated);
     const [selectedContentType, setSelectedContentType] =
         useState<string>("all");
     const [localLoading, setLocalLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        const forceReload = localInvalidated !== invalidated;
-        if (
-            !contentState.entries ||
-            !contentState.contentTypes ||
-            forceReload
-        ) {
-            if (!forceReload) setLocalInvalidated(invalidated);
-            loadProperty("contentTypes", forceReload);
-            loadProperty("entries", forceReload);
-        }
-        if (forceReload) {
-            if (!forceReload) setLocalInvalidated(invalidated);
-        }
-    }, [invalidated]);
+        loadProperty("contentTypes");
+        loadProperty("entries");
+    }, [contentState]);
 
     const isLoading =
         loadingState.entries === true ||
@@ -73,7 +58,7 @@ const EntriesContent = () => {
             } catch (err: any) {
                 sdk.notifier.error(`error: ${err.message}`);
             }
-            setInvalidated((prev) => prev + 1);
+            resetContentState();
             setLocalLoading(false);
         }
     };

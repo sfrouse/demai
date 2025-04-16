@@ -13,20 +13,19 @@ import { EditContentTypeAction } from "../../../../ai/AIAction/actions/contentfu
 
 const ContentTypesContent = () => {
     const sdk = useSDK<PageAppSDK>();
-    const { contentState, loadProperty, loadingState, setContentType } =
-        useContentStateSession();
-    const { invalidated, setRoute, setInvalidated } = useAIState();
-    const [localInvalidated, setLocalInvalidated] =
-        useState<number>(invalidated);
+    const {
+        contentState,
+        loadProperty,
+        loadingState,
+        setContentType,
+        resetContentState,
+    } = useContentStateSession();
+    const { setRoute } = useAIState();
     const [localLoading, setLocalLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        const forceReload = localInvalidated !== invalidated;
-        if (!contentState.contentTypes || forceReload) {
-            if (!forceReload) setLocalInvalidated(invalidated);
-            loadProperty("contentTypes", forceReload);
-        }
-    }, [invalidated]);
+        loadProperty("contentTypes");
+    }, [contentState]);
 
     const isLoading =
         loadingState.contentTypes === true || localLoading === true;
@@ -51,7 +50,7 @@ const ContentTypesContent = () => {
             } catch (err: any) {
                 sdk.notifier.error(`error: ${err.message}`);
             }
-            setInvalidated((prev) => prev + 1);
+            resetContentState();
             setLocalLoading(false);
         }
     };

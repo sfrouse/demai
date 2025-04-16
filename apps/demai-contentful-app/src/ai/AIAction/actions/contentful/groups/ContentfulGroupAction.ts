@@ -30,11 +30,13 @@ export class ContentfulGroupAction extends AIAction {
                 this.config,
                 this.contentChangeEvent,
                 this.getContentState,
+                this.loadProperty,
             ),
             new CreateContentTypeAction(
                 this.config,
                 this.contentChangeEvent,
                 this.getContentState,
+                this.loadProperty,
                 {
                     contextContentSelections: {
                         [CreateContentTypeAction.ACTION_CREATE_CTYPES_ID]:
@@ -47,6 +49,7 @@ export class ContentfulGroupAction extends AIAction {
                 this.config,
                 this.contentChangeEvent,
                 this.getContentState,
+                this.loadProperty,
             ),
         ]);
 

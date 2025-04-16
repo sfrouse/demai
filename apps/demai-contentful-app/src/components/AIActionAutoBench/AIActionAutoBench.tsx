@@ -4,19 +4,13 @@ import { Button, Flex, Select } from "@contentful/f36-components";
 import * as icons from "@contentful/f36-icons";
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../contexts/AIStateContext/useAIState";
-import { ResearchGroupAction } from "../../ai/AIAction/actions/research/groups/ResearchGroupAction";
 import { AIAction, useAIAction } from "../../ai/AIAction/AIAction";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
 import { useError } from "../../contexts/ErrorContext/ErrorContext";
 import AutoBenchAIAction from "./components/AutoBenchAIAction";
 import scrollBarStyles from "../utils/ScrollBarMinimal.module.css";
-import { ContentfulGroupAction } from "../../ai/AIAction/actions/contentful/groups/ContentfulGroupAction";
-import { DeleteGeneratedContentAction } from "../../ai/AIAction/actions/contentful/DeleteGeneratedContentAction";
-import { DeleteSystemContentAction } from "../../ai/AIAction/actions/contentful/DeleteSystemContentAction";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
-import { DeleteAllContentGroupAction } from "../../ai/AIAction/actions/contentful/groups/DeleteAllContentGroupAction";
-import { NAVIGATION } from "../MainNav";
 import { MoneyAction } from "../../ai/AIAction/actions/MoneyAction";
 import runGroup from "./utils/runGroup";
 
@@ -28,8 +22,9 @@ const AIActionAutoBench = ({
     setShowWorkBench: Dispatch<SetStateAction<boolean>>;
 }) => {
     const sdk = useSDK<PageAppSDK>();
-    const { getContentState, validateSpace } = useContentStateSession();
-    const { aiActionConfig, bumpInvalidated, setRoute } = useAIState();
+    const { getContentState, validateSpace, resetContentState, loadProperty } =
+        useContentStateSession();
+    const { aiActionConfig, setRoute } = useAIState();
     const [localAIAction, setLocalAIAction] = useState<AIAction>();
     const { addError } = useError();
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -93,8 +88,9 @@ const AIActionAutoBench = ({
                             setIsLoading(true);
                             const newLocalAIAction = new MoneyAction(
                                 aiActionConfig,
-                                bumpInvalidated,
+                                resetContentState,
                                 getContentState,
+                                loadProperty,
                             );
                             setLocalAIAction(newLocalAIAction);
                             newLocalAIAction.run(addError);
@@ -103,23 +99,6 @@ const AIActionAutoBench = ({
                     >
                         Show Me the Money
                     </Button>
-                    {/* <Button
-                        style={{ minWidth: "100%" }}
-                        onClick={() => {
-                            setIsLoading(true);
-                            const newLocalAIAction =
-                                new ContentfulEntryPerCTypeAction(
-                                    aiActionConfig,
-                                    bumpInvalidated,
-                                    getContentState,
-                                );
-                            setLocalAIAction(newLocalAIAction);
-                            newLocalAIAction.run(addError);
-                            setIsLoading(false);
-                        }}
-                    >
-                        Run Test
-                    </Button> */}
                     <Flex
                         flexDirection="row"
                         style={{
@@ -147,11 +126,14 @@ const AIActionAutoBench = ({
                                 <Select.Option value="contentful">
                                     Contentful Group
                                 </Select.Option>
-                                <Select.Option value="designSystem">
+                                {/* <Select.Option value="designSystem">
                                     Design System Group
-                                </Select.Option>
+                                </Select.Option> */}
                                 <Select.Option value="layouts">
                                     Layouts Group
+                                </Select.Option>
+                                <Select.Option value="-----">
+                                    -------
                                 </Select.Option>
                                 <Select.Option value="deleteGenerated">
                                     Delete DemAI Generated Content
@@ -173,8 +155,9 @@ const AIActionAutoBench = ({
                                     groupId,
                                     setRoute,
                                     aiActionConfig,
-                                    bumpInvalidated,
+                                    resetContentState,
                                     getContentState,
+                                    loadProperty,
                                     setIsLoading,
                                     setLocalAIAction,
                                     validateSpace,

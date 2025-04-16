@@ -6,13 +6,25 @@ import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 export class CreateWebComponentAction extends AIAction {
     static label = "Create Web Component";
 
+    async loadNeededData() {
+        await this.loadProperty("tokens");
+        await this.loadProperty("research");
+    }
+
     constructor(
         config: AIActionConfig,
         contentChangeEvent: () => void,
         getContentState: () => ContentState,
+        loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, contentChangeEvent, getContentState, snapshotOverrides);
+        super(
+            config,
+            contentChangeEvent,
+            getContentState,
+            loadProperty,
+            snapshotOverrides,
+        );
 
         this.system = {
             role: "system",

@@ -19,13 +19,25 @@ export class CreateEntryAction extends AIAction {
     static CONTEXT_TONE_AND_STYLE_DEFAULT =
         CreateEntryAction.CONTEXT_TONE_AND_STYLE_BRAND;
 
+    async loadNeededData() {
+        await this.loadProperty("contentTypes");
+        await this.loadProperty("research");
+    }
+
     constructor(
         config: AIActionConfig,
         contentChangeEvent: () => void,
         getContentState: () => ContentState,
+        loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, contentChangeEvent, getContentState, snapshotOverrides);
+        super(
+            config,
+            contentChangeEvent,
+            getContentState,
+            loadProperty,
+            snapshotOverrides,
+        );
 
         this.introMessage =
             "Let’s create some entries, what would you like to do?";

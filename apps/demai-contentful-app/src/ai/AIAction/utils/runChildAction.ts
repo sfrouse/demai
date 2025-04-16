@@ -26,7 +26,6 @@ export default async function runChildAction(
     });
     childAIAction.updateSnapshot(childSnapshot);
     const runResults = await childAIAction.runAnswerOrDescribe(
-        contentState,
         addError,
         snapshotOverrides,
     );

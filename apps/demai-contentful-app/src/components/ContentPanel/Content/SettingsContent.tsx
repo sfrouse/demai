@@ -36,9 +36,8 @@ function generateErrorMessage(
 
 const SettingsContent = () => {
     const sdk = useSDK<PageAppSDK>();
-    const { validateSpace, spaceStatus, resetLoadingState } =
+    const { validateSpace, spaceStatus, resetLoadingState, resetContentState } =
         useContentStateSession();
-    const { bumpInvalidated } = useAIState();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<(string | null)[]>([]);
 
@@ -123,7 +122,7 @@ const SettingsContent = () => {
                                 if (errors.length === 0) {
                                     await localValidateSpace();
                                 }
-                                bumpInvalidated();
+                                resetContentState();
                                 resetLoadingState();
                             }}
                         >

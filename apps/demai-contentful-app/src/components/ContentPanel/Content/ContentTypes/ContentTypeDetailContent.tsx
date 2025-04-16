@@ -12,17 +12,11 @@ import { CONTENT_PANEL_MAX_WIDTH } from "../../../../constants";
 const ContentTypeDetailContent = () => {
     const { contentState, loadProperty, loadingState } =
         useContentStateSession();
-    const { invalidated, route, setRoute } = useAIState();
-    const [localInvalidated, setLocalInvalidated] =
-        useState<number>(invalidated);
+    const { route, setRoute } = useAIState();
 
     useEffect(() => {
-        const forceReload = localInvalidated !== invalidated;
-        if (!contentState.contentTypes || forceReload) {
-            if (!forceReload) setLocalInvalidated(invalidated);
-            loadProperty("contentTypes", forceReload);
-        }
-    }, [invalidated]);
+        loadProperty("contentTypes");
+    }, [contentState]);
 
     const contentType = contentState.contentTypes?.find(
         (ctype) => ctype.sys.id === route?.contentTypeId,
@@ -30,8 +24,6 @@ const ContentTypeDetailContent = () => {
     if (!contentType) {
         setRoute({
             navigation: "content_model",
-            // aiStateEngines: NAVIGATION["content_model"].aiStateEngines,
-            // aiStateEngineFocus: 0,
             aiActions: NAVIGATION["content_model"].aiActions,
             aiActionFocus: 0,
         });

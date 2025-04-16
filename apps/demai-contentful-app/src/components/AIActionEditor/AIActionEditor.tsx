@@ -26,8 +26,7 @@ import AIActionConfirm from "./components/AIActionConfirm";
 import LoadingStyles from "../Loading/LoadingStyles";
 
 const AIActionEditor = () => {
-    const { contentState, loadingState, spaceStatus } =
-        useContentStateSession();
+    const { contentState } = useContentStateSession();
     const {
         aiAction,
         ignoreContextContent,
@@ -37,8 +36,9 @@ const AIActionEditor = () => {
     } = useAIState();
     const { addError } = useError();
 
-    const isLoading = Object.values(loadingState).includes(true);
     const aiActionSnapshot = useAIAction(aiAction);
+
+    const isLoading = !aiActionSnapshot || aiActionSnapshot.isLoading === true; //  || !spaceStatus?.valid;
 
     if (!aiActionSnapshot || !aiAction) {
         return (
@@ -59,7 +59,7 @@ const AIActionEditor = () => {
                     paddingBottom: tokens.spacingM,
                     // minHeight: isLoading ? 200 : 0,
                     position: "relative",
-                    ...LoadingStyles(!spaceStatus?.valid),
+                    ...LoadingStyles(isLoading),
                 }}
             >
                 {renderContextContent(

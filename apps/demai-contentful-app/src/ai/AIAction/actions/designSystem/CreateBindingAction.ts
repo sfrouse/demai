@@ -9,13 +9,25 @@ import contentTypeToAI from "../../utils/contentTypeToAI";
 export class CreateBindingAction extends AIAction {
     static label = "Create Bindings";
 
+    async loadNeededData() {
+        await this.loadProperty("contentTypes");
+        await this.loadProperty("components");
+    }
+
     constructor(
         config: AIActionConfig,
         contentChangeEvent: () => void,
         getContentState: () => ContentState,
+        loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, contentChangeEvent, getContentState, snapshotOverrides);
+        super(
+            config,
+            contentChangeEvent,
+            getContentState,
+            loadProperty,
+            snapshotOverrides,
+        );
 
         this.system = {
             role: "system",

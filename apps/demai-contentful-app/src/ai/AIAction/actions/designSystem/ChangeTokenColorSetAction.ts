@@ -8,13 +8,25 @@ import rgbaToHex from "../../utils/rgbaToHex";
 export class ChangeTokenColorSetAction extends AIAction {
     static label = "Update Color Tokens";
 
+    async loadNeededData() {
+        await this.loadProperty("tokens");
+        await this.loadProperty("research");
+    }
+
     constructor(
         config: AIActionConfig,
         contentChangeEvent: () => void,
         getContentState: () => ContentState,
+        loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, contentChangeEvent, getContentState, snapshotOverrides);
+        super(
+            config,
+            contentChangeEvent,
+            getContentState,
+            loadProperty,
+            snapshotOverrides,
+        );
 
         this.system = {
             role: "system",
@@ -82,7 +94,6 @@ The brand colors are primary ${contentState.research?.fields.primaryColor}, seco
                 this.contextContentSelections["updateType"] ===
                 "specific colorset"
             ) {
-                console.log("contentState.tokens", contentState.tokens);
                 if (
                     contentState.tokens?.color?.[
                         this.contextContentSelections["colorSetList"]

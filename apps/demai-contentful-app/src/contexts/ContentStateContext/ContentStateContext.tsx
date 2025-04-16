@@ -16,7 +16,7 @@ import { useError } from "../ErrorContext/ErrorContext";
 
 // Define the shape of your session data
 export interface ContentState {
-    contentTypes?: ContentType[]; // Collection<ContentType, ContentTypeProps>;
+    contentTypes?: ContentType[];
     contentType?: ContentType;
     tokens?: any;
     css?: string;
@@ -105,40 +105,41 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     }>({});
     const [cpa, setCPA] = useState<string>("");
 
-    // Function to fetch only one property on demand, preventing duplicate calls
+    // ContentState Property Requets
+    const loadInProgressMap = new Map<keyof ContentState, Promise<any>>();
     const loadProperty = async (
         key: keyof ContentState,
         forceRefresh: boolean = false,
     ) => {
-        if (loadingState[key]) {
-            return;
-        }
-        if (contentState[key] !== undefined && forceRefresh === false) {
-            return;
+        if (!forceRefresh && getContentState()[key] !== undefined) {
+            return getContentState()[key];
         }
 
-        let payload: any;
-        setLoadingState((prev) => ({ ...prev, [key]: true })); // Mark as loading
+        if (loadInProgressMap.has(key)) {
+            return loadInProgressMap.get(key);
+        }
 
-        const previewClient = cpa
-            ? contentful.createClient({
-                  space: sdk.ids.space,
-                  environment: sdk.ids.environment,
-                  accessToken: cpa,
-                  host: "preview.contentful.com",
-              })
-            : undefined;
+        setLoadingState((prev) => ({ ...prev, [key]: true }));
 
-        if (!previewClient) {
-            payload = undefined;
-        } else {
-            switch (key) {
-                case "contentTypes": {
-                    try {
-                        const params = {
-                            ...(sdk.parameters
-                                .installation as AppInstallationParameters),
-                        };
+        const loadPromise = (async () => {
+            let payload: any;
+
+            const previewClient = cpa
+                ? contentful.createClient({
+                      space: sdk.ids.space,
+                      environment: sdk.ids.environment,
+                      accessToken: cpa,
+                      host: "preview.contentful.com",
+                  })
+                : undefined;
+
+            if (!previewClient) return undefined;
+
+            try {
+                switch (key) {
+                    case "contentTypes": {
+                        const params = sdk.parameters
+                            .installation as AppInstallationParameters;
                         payload = await getContentTypes({
                             cma: params.cma,
                             spaceId: sdk.ids.space,
@@ -146,73 +147,67 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
                             openAiApiKey: params.openai,
                             cpa: "",
                         });
-                    } catch (err) {
-                        addError({
-                            service: "Load Content Types",
-                            message:
-                                "Loading content types in contentStateContext",
-                            details: `${err}`,
-                        });
+                        break;
                     }
-                    break;
-                }
-                case "entries": {
-                    console.log("test");
-                    payload = await getEntries(previewClient, addError);
-                    break;
-                }
-                case "tokens": {
-                    payload = await getLatestTokens(
-                        previewClient,
-                        "jsonNested",
-                        addError,
-                    );
-                    break;
-                }
-                case "css": {
-                    payload = await getLatestTokens(
-                        previewClient,
-                        "css",
-                        addError,
-                    );
-                    break;
-                }
-                case "ai": {
-                    payload = await getLatestTokens(
-                        previewClient,
-                        "ai",
-                        addError,
-                    );
-                    break;
-                }
-                case "components": {
-                    payload = await getComponents(previewClient, addError);
-                    break;
-                }
-                case "research": {
-                    try {
+                    case "entries":
+                        payload = await getEntries(previewClient, addError);
+                        break;
+                    case "tokens":
+                        payload = await getLatestTokens(
+                            previewClient,
+                            "jsonNested",
+                            addError,
+                        );
+                        break;
+                    case "css":
+                        payload = await getLatestTokens(
+                            previewClient,
+                            "css",
+                            addError,
+                        );
+                        break;
+                    case "ai":
+                        payload = await getLatestTokens(
+                            previewClient,
+                            "ai",
+                            addError,
+                        );
+                        break;
+                    case "components":
+                        payload = await getComponents(previewClient, addError);
+                        break;
+                    case "research": {
                         payload = await previewClient.getEntry(
                             DEMAI_RESEARCH_SINGLETON_ENTRY_ID,
                         );
-                    } catch (err) {
-                        addError({
-                            service: "Loading Research",
-                            message: "Error loading research entry",
-                            details: err,
-                            showDialog: true,
-                        });
+                        break;
                     }
-                    break;
+                    default:
+                        console.error(`Unknown property: ${key}`);
+                        return;
                 }
-                default:
-                    console.error(`Unknown property: ${key}`);
-                    return;
-            }
-        }
 
-        dispatch({ type: "SET_PROPERTY", key, payload });
-        setLoadingState((prev) => ({ ...prev, [key]: false }));
-        return payload;
+                dispatch({ type: "SET_PROPERTY", key, payload });
+                return payload;
+            } catch (err) {
+                addError({
+                    service: "Load Property",
+                    message: `Error loading property ${key}`,
+                    details: String(err),
+                });
+                return undefined;
+            } finally {
+                setLoadingState((prev) => ({ ...prev, [key]: false }));
+            }
+        })();
+
+        loadInProgressMap.set(key, loadPromise);
+
+        try {
+            return await loadPromise;
+        } finally {
+            loadInProgressMap.delete(key);
+        }
     };
 
     const resetLoadingState = () => {
@@ -220,8 +215,8 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     const resetContentState = () => {
+        resetLoadingState();
         dispatch({ type: "RESET_STATE" });
-        setSpaceStatus(undefined);
     };
 
     const setContentType = async (contentTypeId: string | undefined) => {

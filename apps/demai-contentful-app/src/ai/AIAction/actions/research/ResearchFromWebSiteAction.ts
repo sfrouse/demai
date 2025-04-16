@@ -36,9 +36,16 @@ export class ResearchFromWebSiteAction extends AIAction {
         config: AIActionConfig,
         contentChangeEvent: () => void,
         getContentState: () => ContentState,
+        loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, contentChangeEvent, getContentState, snapshotOverrides);
+        super(
+            config,
+            contentChangeEvent,
+            getContentState,
+            loadProperty,
+            snapshotOverrides,
+        );
 
         this.model = AIModels.gpt4oSearchPreview;
         this.introMessage =
@@ -109,6 +116,7 @@ Keep any summary you come up with to a paragraph or two at most.
                 this.config,
                 this.contentChangeEvent,
                 this.getContentState,
+                this.loadProperty,
                 {
                     response: `
 The research below defines research on this brand. Use the \`update_brand\` tool and update.

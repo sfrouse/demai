@@ -33,7 +33,9 @@ export class AIAction {
     key: string; // Unique key for React lists
     className: string = "AIAction";
     contentChangeEvent: () => void = () => {};
+    isLoading: boolean = false;
     getContentState: () => ContentState;
+    loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void;
 
     // --- UI Setup ----------------------------------------------------------------
     contextContent: (contentState: ContentState) => AIActionContentPrefix =
@@ -142,6 +144,7 @@ export class AIAction {
             runAIResults: this.runAIResults,
             runExeAIArg: this.runExeAIArg,
             runExeAIResults: this.runExeAIResults,
+            isLoading: this.isLoading,
         };
     }
 
@@ -163,14 +166,16 @@ export class AIAction {
 
     constructor(
         config: AIActionConfig,
-        contentChangeEvent: () => void,
+        resetContentState: () => void,
         getContentState: () => ContentState,
+        loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
         this.key = nanoid();
         this.config = config;
-        this.contentChangeEvent = contentChangeEvent;
+        this.contentChangeEvent = resetContentState;
         this.getContentState = getContentState;
+        this.loadProperty = loadProperty;
         this.openAIClient = getOpeAIClient(this.config.openAiApiKey);
         this.designSystemCMPClient = new DesignSystemMCPClient(
             this.config.cma,
@@ -194,7 +199,21 @@ export class AIAction {
         if (snapshotOverrides) {
             this.updateSnapshot(snapshotOverrides);
         }
+
+        this._loadNeededData();
     }
+
+    private async _loadNeededData() {
+        this.updateSnapshot({
+            isLoading: true,
+        });
+        await this.loadNeededData();
+        this.updateSnapshot({
+            isLoading: false,
+        });
+    }
+
+    async loadNeededData() {}
 
     async run(
         addError: (err: AppError) => void,
@@ -215,6 +234,7 @@ export class AIAction {
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ): Promise<AIActionRunResults> {
         this.updateSnapshot(snapshotOverrides);
+        await this._loadNeededData();
         const contentState = this.getContentState();
         const runResults = await runAIAction(
             this,
@@ -243,6 +263,7 @@ export class AIAction {
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ): Promise<AIActionExecuteResults> {
         this.updateSnapshot(snapshotOverrides);
+        await this._loadNeededData();
         const contentState = this.getContentState();
         const exeResults = await runExeAIAction(this, contentState, addError);
         return exeResults;
