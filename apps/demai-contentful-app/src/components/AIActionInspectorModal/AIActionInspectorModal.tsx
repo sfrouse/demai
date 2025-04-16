@@ -1,10 +1,10 @@
-import { Modal } from "@contentful/f36-components";
+import { Button, Modal } from "@contentful/f36-components";
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import AIActionDescription from "../AIActionDescription/AIActionDescription";
 import { AIAction, useAIAction } from "../../ai/AIAction/AIAction";
 import AIActionDescriptionToolbar from "../AIActionDescription/components/AIActionDescriptionToolbar";
 
-const AIActionInspector = () => {
+const AIActionInspectorModalModal = () => {
     const { inspectedAIAction, setInspectedAIAction } = useAIState();
     const aiActionSnapshot = useAIAction(inspectedAIAction);
 
@@ -14,6 +14,7 @@ const AIActionInspector = () => {
         <Modal
             onClose={() => setInspectedAIAction(undefined)}
             isShown={inspectedAIAction !== undefined}
+            size="large"
         >
             {() => (
                 <>
@@ -34,10 +35,26 @@ const AIActionInspector = () => {
                         aiAction={inspectedAIAction}
                         aiActionSnapshot={aiActionSnapshot}
                     />
+                    <Modal.Controls>
+                        <Button
+                            variant="transparent"
+                            size="small"
+                            onClick={() => console.log(inspectedAIAction)}
+                        >
+                            Console
+                        </Button>
+                        <Button
+                            variant="transparent"
+                            size="small"
+                            onClick={() => setInspectedAIAction(undefined)}
+                        >
+                            Done
+                        </Button>
+                    </Modal.Controls>
                 </>
             )}
         </Modal>
     );
 };
 
-export default AIActionInspector;
+export default AIActionInspectorModalModal;

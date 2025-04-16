@@ -13,9 +13,10 @@ import testCPA from "./utils/testCPA";
 import getPreviewAccessKey from "./utils/getPreviewAccessKey";
 import { useError } from "../../contexts/ErrorContext/ErrorContext";
 import AIActionPanel from "../../components/AIActionPanel/AIActionPanel";
-import AIActionInspector from "../../components/AIActionInspector/AIActionInspector";
 import findAndSetAIAction from "./utils/findAndSetAIAction";
 import { AIActionConfig } from "../../ai/AIAction/AIActionTypes";
+import InspectedContentModal from "../../components/InspectedContentModal/InspectedContentModal";
+import AIActionInspectorModalModal from "../../components/AIActionInspectorModal/AIActionInspectorModal";
 
 const Page = () => {
     const sdk = useSDK<PageAppSDK>();
@@ -152,7 +153,8 @@ const Page = () => {
             }}
             alignItems="stretch"
         >
-            <AIActionInspector />
+            <AIActionInspectorModalModal />
+            <InspectedContentModal />
             <Flex
                 style={{
                     position: "absolute",

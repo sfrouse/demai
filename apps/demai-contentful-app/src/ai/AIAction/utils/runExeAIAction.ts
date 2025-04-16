@@ -69,10 +69,13 @@ ${aiAction.response}`,
 
         // RUN
         // console.log(`runExe[start][${aiAction.toolType}]:`, aiArg, tools);
-        aiAction.runExeAIArg = aiArg;
         const result = await openAIChatCompletions(aiArg);
-        aiAction.runExeAIResults = result;
         // console.log(`runExe[end][${aiAction.toolType}]:`, result, tools);
+
+        aiAction.updateSnapshot({
+            runExeAIArg: aiArg,
+            runExeAIResults: result,
+        });
 
         const toolResults: any[] = [];
         if (result.toolCalls) {

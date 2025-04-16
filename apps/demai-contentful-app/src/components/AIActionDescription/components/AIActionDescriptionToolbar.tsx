@@ -1,13 +1,14 @@
-import { Flex } from "@contentful/f36-components";
+import { Flex, IconButton } from "@contentful/f36-components";
 import tokens from "@contentful/f36-tokens";
 import LoadingIcon from "../../Loading/LoadingIcon";
 import { DoneIcon, IconVariant } from "@contentful/f36-icons";
-import Divider from "../../Divider";
 import { AIAction } from "../../../ai/AIAction/AIAction";
 import {
     AIActionPhase,
     AIActionSnapshot,
 } from "../../../ai/AIAction/AIActionTypes";
+import useAIState from "../../../contexts/AIStateContext/useAIState";
+import * as icons from "@contentful/f36-icons";
 
 const AIActionDescriptionToolbar = ({
     aiAction,
@@ -16,6 +17,7 @@ const AIActionDescriptionToolbar = ({
     aiAction: AIAction;
     aiActionSnapshot: AIActionSnapshot;
 }) => {
+    const { setInspectedAIAction } = useAIState();
     let bgColor = aiActionSnapshot.isRunning ? tokens.green100 : tokens.gray100;
     let foreColor = tokens.gray800;
     let iconVariant: IconVariant = "muted";
@@ -52,14 +54,22 @@ const AIActionDescriptionToolbar = ({
                 style={{
                     backgroundColor: bgColor,
                     color: foreColor,
-                    padding: `${tokens.spacingM} ${tokens.spacingL}`,
+                    padding: `${tokens.spacingS} ${tokens.spacingL}`,
                     height: 54,
                 }}
             >
                 {getStats(aiAction, aiActionSnapshot, foreColor, iconVariant)}
                 <div style={{ flex: 1, minWidth: 30 }}></div>
+                <IconButton
+                    size="small"
+                    variant="transparent"
+                    aria-label="Select the date"
+                    icon={<icons.InfoCircleIcon variant={iconVariant} />}
+                    onClick={() => {
+                        setInspectedAIAction(aiAction);
+                    }}
+                />
             </Flex>
-            <Divider style={{ margin: 0 }} />
         </div>
     );
 };

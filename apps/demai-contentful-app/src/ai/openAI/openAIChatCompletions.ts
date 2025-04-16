@@ -1,69 +1,64 @@
 import OpenAI from "openai";
-import {
-  AIModels,
-  OPEN_AI_MAX_TOKENS,
-  OPEN_AI_TEMPERATURE,
-  OPEN_AI_TOP_P,
-} from "./openAIConfig";
+import { AIModels } from "./openAIConfig";
 
 export type OpenAIChatCompletionsProps = {
-  openAIClient: OpenAI;
-  systemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam;
-  userPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam;
-  prevMessages?: OpenAI.Chat.Completions.ChatCompletionMessageParam[];
-  tools?: OpenAI.Chat.Completions.ChatCompletionTool[];
-  tool_choice?: OpenAI.Chat.Completions.ChatCompletionToolChoiceOption;
-  web_search_options?: OpenAI.Chat.Completions.ChatCompletionCreateParams.WebSearchOptions;
-  model?: AIModels;
-  max_tokens?: number;
-  top_p?: number;
-  temperature?: number;
+    openAIClient: OpenAI;
+    systemPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam;
+    userPrompt: OpenAI.Chat.Completions.ChatCompletionMessageParam;
+    prevMessages?: OpenAI.Chat.Completions.ChatCompletionMessageParam[];
+    tools?: OpenAI.Chat.Completions.ChatCompletionTool[];
+    tool_choice?: OpenAI.Chat.Completions.ChatCompletionToolChoiceOption;
+    web_search_options?: OpenAI.Chat.Completions.ChatCompletionCreateParams.WebSearchOptions;
+    model?: AIModels;
+    max_tokens?: number;
+    top_p?: number;
+    temperature?: number;
 };
 
 export default async function openAIChatCompletions(
-  params: OpenAIChatCompletionsProps
+    params: OpenAIChatCompletionsProps,
 ) {
-  const {
-    openAIClient,
-    systemPrompt,
-    userPrompt,
-    prevMessages = [],
-    tools,
-    tool_choice,
-    model = AIModels.gpt4o,
-    max_tokens,
-    top_p,
-    temperature,
-    web_search_options,
-  } = params;
+    const {
+        openAIClient,
+        systemPrompt,
+        userPrompt,
+        prevMessages = [],
+        tools,
+        tool_choice,
+        model = AIModels.gpt4o,
+        max_tokens,
+        top_p,
+        temperature,
+        web_search_options,
+    } = params;
 
-  const body: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming = {
-    model,
-    max_tokens,
-    top_p,
-    temperature,
-    messages: [systemPrompt, ...prevMessages, userPrompt],
-    tools,
-    tool_choice,
-    web_search_options,
-  };
+    const body: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming =
+        {
+            model,
+            max_tokens,
+            top_p,
+            temperature,
+            messages: [systemPrompt, ...prevMessages, userPrompt],
+            tools,
+            tool_choice,
+            web_search_options,
+        };
 
-  const { data: stream } = await openAIClient.chat.completions
-    .create(body)
-    .withResponse();
+    const { data: stream } = await openAIClient.chat.completions
+        .create(body)
+        .withResponse();
 
-  console.log("openAIChatCompletions:", stream);
-  const description =
-    stream.choices && stream.choices.length > 0
-      ? stream.choices[0].message.content
-      : "No description";
-  const toolCalls =
-    stream.choices && stream.choices.length > 0
-      ? stream.choices[0].message.tool_calls
-      : undefined;
+    const description =
+        stream.choices && stream.choices.length > 0
+            ? stream.choices[0].message.content
+            : "No description";
+    const toolCalls =
+        stream.choices && stream.choices.length > 0
+            ? stream.choices[0].message.tool_calls
+            : undefined;
 
-  return {
-    description,
-    toolCalls,
-  };
+    return {
+        description,
+        toolCalls,
+    };
 }

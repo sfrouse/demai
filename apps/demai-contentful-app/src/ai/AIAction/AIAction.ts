@@ -138,6 +138,10 @@ export class AIAction {
             // local global settings
             ignoreContextContent: this.ignoreContextContent,
             autoExecute: this.autoExecute,
+            runAIArg: this.runAIArg,
+            runAIResults: this.runAIResults,
+            runExeAIArg: this.runExeAIArg,
+            runExeAIResults: this.runExeAIResults,
         };
     }
 

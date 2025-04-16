@@ -7,6 +7,9 @@ import AIActionDescriptionTitle from "./components/AIActionDescriptionTitle";
 import { AIActionSnapshot } from "../../ai/AIAction/AIActionTypes";
 import AutoBenchAIAction from "../AIActionAutoBench/components/AutoBenchAIAction";
 import convertMarkdown from "../utils/convertMarkdown/convertMarkdown";
+import { safeJSONStringify } from "../utils/safeJSONStringify";
+import ButtonXs from "../ButtonXs/ButtonXs";
+import useAIState from "../../contexts/AIStateContext/useAIState";
 
 const AIActionDescription = forwardRef<
     HTMLDivElement,
@@ -16,6 +19,7 @@ const AIActionDescription = forwardRef<
     }
 >(({ aiAction, aiActionSnapshot }, ref) => {
     if (!aiAction) return null;
+    const { setInspectedContent } = useAIState();
     const [systemHtml, setSystemHtml] = useState<string>("");
     const [userContentHTML, setUserContentHTML] = useState<string>("");
     const [requestHtml, setRequestHTML] = useState<string>("");
@@ -108,77 +112,96 @@ const AIActionDescription = forwardRef<
                     <span>{aiAction.introMessage}</span>
                 </div>
             </div>
-
-            {aiActionSnapshot.userContent && (
+            {/* USER PROMPT */}
+            <div
+                style={{
+                    padding: `0 ${tokens.spacingL}`,
+                }}
+            >
+                <AIActionDescriptionTitle title="User Prompt" />
+                <span
+                    dangerouslySetInnerHTML={{
+                        __html: aiActionSnapshot.userContent
+                            ? userContentHTML
+                            : "--",
+                    }}
+                ></span>
+            </div>
+            {/* FULL PROMPT */}
+            <div
+                style={{
+                    padding: `0 ${tokens.spacingL}`,
+                }}
+            >
+                <AIActionDescriptionTitle title="Full Prompt" />
                 <div
                     style={{
-                        padding: `0 ${tokens.spacingL}`,
+                        overflow: "hidden",
+                        position: "relative",
                     }}
                 >
-                    <AIActionDescriptionTitle title="User Prompt" />
                     <span
                         dangerouslySetInnerHTML={{
-                            __html: aiActionSnapshot.userContent
-                                ? userContentHTML
+                            __html: aiActionSnapshot.request
+                                ? requestHtml
                                 : "--",
                         }}
                     ></span>
                 </div>
-            )}
-            {aiActionSnapshot.request && (
-                <div
-                    style={{
-                        padding: `0 ${tokens.spacingL}`,
-                    }}
-                >
-                    <AIActionDescriptionTitle title="Full Prompt" />
-                    <div
-                        style={{
-                            overflow: "hidden",
-                            position: "relative",
-                        }}
-                    >
-                        <span
-                            dangerouslySetInnerHTML={{
-                                __html: aiActionSnapshot.request
-                                    ? requestHtml
-                                    : "--",
-                            }}
-                        ></span>
-                    </div>
+            </div>
+            {/* SYSTEM */}
+            <div
+                style={{
+                    padding: `0 ${tokens.spacingL}`,
+                }}
+            >
+                <AIActionDescriptionTitle title="System" />
+                <div>
+                    <span dangerouslySetInnerHTML={{ __html: systemHtml }} />
                 </div>
-            )}
-            {aiActionSnapshot.request && (
-                <>
-                    <div
-                        style={{
-                            padding: `0 ${tokens.spacingL}`,
-                        }}
-                    >
-                        <AIActionDescriptionTitle title="System" />
-                        <div>
-                            <span
-                                dangerouslySetInnerHTML={{ __html: systemHtml }}
-                            />
-                        </div>
-                    </div>
-                    <div
-                        style={{
-                            padding: `0 ${tokens.spacingL}`,
-                        }}
-                    >
-                        <AIActionDescriptionTitle title="Tools" />
-                        <span>{toolsHtml || "none"}</span>
-                    </div>
-                </>
-            )}
+            </div>
+            <div
+                style={{
+                    padding: `0 ${tokens.spacingL}`,
+                }}
+            >
+                <AIActionDescriptionTitle title="Tools" />
+                <span>{toolsHtml || "none"}</span>
+            </div>
+            {/* RESPONSE */}
             {aiActionSnapshot.response && (
                 <div
                     style={{
                         padding: `0 ${tokens.spacingL}`,
                     }}
                 >
-                    <AIActionDescriptionTitle title="Suggestion" />
+                    <Flex flexDirection="row" alignItems="center">
+                        <AIActionDescriptionTitle title="Response" />
+                        <div style={{ flex: 1 }}></div>
+                        <ButtonXs
+                            onClick={() => {
+                                setInspectedContent(
+                                    safeJSONStringify(
+                                        aiActionSnapshot.runAIArg,
+                                    ),
+                                );
+                            }}
+                        >
+                            Args
+                        </ButtonXs>
+                        <ButtonXs
+                            onClick={() => {
+                                console.log("TEST");
+                                setInspectedContent(
+                                    safeJSONStringify(
+                                        aiActionSnapshot.runAIResults,
+                                    ),
+                                );
+                            }}
+                        >
+                            Results
+                        </ButtonXs>
+                    </Flex>
                     <span
                         dangerouslySetInnerHTML={{ __html: responseHtml }}
                     ></span>
@@ -190,7 +213,33 @@ const AIActionDescription = forwardRef<
                         padding: `0 ${tokens.spacingL}`,
                     }}
                 >
-                    <AIActionDescriptionTitle title="Results" />
+                    <Flex flexDirection="row" alignItems="center">
+                        <AIActionDescriptionTitle title="Execution Results" />
+                        <div style={{ flex: 1 }}></div>
+                        <ButtonXs
+                            onClick={() => {
+                                setInspectedContent(
+                                    safeJSONStringify(
+                                        aiActionSnapshot.runExeAIArg,
+                                    ),
+                                );
+                            }}
+                        >
+                            Args
+                        </ButtonXs>
+                        <ButtonXs
+                            onClick={() => {
+                                console.log("TEST", aiActionSnapshot);
+                                setInspectedContent(
+                                    safeJSONStringify(
+                                        aiActionSnapshot.runExeAIResults,
+                                    ),
+                                );
+                            }}
+                        >
+                            Results
+                        </ButtonXs>
+                    </Flex>
                     <span
                         dangerouslySetInnerHTML={{
                             __html: executionResponseHtml,
@@ -198,26 +247,25 @@ const AIActionDescription = forwardRef<
                     ></span>
                 </div>
             )}
-            {aiActionSnapshot.request &&
-                aiActionSnapshot.childActions.length > 0 && (
-                    <Flex
-                        flexDirection="column"
-                        style={{
-                            gap: tokens.spacingXs,
-                            padding: `0 ${tokens.spacingL}`,
-                        }}
-                    >
-                        <AIActionDescriptionTitle title="Actions" />
-                        {aiActionSnapshot.childActions.map((subAIAction) => {
-                            return (
-                                <AutoBenchAIAction
-                                    key={`sub-${subAIAction.key}`}
-                                    aiAction={subAIAction}
-                                />
-                            );
-                        })}
-                    </Flex>
-                )}
+            {aiActionSnapshot.childActions.length > 0 && (
+                <Flex
+                    flexDirection="column"
+                    style={{
+                        gap: tokens.spacingXs,
+                        padding: `0 ${tokens.spacingL}`,
+                    }}
+                >
+                    <AIActionDescriptionTitle title="Actions" />
+                    {aiActionSnapshot.childActions.map((subAIAction) => {
+                        return (
+                            <AutoBenchAIAction
+                                key={`sub-${subAIAction.key}`}
+                                aiAction={subAIAction}
+                            />
+                        );
+                    })}
+                </Flex>
+            )}
             {aiActionSnapshot.errors.length > 0 && (
                 <div
                     style={{

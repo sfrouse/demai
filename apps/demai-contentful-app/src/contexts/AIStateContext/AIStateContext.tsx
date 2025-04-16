@@ -19,6 +19,11 @@ export interface AIStateContextType {
         React.SetStateAction<AIAction | undefined>
     >;
 
+    inspectedContent: string | undefined;
+    setInspectedContent: React.Dispatch<
+        React.SetStateAction<string | undefined>
+    >;
+
     invalidated: number;
     setInvalidated: React.Dispatch<React.SetStateAction<number>>;
     bumpInvalidated: () => void;
@@ -47,6 +52,7 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
     const [invalidated, setInvalidated] = useState<number>(0);
     const bumpInvalidated = () => setInvalidated((prev) => prev + 1);
     const [route, setRoute] = useState<AIStateRoute>();
+    const [inspectedContent, setInspectedContent] = useState<string>();
 
     return (
         <AIStateContext.Provider
@@ -66,6 +72,8 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
                 setAIAction,
                 inspectedAIAction,
                 setInspectedAIAction,
+                inspectedContent,
+                setInspectedContent,
             }}
         >
             {children}
