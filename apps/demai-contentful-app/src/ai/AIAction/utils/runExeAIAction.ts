@@ -68,9 +68,11 @@ ${aiAction.response}`,
         };
 
         // RUN
-        console.log(`runExe[start][${aiAction.toolType}]:`, aiArg, tools);
+        // console.log(`runExe[start][${aiAction.toolType}]:`, aiArg, tools);
+        aiAction.runExeAIArg = aiArg;
         const result = await openAIChatCompletions(aiArg);
-        console.log(`runExe[end][${aiAction.toolType}]:`, result, tools);
+        aiAction.runExeAIResults = result;
+        // console.log(`runExe[end][${aiAction.toolType}]:`, result, tools);
 
         const toolResults: any[] = [];
         if (result.toolCalls) {

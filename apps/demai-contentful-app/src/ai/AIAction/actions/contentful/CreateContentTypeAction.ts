@@ -11,24 +11,6 @@ import {
 } from "../../AIActionTypes";
 import { EditContentTypeAction } from "./EditContentTypeAction";
 
-// function makeVar<T>(fn: (obj: T) => any): string {
-//     const path: string[] = [];
-
-//     const proxy = new Proxy(
-//         {},
-//         {
-//             get(_, prop) {
-//                 path.push(String(prop));
-//                 return proxy;
-//             },
-//         },
-//     );
-
-//     fn(proxy as any);
-//     return `{${path.join(".")}}`;
-// }
-// makeVar<ContentState>((v) => v.research?.fields.description),
-
 export class CreateContentTypeAction extends AIAction {
     static label = "Create Content Types";
 
@@ -184,6 +166,8 @@ ${contentState.research?.fields.products}
                 ),
                 addError,
             );
+
+            this.contentChangeEvent();
             this.updateSnapshot({
                 isRunning: false,
                 phase: AIActionPhase.executed,

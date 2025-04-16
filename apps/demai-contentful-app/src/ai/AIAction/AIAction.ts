@@ -25,6 +25,7 @@ import { processContextContent } from "./utils/processContextContent";
 import { nanoid } from "nanoid";
 import runAIAction from "./utils/runAIAction";
 import runExeAIAction from "./utils/runExeAIAction";
+import { ChatCompletionMessageToolCall } from "openai/resources/index.mjs";
 
 export class AIAction {
     static label: string = "Open";
@@ -78,7 +79,7 @@ export class AIAction {
     model: AIModels = AIModels.gpt4o;
     openAIClient: OpenAI;
 
-    // TOOL CONFIG
+    // --- TOOL CONFIG -------------------------------------------------------------
     toolType:
         | "DemAIDesignSystem"
         | "Contentful"
@@ -91,6 +92,22 @@ export class AIAction {
     designSystemCMPClient: DesignSystemMCPClient | undefined;
     researchMCP: ResearchMCP | undefined;
     config: AIActionConfig;
+
+    // --- AI RESULTS -------------------------------------------------------------
+    runAIArg: {} | undefined;
+    runAIResults:
+        | {
+              description: string | null;
+              toolCalls: ChatCompletionMessageToolCall[] | undefined;
+          }
+        | undefined;
+    runExeAIArg: {} | undefined;
+    runExeAIResults:
+        | {
+              description: string | null;
+              toolCalls: ChatCompletionMessageToolCall[] | undefined;
+          }
+        | undefined;
 
     // ======= useSyncExternalStore ==========
     private listeners = new Set<() => void>();
@@ -271,7 +288,7 @@ export class AIAction {
                 addError,
                 snapshotOverrides,
             );
-            // await new Promise((resolve) => setTimeout(resolve, 2000));
+            this.contentChangeEvent();
         }
     }
 

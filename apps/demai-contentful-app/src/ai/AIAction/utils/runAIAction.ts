@@ -64,9 +64,11 @@ export default async function runAIAction(
         }
 
         // RUN
-        console.log(`run[start][${aiAction.toolType}]:`, aiArg, tools);
+        // console.log(`run[start][${aiAction.toolType}]:`, aiArg, tools);
+        aiAction.runAIArg = aiArg;
         const aiResults = await openAIChatCompletions(aiArg);
-        console.log(`run[end][${aiAction.toolType}]:`, aiResults, tools);
+        aiAction.runAIResults = aiResults;
+        // console.log(`run[end][${aiAction.toolType}]:`, aiResults, tools);
 
         aiAction.updateSnapshot({
             runTime: Date.now() - aiAction.startRunTime!,

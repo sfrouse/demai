@@ -1,15 +1,14 @@
-import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
-import { AIAction } from "../../../AIAction";
+import { AppError } from "../../../contexts/ErrorContext/ErrorContext";
+import { AIAction } from "../AIAction";
 import {
     AIActionExecuteResults,
     AIActionPhase,
     AIActionRunResults,
-} from "../../../AIActionTypes";
-import { CreateContentTypeAction } from "../CreateContentTypeAction";
-import { DeleteGeneratedContentAction } from "../DeleteGeneratedContentAction";
-import { ContentfulEntryPerCTypeAction } from "./ContentfulEntryPerCTypeAction";
+} from "../AIActionTypes";
+import { ContentfulGroupAction } from "./contentful/groups/ContentfulGroupAction";
+import { ResearchGroupAction } from "./research/groups/ResearchGroupAction";
 
-export class ContentfulGroupAction extends AIAction {
+export class MoneyAction extends AIAction {
     static label = "Contentful Group";
 
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {
@@ -26,24 +25,12 @@ export class ContentfulGroupAction extends AIAction {
         });
 
         this.addChildActions([
-            new DeleteGeneratedContentAction(
+            new ResearchGroupAction(
                 this.config,
                 this.contentChangeEvent,
                 this.getContentState,
             ),
-            new CreateContentTypeAction(
-                this.config,
-                this.contentChangeEvent,
-                this.getContentState,
-                {
-                    contextContentSelections: {
-                        [CreateContentTypeAction.ACTION_CREATE_CTYPES_ID]:
-                            CreateContentTypeAction
-                                .ACTION_CREATE_CTYPES_OPTIONS[3],
-                    },
-                },
-            ),
-            new ContentfulEntryPerCTypeAction(
+            new ContentfulGroupAction(
                 this.config,
                 this.contentChangeEvent,
                 this.getContentState,

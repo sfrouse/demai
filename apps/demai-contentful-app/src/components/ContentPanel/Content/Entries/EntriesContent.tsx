@@ -8,7 +8,7 @@ import DmaiContentRow from "../../../DmaiContentRow/DmaiContentRow";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
 import getEntryStatus from "../../../utils/entryStatus";
-import LoadingPage from "../../../Loading/LoadingPage";
+import scrollBarStyles from "../../../utils/ScrollBarMinimal.module.css";
 import Divider from "../../../Divider";
 import { Entry } from "contentful-management";
 import LoadingStyles from "../../../Loading/LoadingStyles";
@@ -134,6 +134,7 @@ const EntriesContent = () => {
                     <Flex
                         flexDirection="column"
                         alignItems="center"
+                        className={scrollBarStyles["scrollbar-minimal"]}
                         style={{
                             overflowY: "auto",
                             flex: 1,

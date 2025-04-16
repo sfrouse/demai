@@ -1,16 +1,16 @@
+import getContentTypes from "../../../../../contexts/ContentStateContext/services/getContentTypes";
 import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
 import { AIAction } from "../../../AIAction";
 import {
     AIActionExecuteResults,
     AIActionPhase,
     AIActionRunResults,
+    AIActionSnapshot,
 } from "../../../AIActionTypes";
-import { CreateContentTypeAction } from "../CreateContentTypeAction";
-import { DeleteGeneratedContentAction } from "../DeleteGeneratedContentAction";
-import { ContentfulEntryPerCTypeAction } from "./ContentfulEntryPerCTypeAction";
+import { CreateEntryAction } from "../CreateEntryAction";
 
-export class ContentfulGroupAction extends AIAction {
-    static label = "Contentful Group";
+export class ContentfulEntryPerCTypeAction extends AIAction {
+    static label = "Contentful Entry Per CType Group";
 
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {
         const results: AIActionRunResults = {
@@ -25,30 +25,30 @@ export class ContentfulGroupAction extends AIAction {
             startExecutionRunTime: Date.now(),
         });
 
-        this.addChildActions([
-            new DeleteGeneratedContentAction(
-                this.config,
-                this.contentChangeEvent,
-                this.getContentState,
-            ),
-            new CreateContentTypeAction(
-                this.config,
-                this.contentChangeEvent,
-                this.getContentState,
-                {
-                    contextContentSelections: {
-                        [CreateContentTypeAction.ACTION_CREATE_CTYPES_ID]:
-                            CreateContentTypeAction
-                                .ACTION_CREATE_CTYPES_OPTIONS[3],
-                    },
-                },
-            ),
-            new ContentfulEntryPerCTypeAction(
-                this.config,
-                this.contentChangeEvent,
-                this.getContentState,
-            ),
-        ]);
+        // need the latest
+        const ctypes = await getContentTypes(this.config); // this.getContentState().contentTypes;
+        let children: AIAction[] = [];
+
+        if (ctypes) {
+            children = ctypes.map(
+                (ctype) =>
+                    new CreateEntryAction(
+                        this.config,
+                        this.contentChangeEvent,
+                        this.getContentState,
+                        {
+                            contextContentSelections: {
+                                [CreateEntryAction.CONTEXT_NUMBER_OF_TYPES]:
+                                    "3",
+                                [CreateEntryAction.CONTEXT_CTYPE_ID]:
+                                    ctype.sys.id,
+                            },
+                        },
+                    ),
+            );
+        }
+
+        this.addChildActions(children);
 
         await this.runAllChildren(addError, {
             ignoreContextContent: false,

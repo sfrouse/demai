@@ -144,6 +144,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
                             spaceId: sdk.ids.space,
                             environmentId: sdk.ids.environment,
                             openAiApiKey: params.openai,
+                            cpa: "",
                         });
                     } catch (err) {
                         addError({

@@ -1,6 +1,10 @@
 import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
 import { AIAction } from "../../../AIAction";
-import { AIActionPhase, AIActionRunResults } from "../../../AIActionTypes";
+import {
+    AIActionExecuteResults,
+    AIActionPhase,
+    AIActionRunResults,
+} from "../../../AIActionTypes";
 import { DeleteGeneratedContentAction } from "../DeleteGeneratedContentAction";
 import { DeleteSystemContentAction } from "../DeleteSystemContentAction";
 
@@ -45,5 +49,22 @@ export class DeleteAllContentGroupAction extends AIAction {
             executeRunTime: Date.now() - this.startExecutionRunTime!,
         });
         return results;
+    }
+
+    async runAnswerOrDescribe(
+        addError: (err: AppError) => void,
+    ): Promise<AIActionRunResults> {
+        return this.run(addError);
+    }
+
+    async runExe(
+        addError: (err: AppError) => void,
+    ): Promise<AIActionExecuteResults> {
+        const runResults = await this.run(addError);
+        return {
+            ...runResults,
+            toolCalls: [],
+            toolResults: [],
+        };
     }
 }

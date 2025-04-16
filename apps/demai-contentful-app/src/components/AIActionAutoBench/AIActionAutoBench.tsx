@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import ContentPanelHeader from "../ContentPanel/ContentPanelHeader";
 import { Button, Flex, Select } from "@contentful/f36-components";
 import * as icons from "@contentful/f36-icons";
@@ -16,7 +16,9 @@ import { DeleteSystemContentAction } from "../../ai/AIAction/actions/contentful/
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { DeleteAllContentGroupAction } from "../../ai/AIAction/actions/contentful/groups/DeleteAllContentGroupAction";
-import { NAVIGATION, PromptAreas } from "../MainNav";
+import { NAVIGATION } from "../MainNav";
+import { MoneyAction } from "../../ai/AIAction/actions/MoneyAction";
+import runGroup from "./utils/runGroup";
 
 const AIActionAutoBench = ({
     showAutoBench,
@@ -89,7 +91,7 @@ const AIActionAutoBench = ({
                         isLoading={isLoading}
                         onClick={async () => {
                             setIsLoading(true);
-                            const newLocalAIAction = new ResearchGroupAction(
+                            const newLocalAIAction = new MoneyAction(
                                 aiActionConfig,
                                 bumpInvalidated,
                                 getContentState,
@@ -101,6 +103,23 @@ const AIActionAutoBench = ({
                     >
                         Show Me the Money
                     </Button>
+                    {/* <Button
+                        style={{ minWidth: "100%" }}
+                        onClick={() => {
+                            setIsLoading(true);
+                            const newLocalAIAction =
+                                new ContentfulEntryPerCTypeAction(
+                                    aiActionConfig,
+                                    bumpInvalidated,
+                                    getContentState,
+                                );
+                            setLocalAIAction(newLocalAIAction);
+                            newLocalAIAction.run(addError);
+                            setIsLoading(false);
+                        }}
+                    >
+                        Run Test
+                    </Button> */}
                     <Flex
                         flexDirection="row"
                         style={{
@@ -150,85 +169,18 @@ const AIActionAutoBench = ({
                             isLoading={isLoading}
                             size="small"
                             onClick={async () => {
-                                let newLocalAIActionConstructor;
-                                let notifyFirst = false;
-                                let validateDemAI = false;
-                                switch (groupId) {
-                                    case "research":
-                                        newLocalAIActionConstructor =
-                                            ResearchGroupAction;
-                                        setRoute({
-                                            navigation: "research",
-                                            aiActions:
-                                                NAVIGATION["research"]
-                                                    .aiActions,
-                                            aiActionFocus: 0,
-                                        });
-                                        break;
-                                    case "contentful":
-                                        notifyFirst = true;
-                                        newLocalAIActionConstructor =
-                                            ContentfulGroupAction;
-                                        setRoute({
-                                            navigation: "content_model",
-                                            aiActions:
-                                                NAVIGATION["content_model"]
-                                                    .aiActions,
-                                            aiActionFocus: 0,
-                                        });
-                                        break;
-                                    case "deleteGenerated":
-                                        notifyFirst = true;
-                                        newLocalAIActionConstructor =
-                                            DeleteGeneratedContentAction;
-                                        break;
-                                    case "deleteSystem":
-                                        notifyFirst = true;
-                                        validateDemAI = true;
-                                        newLocalAIActionConstructor =
-                                            DeleteSystemContentAction;
-                                        break;
-                                    case "deleteAll":
-                                        notifyFirst = true;
-                                        validateDemAI = true;
-                                        newLocalAIActionConstructor =
-                                            DeleteAllContentGroupAction;
-                                        break;
-                                }
-
-                                if (newLocalAIActionConstructor) {
-                                    const newLocalAIAction =
-                                        new newLocalAIActionConstructor(
-                                            aiActionConfig,
-                                            bumpInvalidated,
-                                            getContentState,
-                                        );
-                                    if (notifyFirst) {
-                                        const answer =
-                                            await sdk.dialogs.openConfirm({
-                                                title: "Delete Confirmation",
-                                                message:
-                                                    "This will delete content, are you sure?",
-                                            });
-                                        if (answer === true) {
-                                            setIsLoading(true);
-                                            setLocalAIAction(newLocalAIAction);
-                                            await newLocalAIAction.run(
-                                                addError,
-                                            );
-                                            if (validateDemAI) {
-                                                await validateSpace();
-                                                bumpInvalidated();
-                                            }
-                                            setIsLoading(false);
-                                        }
-                                    } else {
-                                        setIsLoading(true);
-                                        setLocalAIAction(newLocalAIAction);
-                                        await newLocalAIAction.run(addError);
-                                        setIsLoading(false);
-                                    }
-                                }
+                                await runGroup(
+                                    groupId,
+                                    setRoute,
+                                    aiActionConfig,
+                                    bumpInvalidated,
+                                    getContentState,
+                                    setIsLoading,
+                                    setLocalAIAction,
+                                    validateSpace,
+                                    addError,
+                                    sdk,
+                                );
                             }}
                         >
                             Run Group
@@ -239,30 +191,62 @@ const AIActionAutoBench = ({
                         className={scrollBarStyles["scrollbar-minimal"]}
                         style={{
                             flex: 1,
-                            overflowY: "auto",
-                            gap: tokens.spacing2Xs,
-                            padding: `${tokens.spacingXs}`,
-                            backgroundColor: tokens.gray100,
-                            borderRadius: tokens.borderRadiusSmall,
+                            position: "relative",
                         }}
                     >
-                        {localAIAction &&
-                            localAIActionSnapshot?.childActions.length ===
-                                0 && (
-                                <AutoBenchAIAction
-                                    key={localAIAction.key}
-                                    aiAction={localAIAction}
-                                />
-                            )}
-                        {localAIActionSnapshot &&
-                            localAIActionSnapshot.childActions.map(
-                                (childAction) => (
+                        <Flex
+                            flexDirection="column"
+                            className={scrollBarStyles["scrollbar-minimal"]}
+                            style={{
+                                position: "absolute",
+                                top: 0,
+                                bottom: 0,
+                                right: 0,
+                                left: 0,
+                                overflowY: "auto",
+                                gap: tokens.spacing2Xs,
+                                padding: `${tokens.spacingXs}`,
+                                backgroundColor: tokens.gray100,
+                                borderRadius: tokens.borderRadiusSmall,
+                            }}
+                        >
+                            {localAIAction &&
+                                localAIActionSnapshot?.childActions.length ===
+                                    0 && (
                                     <AutoBenchAIAction
-                                        key={childAction.key}
-                                        aiAction={childAction}
+                                        key={localAIAction.key}
+                                        aiAction={localAIAction}
                                     />
-                                ),
-                            )}
+                                )}
+                            {localAIActionSnapshot &&
+                                localAIActionSnapshot.childActions.map(
+                                    (childAction) => {
+                                        return (
+                                            <>
+                                                {childAction.childActions
+                                                    .length > 0 ? (
+                                                    childAction.childActions.map(
+                                                        (nestedChild) => (
+                                                            <AutoBenchAIAction
+                                                                key={
+                                                                    nestedChild.key
+                                                                }
+                                                                aiAction={
+                                                                    nestedChild
+                                                                }
+                                                            />
+                                                        ),
+                                                    )
+                                                ) : (
+                                                    <AutoBenchAIAction
+                                                        aiAction={childAction}
+                                                    />
+                                                )}
+                                            </>
+                                        );
+                                    },
+                                )}
+                        </Flex>
                     </Flex>
                     <Flex flexDirection="row" justifyContent="flex-end">
                         <Button
