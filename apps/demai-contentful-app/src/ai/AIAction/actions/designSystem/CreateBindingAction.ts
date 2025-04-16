@@ -1,19 +1,21 @@
 import { ContentType } from "contentful-management";
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { CREATE_BINDING_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/createBinding";
-import contentTypeToAI from "../../../AIState/utils/contentTypeToAI";
-import cDefToAI from "../../../AIState/utils/cDefToAI";
 import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 import { AIAction } from "../../AIAction";
+import cDefToAI from "../../utils/cDefToAI";
+import contentTypeToAI from "../../utils/contentTypeToAI";
 
 export class CreateBindingAction extends AIAction {
     static label = "Create Bindings";
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, snapshotOverrides);
+        super(config, contentChangeEvent, getContentState, snapshotOverrides);
 
         this.system = {
             role: "system",

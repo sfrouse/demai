@@ -10,9 +10,11 @@ export class SaveBrandColorsAction extends AIAction {
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, snapshotOverrides);
+        super(config, contentChangeEvent, getContentState, snapshotOverrides);
 
         this.model = AIModels.gpt4o;
         this.introMessage =

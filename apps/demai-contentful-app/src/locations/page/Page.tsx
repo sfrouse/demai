@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Flex, Heading, Modal } from "@contentful/f36-components";
+import { Flex, Heading } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { AppInstallationParameters } from "../config/ConfigScreen";
 import tokens from "@contentful/f36-tokens";
 import MainNav, { NAVIGATION } from "../../components/MainNav";
 import ContentPanel from "../../components/ContentPanel/ContentPanel";
-import { AIStateConfig } from "../../ai/AIState/AIStateTypes";
 import { useContentStateSession } from "../../contexts/ContentStateContext/ContentStateContext";
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import LoadingIcon from "../../components/Loading/LoadingIcon";
@@ -15,22 +14,35 @@ import getPreviewAccessKey from "./utils/getPreviewAccessKey";
 import { useError } from "../../contexts/ErrorContext/ErrorContext";
 import AIActionPanel from "../../components/AIActionPanel/AIActionPanel";
 import AIActionInspector from "../../components/AIActionInspector/AIActionInspector";
+import findAndSetAIAction from "./utils/findAndSetAIAction";
+import { AIActionConfig } from "../../ai/AIAction/AIActionTypes";
 
 const Page = () => {
     const sdk = useSDK<PageAppSDK>();
-    const { spaceStatus, validateSpace, setCPA } = useContentStateSession();
+    const { spaceStatus, validateSpace, setCPA, getContentState } =
+        useContentStateSession();
     const { addError, errors } = useError();
-    const { setAIStateConfig, setRoute, route, findAndSetAIAction } =
-        useAIState();
+    const {
+        setAIActionConfig,
+        aiActionConfig,
+        setRoute,
+        setAIAction,
+        route,
+        bumpInvalidated,
+    } = useAIState();
     const [configReady, setConfigReady] = useState<boolean>(false);
 
     // MAIN AISTATE MANEGEMENT
     useEffect(() => {
-        if (route) {
+        if (route && aiActionConfig) {
             if (route.aiActions.length > 0) {
-                const newAIActionConstructor =
-                    route.aiActions[route.aiActionFocus || 0];
-                findAndSetAIAction(newAIActionConstructor, route);
+                findAndSetAIAction(
+                    aiActionConfig,
+                    route,
+                    setAIAction,
+                    bumpInvalidated,
+                    getContentState,
+                );
             }
         }
     }, [route]);
@@ -94,14 +106,14 @@ const Page = () => {
                 }
 
                 // Build and Save Config...pass on to AI State Context
-                const newAIConfig: AIStateConfig = {
+                const newAIConfig: AIActionConfig = {
                     cma: params.cma,
                     openAiApiKey: params.openai,
                     spaceId: sdk.ids.space,
                     environmentId: sdk.ids.environment,
                     cpa: cpaResult,
                 };
-                setAIStateConfig(newAIConfig);
+                setAIActionConfig(newAIConfig);
                 validateSpace();
                 setRoute({
                     navigation: "prospect",

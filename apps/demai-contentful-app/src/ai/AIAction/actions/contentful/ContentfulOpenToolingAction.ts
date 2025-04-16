@@ -1,3 +1,4 @@
+import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { AIAction } from "../../AIAction";
 import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 
@@ -6,9 +7,11 @@ export class ContentfulOpenToolingAction extends AIAction {
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, snapshotOverrides);
+        super(config, contentChangeEvent, getContentState, snapshotOverrides);
 
         this.className = "ContentfulOpenToolingAction";
         this.system = {

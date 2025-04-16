@@ -93,6 +93,7 @@ ${aiAction.response}`,
                         JSON.parse(processedToolCall.function.arguments),
                     );
                     toolResults.push(exeResult);
+                    aiAction.contentChangeEvent();
                 } catch (err) {
                     addError({
                         service: "AI/MCP Tool Execution",
@@ -136,7 +137,6 @@ ${aiAction.response}`,
             }`,
             errors: [],
         });
-        aiAction.contentChangeEvent();
         return {
             success: true,
             result: aiAction.executionResponse,

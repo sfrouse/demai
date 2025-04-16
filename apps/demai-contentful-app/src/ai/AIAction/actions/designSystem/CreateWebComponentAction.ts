@@ -8,9 +8,11 @@ export class CreateWebComponentAction extends AIAction {
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, snapshotOverrides);
+        super(config, contentChangeEvent, getContentState, snapshotOverrides);
 
         this.system = {
             role: "system",

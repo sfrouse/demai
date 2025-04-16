@@ -1,8 +1,8 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
-import cDefToAI from "../../../AIState/utils/cDefToAI";
 import { UPDATE_COMPONENT_DEFINITION_TOOL_NAME } from "../../../mcp/designSystemMCP/tools/updateComponentDefinition/updateComponentDefinition.tool";
 import { AIAction } from "../../AIAction";
 import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
+import cDefToAI from "../../utils/cDefToAI";
 
 const EDIT_COMP_ACTION = "compAction";
 const EDIT_COMP_ACTION_DEFITION = "Component Definition";
@@ -14,9 +14,11 @@ export class EditComponentAction extends AIAction {
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, snapshotOverrides);
+        super(config, contentChangeEvent, getContentState, snapshotOverrides);
 
         this.introMessage =
             "Let's edit this component definition, what would you like to do?";

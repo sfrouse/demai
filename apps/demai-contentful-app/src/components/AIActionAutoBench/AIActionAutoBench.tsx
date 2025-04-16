@@ -11,31 +11,53 @@ import { useError } from "../../contexts/ErrorContext/ErrorContext";
 import AutoBenchAIAction from "./components/AutoBenchAIAction";
 import scrollBarStyles from "../utils/ScrollBarMinimal.module.css";
 import { ContentfulGroupAction } from "../../ai/AIAction/actions/contentful/groups/ContentfulGroupAction";
+import { DeleteGeneratedContentAction } from "../../ai/AIAction/actions/contentful/DeleteGeneratedContentAction";
+import { DeleteSystemContentAction } from "../../ai/AIAction/actions/contentful/DeleteSystemContentAction";
+import { useSDK } from "@contentful/react-apps-toolkit";
+import { PageAppSDK } from "@contentful/app-sdk";
+import { DeleteAllContentGroupAction } from "../../ai/AIAction/actions/contentful/groups/DeleteAllContentGroupAction";
+import { NAVIGATION, PromptAreas } from "../MainNav";
 
 const AIActionAutoBench = ({
+    showAutoBench,
     setShowWorkBench,
 }: {
+    showAutoBench: boolean;
     setShowWorkBench: Dispatch<SetStateAction<boolean>>;
 }) => {
-    const { contentState } = useContentStateSession();
-    const { aiStateConfig, setInvalidated } = useAIState();
+    const sdk = useSDK<PageAppSDK>();
+    const { getContentState, validateSpace } = useContentStateSession();
+    const { aiActionConfig, bumpInvalidated, setRoute } = useAIState();
+    const [localAIAction, setLocalAIAction] = useState<AIAction>();
     const { addError } = useError();
-
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [groupId, setGroupId] = useState<string>("research");
-    const [localAIAction, setLocalAIAction] = useState<AIAction | undefined>();
     const localAIActionSnapshot = useAIAction(localAIAction);
 
-    if (!aiStateConfig) return null;
+    if (!aiActionConfig) return null;
 
     return (
-        <>
+        <Flex
+            flexDirection="column"
+            style={{
+                display: showAutoBench ? "flex" : "none",
+                backgroundColor: tokens.colorWhite,
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                zIndex: tokens.zIndexDefault,
+            }}
+        >
             <ContentPanelHeader title="AutoBench">
                 <Button
                     startIcon={<icons.WorkflowsIcon />}
                     variant="transparent"
                     size="small"
-                    onClick={() => setShowWorkBench((prev) => !prev)}
+                    onClick={() => {
+                        setShowWorkBench((prev) => !prev);
+                    }}
                 >
                     Workbench
                 </Button>
@@ -68,12 +90,12 @@ const AIActionAutoBench = ({
                         onClick={async () => {
                             setIsLoading(true);
                             const newLocalAIAction = new ResearchGroupAction(
-                                aiStateConfig,
+                                aiActionConfig,
+                                bumpInvalidated,
+                                getContentState,
                             );
                             setLocalAIAction(newLocalAIAction);
-                            newLocalAIAction.contentChangeEvent = () =>
-                                setInvalidated((prev) => prev + 1);
-                            newLocalAIAction.run(contentState, addError);
+                            newLocalAIAction.run(addError);
                             setIsLoading(false);
                         }}
                     >
@@ -112,6 +134,15 @@ const AIActionAutoBench = ({
                                 <Select.Option value="layouts">
                                     Layouts Group
                                 </Select.Option>
+                                <Select.Option value="deleteGenerated">
+                                    Delete DemAI Generated Content
+                                </Select.Option>
+                                <Select.Option value="deleteSystem">
+                                    Delete DemAI System Content
+                                </Select.Option>
+                                <Select.Option value="deleteAll">
+                                    Delete All DemAI Content
+                                </Select.Option>
                             </Select>
                         </Flex>
                         <Button
@@ -119,28 +150,85 @@ const AIActionAutoBench = ({
                             isLoading={isLoading}
                             size="small"
                             onClick={async () => {
-                                setIsLoading(true);
-                                let newLocalAIAction;
-                                if (groupId === "research") {
-                                    newLocalAIAction = new ResearchGroupAction(
-                                        aiStateConfig,
-                                    );
-                                } else if (groupId === "contentful") {
-                                    newLocalAIAction =
-                                        new ContentfulGroupAction(
-                                            aiStateConfig,
+                                let newLocalAIActionConstructor;
+                                let notifyFirst = false;
+                                let validateDemAI = false;
+                                switch (groupId) {
+                                    case "research":
+                                        newLocalAIActionConstructor =
+                                            ResearchGroupAction;
+                                        setRoute({
+                                            navigation: "research",
+                                            aiActions:
+                                                NAVIGATION["research"]
+                                                    .aiActions,
+                                            aiActionFocus: 0,
+                                        });
+                                        break;
+                                    case "contentful":
+                                        notifyFirst = true;
+                                        newLocalAIActionConstructor =
+                                            ContentfulGroupAction;
+                                        setRoute({
+                                            navigation: "content_model",
+                                            aiActions:
+                                                NAVIGATION["content_model"]
+                                                    .aiActions,
+                                            aiActionFocus: 0,
+                                        });
+                                        break;
+                                    case "deleteGenerated":
+                                        notifyFirst = true;
+                                        newLocalAIActionConstructor =
+                                            DeleteGeneratedContentAction;
+                                        break;
+                                    case "deleteSystem":
+                                        notifyFirst = true;
+                                        validateDemAI = true;
+                                        newLocalAIActionConstructor =
+                                            DeleteSystemContentAction;
+                                        break;
+                                    case "deleteAll":
+                                        notifyFirst = true;
+                                        validateDemAI = true;
+                                        newLocalAIActionConstructor =
+                                            DeleteAllContentGroupAction;
+                                        break;
+                                }
+
+                                if (newLocalAIActionConstructor) {
+                                    const newLocalAIAction =
+                                        new newLocalAIActionConstructor(
+                                            aiActionConfig,
+                                            bumpInvalidated,
+                                            getContentState,
                                         );
+                                    if (notifyFirst) {
+                                        const answer =
+                                            await sdk.dialogs.openConfirm({
+                                                title: "Delete Confirmation",
+                                                message:
+                                                    "This will delete content, are you sure?",
+                                            });
+                                        if (answer === true) {
+                                            setIsLoading(true);
+                                            setLocalAIAction(newLocalAIAction);
+                                            await newLocalAIAction.run(
+                                                addError,
+                                            );
+                                            if (validateDemAI) {
+                                                await validateSpace();
+                                                bumpInvalidated();
+                                            }
+                                            setIsLoading(false);
+                                        }
+                                    } else {
+                                        setIsLoading(true);
+                                        setLocalAIAction(newLocalAIAction);
+                                        await newLocalAIAction.run(addError);
+                                        setIsLoading(false);
+                                    }
                                 }
-                                if (newLocalAIAction) {
-                                    setLocalAIAction(newLocalAIAction);
-                                    newLocalAIAction.contentChangeEvent = () =>
-                                        setInvalidated((prev) => prev + 1);
-                                    newLocalAIAction.run(
-                                        contentState,
-                                        addError,
-                                    );
-                                }
-                                setIsLoading(false);
                             }}
                         >
                             Run Group
@@ -153,9 +241,19 @@ const AIActionAutoBench = ({
                             flex: 1,
                             overflowY: "auto",
                             gap: tokens.spacing2Xs,
-                            padding: `${tokens.spacingS} 0`,
+                            padding: `${tokens.spacingXs}`,
+                            backgroundColor: tokens.gray100,
+                            borderRadius: tokens.borderRadiusSmall,
                         }}
                     >
+                        {localAIAction &&
+                            localAIActionSnapshot?.childActions.length ===
+                                0 && (
+                                <AutoBenchAIAction
+                                    key={localAIAction.key}
+                                    aiAction={localAIAction}
+                                />
+                            )}
                         {localAIActionSnapshot &&
                             localAIActionSnapshot.childActions.map(
                                 (childAction) => (
@@ -178,7 +276,7 @@ const AIActionAutoBench = ({
                     </Flex>
                 </Flex>
             </Flex>
-        </>
+        </Flex>
     );
 };
 

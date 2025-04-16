@@ -1,0 +1,6 @@
+
+
+
+.editableResearchField p + p {
+    margin-top: var( --spacing-s );
+}

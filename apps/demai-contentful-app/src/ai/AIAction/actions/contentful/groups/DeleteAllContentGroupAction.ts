@@ -1,11 +1,11 @@
 import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
 import { AIAction } from "../../../AIAction";
 import { AIActionPhase, AIActionRunResults } from "../../../AIActionTypes";
-import { CreateContentTypeAction } from "../CreateContentTypeAction";
 import { DeleteGeneratedContentAction } from "../DeleteGeneratedContentAction";
+import { DeleteSystemContentAction } from "../DeleteSystemContentAction";
 
-export class ContentfulGroupAction extends AIAction {
-    static label = "Contentful Group";
+export class DeleteAllContentGroupAction extends AIAction {
+    static label = "Delete All Content";
 
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {
         const results: AIActionRunResults = {
@@ -26,23 +26,11 @@ export class ContentfulGroupAction extends AIAction {
                 this.contentChangeEvent,
                 this.getContentState,
             ),
-            new CreateContentTypeAction(
+            new DeleteSystemContentAction(
                 this.config,
                 this.contentChangeEvent,
                 this.getContentState,
-                {
-                    contextContentSelections: {
-                        [CreateContentTypeAction.ACTION_CREATE_CTYPES_ID]:
-                            CreateContentTypeAction
-                                .ACTION_CREATE_CTYPES_OPTIONS[3],
-                    },
-                },
             ),
-            // new CreateEntryAction(this.config, {
-            //     contextContentSelections: {
-            //         [CreateEntryAction.CONTEXT_NUMBER_OF_TYPES]: "4",
-            //     },
-            // }),
         ]);
 
         await this.runAllChildren(addError, {

@@ -1,7 +1,7 @@
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
-import contentTypeToAI from "../../../AIState/utils/contentTypeToAI";
 import { AIAction } from "../../AIAction";
 import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
+import contentTypeToAI from "../../utils/contentTypeToAI";
 
 export class CreateEntryAction extends AIAction {
     static label = "Create Entries";
@@ -21,9 +21,11 @@ export class CreateEntryAction extends AIAction {
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, snapshotOverrides);
+        super(config, contentChangeEvent, getContentState, snapshotOverrides);
 
         this.introMessage =
             "Let’s create some entries, what would you like to do?";

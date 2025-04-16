@@ -117,7 +117,7 @@ const AIActionEditor = () => {
                     <Button
                         startIcon={<icons.StarIcon />}
                         onClick={() =>
-                            aiAction?.run(contentState, addError, {
+                            aiAction?.run(addError, {
                                 ignoreContextContent,
                                 autoExecute,
                             })
@@ -142,7 +142,7 @@ const AIActionEditor = () => {
                     aiAction?.reset();
                 }}
                 onConfirm={async () => {
-                    await aiAction?.run(contentState, addError, {
+                    await aiAction?.run(addError, {
                         ignoreContextContent,
                     });
                 }}

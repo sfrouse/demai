@@ -25,9 +25,6 @@ import { processContextContent } from "./utils/processContextContent";
 import { nanoid } from "nanoid";
 import runAIAction from "./utils/runAIAction";
 import runExeAIAction from "./utils/runExeAIAction";
-import { AIActionConstructor } from "../../contexts/AIStateContext/AIStateRouting";
-import runExeChildAction from "./utils/runExeChildAction";
-import runChildAction from "./utils/runChildAction";
 
 export class AIAction {
     static label: string = "Open";
@@ -35,6 +32,7 @@ export class AIAction {
     key: string; // Unique key for React lists
     className: string = "AIAction";
     contentChangeEvent: () => void = () => {};
+    getContentState: () => ContentState;
 
     // --- UI Setup ----------------------------------------------------------------
     contextContent: (contentState: ContentState) => AIActionContentPrefix =
@@ -144,10 +142,14 @@ export class AIAction {
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
         this.key = nanoid();
         this.config = config;
+        this.contentChangeEvent = contentChangeEvent;
+        this.getContentState = getContentState;
         this.openAIClient = getOpeAIClient(this.config.openAiApiKey);
         this.designSystemCMPClient = new DesignSystemMCPClient(
             this.config.cma,
@@ -174,7 +176,6 @@ export class AIAction {
     }
 
     async run(
-        contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
@@ -182,22 +183,18 @@ export class AIAction {
             // forceExecution === true ||
             this.phase === AIActionPhase.describing
         ) {
-            await this.runExe(contentState, addError);
+            return this.runExe(addError);
         } else {
-            await this.runAnswerOrDescribe(
-                contentState,
-                addError,
-                snapshotOverrides,
-            );
+            return this.runAnswerOrDescribe(addError, snapshotOverrides);
         }
     }
 
     async runAnswerOrDescribe(
-        contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ): Promise<AIActionRunResults> {
         this.updateSnapshot(snapshotOverrides);
+        const contentState = this.getContentState();
         const runResults = await runAIAction(
             this,
             contentState,
@@ -212,7 +209,7 @@ export class AIAction {
                         contentState,
                     ),
                 });
-                const runExeResults = await this.runExe(contentState, addError);
+                const runExeResults = await this.runExe(addError);
                 return runExeResults;
             }
             return runResults;
@@ -221,11 +218,11 @@ export class AIAction {
     }
 
     async runExe(
-        contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ): Promise<AIActionExecuteResults> {
         this.updateSnapshot(snapshotOverrides);
+        const contentState = this.getContentState();
         const exeResults = await runExeAIAction(this, contentState, addError);
         return exeResults;
     }
@@ -239,7 +236,7 @@ export class AIAction {
 
     async runChildAction(
         childAIAction: AIAction,
-        contentState: ContentState,
+        // contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
@@ -247,16 +244,12 @@ export class AIAction {
             childActions: [...this.childActions, childAIAction],
         });
         childAIAction.contentChangeEvent = this.contentChangeEvent;
-        await childAIAction.runAnswerOrDescribe(
-            contentState,
-            addError,
-            snapshotOverrides,
-        );
+        await childAIAction.runAnswerOrDescribe(addError, snapshotOverrides);
     }
 
     async runExeChildAction(
         childAIAction: AIAction,
-        contentState: ContentState,
+        // contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
@@ -264,18 +257,17 @@ export class AIAction {
             childActions: [...this.childActions, childAIAction],
         });
         childAIAction.contentChangeEvent = this.contentChangeEvent;
-        await childAIAction.runExe(contentState, addError, snapshotOverrides);
+        await childAIAction.runExe(addError, snapshotOverrides);
     }
 
     async runAllChildren(
-        contentState: ContentState,
+        // contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
         for (const childAIAction of this.childActions) {
             childAIAction.contentChangeEvent = this.contentChangeEvent;
             await childAIAction.runAnswerOrDescribe(
-                contentState,
                 addError,
                 snapshotOverrides,
             );
@@ -284,17 +276,13 @@ export class AIAction {
     }
 
     async runExeAllChildren(
-        contentState: ContentState,
+        // contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
         for (const childAIAction of this.childActions) {
             childAIAction.contentChangeEvent = this.contentChangeEvent;
-            await childAIAction.runExe(
-                contentState,
-                addError,
-                snapshotOverrides,
-            );
+            await childAIAction.runExe(addError, snapshotOverrides);
         }
     }
     // ====== GROUPS ====================

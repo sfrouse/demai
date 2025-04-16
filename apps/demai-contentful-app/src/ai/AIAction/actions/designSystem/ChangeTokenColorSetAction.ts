@@ -1,18 +1,20 @@
 import { COLOR_SET_ALLOW_LIST } from "../../../../components/ContentPanel/Content/DesignSystem/DSysTokensContent";
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
-import rgbaToHex from "../../../AIState/utils/rgbaToHex";
 import { SAVE_COLOR_SET_TOOL_NAME } from "../../../mcp/designSystemMCP/functions/saveColorSet";
 import { AIAction } from "../../AIAction";
 import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
+import rgbaToHex from "../../utils/rgbaToHex";
 
 export class ChangeTokenColorSetAction extends AIAction {
     static label = "Update Color Tokens";
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, snapshotOverrides);
+        super(config, contentChangeEvent, getContentState, snapshotOverrides);
 
         this.system = {
             role: "system",

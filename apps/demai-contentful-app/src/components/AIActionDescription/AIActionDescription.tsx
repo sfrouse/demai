@@ -1,12 +1,12 @@
 import { forwardRef, useEffect, useState } from "react";
 import { AIAction } from "../../ai/AIAction/AIAction";
-import convertMarkdown from "./util/convertMarkdown";
 import tokens from "@contentful/f36-tokens";
 import { Flex } from "@contentful/f36-components";
 import scrollBarStyles from "../utils/ScrollBarMinimal.module.css";
 import AIActionDescriptionTitle from "./components/AIActionDescriptionTitle";
 import { AIActionSnapshot } from "../../ai/AIAction/AIActionTypes";
 import AutoBenchAIAction from "../AIActionAutoBench/components/AutoBenchAIAction";
+import convertMarkdown from "../utils/convertMarkdown/convertMarkdown";
 
 const AIActionDescription = forwardRef<
     HTMLDivElement,

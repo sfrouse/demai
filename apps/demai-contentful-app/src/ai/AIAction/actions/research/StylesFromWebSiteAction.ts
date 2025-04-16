@@ -18,9 +18,11 @@ export class StylesFromWebSiteAction extends AIAction {
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, snapshotOverrides);
+        super(config, contentChangeEvent, getContentState, snapshotOverrides);
 
         this.model = AIModels.gpt4oSearchPreview;
         this.introMessage =
@@ -68,11 +70,8 @@ enough colors to satisfy the request.
         };
     }
 
-    async runExe(
-        contentState: ContentState,
-        addError: (err: AppError) => void,
-    ) {
-        const results = await super.runExe(contentState, addError);
+    async runExe(addError: (err: AppError) => void) {
+        const results = await super.runExe(addError);
 
         this.updateSnapshot({
             isRunning: true,
@@ -80,16 +79,19 @@ enough colors to satisfy the request.
         });
 
         await this.runExeChildAction(
-            new SaveBrandColorsAction(this.config, {
-                response: `
+            new SaveBrandColorsAction(
+                this.config,
+                this.contentChangeEvent,
+                this.getContentState,
+                {
+                    response: `
 The research below should have definitions for primary, secondary, or tertiary colors.
 Find them and save to research:
 
 ${this.response}
 `,
-            }),
-
-            contentState,
+                },
+            ),
             addError,
             // results,
         );

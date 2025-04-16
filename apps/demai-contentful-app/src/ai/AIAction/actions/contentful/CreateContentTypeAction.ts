@@ -49,9 +49,11 @@ export class CreateContentTypeAction extends AIAction {
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, snapshotOverrides);
+        super(config, contentChangeEvent, getContentState, snapshotOverrides);
 
         this.system = {
             role: "system",
@@ -155,10 +157,9 @@ ${contentState.research?.fields.products}
     }
 
     async runExe(
-        contentState: ContentState,
         addError: (err: AppError) => void,
     ): Promise<AIActionExecuteResults> {
-        const results = await super.runExe(contentState, addError);
+        const results = await super.runExe(addError);
         if (results.success === true) {
             this.updateSnapshot({
                 isRunning: true,
@@ -173,10 +174,14 @@ ${contentState.research?.fields.products}
                 } catch {}
             }
             await this.runExeChildAction(
-                new EditContentTypeAction(this.config, {
-                    response: `publish the content type with id ${newContentTypeId}`,
-                }),
-                contentState,
+                new EditContentTypeAction(
+                    this.config,
+                    this.contentChangeEvent,
+                    this.getContentState,
+                    {
+                        response: `publish the content type with id ${newContentTypeId}`,
+                    },
+                ),
                 addError,
             );
             this.updateSnapshot({

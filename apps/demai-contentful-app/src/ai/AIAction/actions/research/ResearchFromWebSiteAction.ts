@@ -34,9 +34,11 @@ export class ResearchFromWebSiteAction extends AIAction {
 
     constructor(
         config: AIActionConfig,
+        contentChangeEvent: () => void,
+        getContentState: () => ContentState,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(config, snapshotOverrides);
+        super(config, contentChangeEvent, getContentState, snapshotOverrides);
 
         this.model = AIModels.gpt4oSearchPreview;
         this.introMessage =
@@ -94,27 +96,27 @@ Keep any summary you come up with to a paragraph or two at most.
         };
     }
 
-    async runExe(
-        contentState: ContentState,
-        addError: (err: AppError) => void,
-    ) {
+    async runExe(addError: (err: AppError) => void) {
         this.updateSnapshot({
             isRunning: true,
             startExecutionRunTime: Date.now(),
         });
 
-        const results = await super.runExe(contentState, addError);
+        const results = await super.runExe(addError);
 
         await this.runExeChildAction(
-            new SaveBrandColorsAction(this.config, {
-                response: `
+            new SaveBrandColorsAction(
+                this.config,
+                this.contentChangeEvent,
+                this.getContentState,
+                {
+                    response: `
 The research below defines research on this brand. Use the \`update_brand\` tool and update.
 
 ${this.response}
 `,
-            }),
-
-            contentState,
+                },
+            ),
             addError,
             // results,
         );

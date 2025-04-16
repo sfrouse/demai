@@ -1,6 +1,4 @@
-import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
 import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
-import { ResearchFromWebSiteEngine } from "../../../../AIPromptEngine/promptEngines/research/ResearchFromWebSiteEngine";
 import { AIAction } from "../../../AIAction";
 import { AIActionPhase, AIActionRunResults } from "../../../AIActionTypes";
 import { ResearchFromWebSiteAction } from "../ResearchFromWebSiteAction";
@@ -10,7 +8,6 @@ export class ResearchGroupAction extends AIAction {
     static label = "Research Group";
 
     async runAnswerOrDescribe(
-        contentState: ContentState,
         addError: (err: AppError) => void,
     ): Promise<AIActionRunResults> {
         const results: AIActionRunResults = {
@@ -26,34 +23,58 @@ export class ResearchGroupAction extends AIAction {
         });
 
         this.addChildActions([
-            new StylesFromWebSiteAction(this.config),
-            new ResearchFromWebSiteAction(this.config, {
-                contextContentSelections: {
-                    [ResearchFromWebSiteEngine.ACTION_RESEARCH_ID]:
-                        ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_DESCRIPTION,
+            new StylesFromWebSiteAction(
+                this.config,
+                this.contentChangeEvent,
+                this.getContentState,
+            ),
+            new ResearchFromWebSiteAction(
+                this.config,
+                this.contentChangeEvent,
+                this.getContentState,
+                {
+                    contextContentSelections: {
+                        [ResearchFromWebSiteAction.ACTION_RESEARCH_ID]:
+                            ResearchFromWebSiteAction.ACTION_RESEARCH_BRAND_DESCRIPTION,
+                    },
                 },
-            }),
-            new ResearchFromWebSiteAction(this.config, {
-                contextContentSelections: {
-                    [ResearchFromWebSiteEngine.ACTION_RESEARCH_ID]:
-                        ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_PRODUCT,
+            ),
+            new ResearchFromWebSiteAction(
+                this.config,
+                this.contentChangeEvent,
+                this.getContentState,
+                {
+                    contextContentSelections: {
+                        [ResearchFromWebSiteAction.ACTION_RESEARCH_ID]:
+                            ResearchFromWebSiteAction.ACTION_RESEARCH_BRAND_PRODUCT,
+                    },
                 },
-            }),
-            new ResearchFromWebSiteAction(this.config, {
-                contextContentSelections: {
-                    [ResearchFromWebSiteEngine.ACTION_RESEARCH_ID]:
-                        ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_STYLE,
+            ),
+            new ResearchFromWebSiteAction(
+                this.config,
+                this.contentChangeEvent,
+                this.getContentState,
+                {
+                    contextContentSelections: {
+                        [ResearchFromWebSiteAction.ACTION_RESEARCH_ID]:
+                            ResearchFromWebSiteAction.ACTION_RESEARCH_BRAND_STYLE,
+                    },
                 },
-            }),
-            new ResearchFromWebSiteAction(this.config, {
-                contextContentSelections: {
-                    [ResearchFromWebSiteEngine.ACTION_RESEARCH_ID]:
-                        ResearchFromWebSiteEngine.ACTION_RESEARCH_BRAND_TONE,
+            ),
+            new ResearchFromWebSiteAction(
+                this.config,
+                this.contentChangeEvent,
+                this.getContentState,
+                {
+                    contextContentSelections: {
+                        [ResearchFromWebSiteAction.ACTION_RESEARCH_ID]:
+                            ResearchFromWebSiteAction.ACTION_RESEARCH_BRAND_TONE,
+                    },
                 },
-            }),
+            ),
         ]);
 
-        await this.runAllChildren(contentState, addError, {
+        await this.runAllChildren(addError, {
             ignoreContextContent: false,
             autoExecute: true, // false,
         });

@@ -17,8 +17,6 @@ import { CreateComponentDefinitionAction } from "../ai/AIAction/actions/designSy
 import { CreateWebComponentAction } from "../ai/AIAction/actions/designSystem/CreateWebComponentAction";
 import { CreateBindingAction } from "../ai/AIAction/actions/designSystem/CreateBindingAction";
 import { AIActionConstructor } from "../contexts/AIStateContext/AIStateRouting";
-import { ContentfulGroupAction } from "../ai/AIAction/actions/contentful/groups/ContentfulGroupAction";
-import { ResearchGroupAction } from "../ai/AIAction/actions/research/groups/ResearchGroupAction";
 
 type NAVIGATION_ENTRY = {
     label: string;
@@ -32,54 +30,35 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
     prospect: {
         label: "Prospect",
         section_header: "Prospect Research",
-        // aiStateEngines: [AIPromptEngineID.OPEN],
         aiActions: [ContentfulOpenToolingAction],
     },
     research: {
         label: "Research",
         end: true,
-        // aiStateEngines: [
-        //     AIPromptEngineID.RESEARCH_STYLES,
-        //     AIPromptEngineID.RESEARCH_BRAND,
-        //     AIPromptEngineID.OPEN,
-        // ],
         aiActions: [StylesFromWebSiteAction, ResearchFromWebSiteAction],
     },
     content_model: {
         label: "Content Types",
         section_header: "Contentful",
-        // aiStateEngines: [
-        //     AIPromptEngineID.CONTENT_MODEL,
-        //     AIPromptEngineID.CONTENTFUL_OPEN_TOOL,
-        // ],
         aiActions: [CreateContentTypeAction],
     },
     entries: {
         label: "Entries / Content",
-        // aiStateEngines: [AIPromptEngineID.ENTRIES],
         aiActions: [CreateEntryAction],
     },
     personalization: {
         label: "Personalization",
         end: true,
-        // aiStateEngines: [AIPromptEngineID.OPEN],
         aiActions: [ContentfulOpenToolingAction],
     },
     design_tokens: {
         label: "Design Tokens",
         section_header: "Design System",
-        // aiStateEngines: [AIPromptEngineID.DESIGN_TOKENS],
         aiActions: [ChangeTokenColorSetAction],
     },
     components: {
         label: "Components",
         end: true,
-        // aiStateEngines: [
-        //     AIPromptEngineID.COMPONENT_DEFINITIONS,
-        //     AIPromptEngineID.WEB_COMPONENTS,
-        //     AIPromptEngineID.BINDING,
-        //     AIPromptEngineID.OPEN,
-        // ],
         aiActions: [
             CreateComponentDefinitionAction,
             CreateWebComponentAction,
@@ -90,13 +69,11 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         label: "Pages",
         section_header: "Layouts",
         end: true,
-        // aiStateEngines: [AIPromptEngineID.OPEN],
         aiActions: [ContentfulOpenToolingAction],
     },
     space: {
         label: "Space",
         section_header: "Configuration",
-        // aiStateEngines: [AIPromptEngineID.OPEN],
         aiActions: [ContentfulOpenToolingAction],
     },
 } as const;
@@ -155,9 +132,6 @@ const MainNav = () => {
                                     onClick={() => {
                                         setRoute({
                                             navigation: key,
-                                            // aiStateEngines: NAVIGATION[key]
-                                            //     .aiStateEngines as unknown as AIPromptEngineID[],
-                                            // aiStateEngineFocus: 0,
                                             aiActions:
                                                 NAVIGATION[key].aiActions,
                                             aiActionFocus: 0,
@@ -185,7 +159,6 @@ const MainNav = () => {
                         onClick={() => {
                             setRoute({
                                 navigation: "error",
-                                // aiStateEngines: [AIPromptEngineID.OPEN],
                                 aiActions: [ContentfulOpenToolingAction],
                                 aiActionFocus: 0,
                             });
@@ -200,9 +173,6 @@ const MainNav = () => {
                     onClick={() => {
                         setRoute({
                             navigation: "space",
-                            // aiStateEngines: NAVIGATION["space"]
-                            //     .aiStateEngines as unknown as AIPromptEngineID[],
-                            // aiStateEngineFocus: 0,
                             aiActions: NAVIGATION["space"].aiActions,
                             aiActionFocus: 0,
                         });

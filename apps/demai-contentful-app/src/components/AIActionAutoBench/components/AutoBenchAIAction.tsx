@@ -12,7 +12,7 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
 
     if (!aiActionSnapshot) return null;
 
-    let bgColor = aiActionSnapshot.isRunning ? tokens.green100 : tokens.gray100;
+    let bgColor = aiActionSnapshot.isRunning ? tokens.green100 : tokens.gray200;
     let foreColor = tokens.gray800;
     let iconVariant: icons.IconVariant = "muted";
 
