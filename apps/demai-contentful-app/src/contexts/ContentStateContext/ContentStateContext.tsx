@@ -180,6 +180,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
                         payload = await previewClient.getEntry(
                             DEMAI_RESEARCH_SINGLETON_ENTRY_ID,
                         );
+
                         break;
                     }
                     default:
@@ -188,6 +189,11 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
                 }
 
                 dispatch({ type: "SET_PROPERTY", key, payload });
+                // For updates to AIActions which are not in React
+                contentStateRef.current = {
+                    ...contentStateRef.current,
+                    [key]: payload,
+                };
                 return payload;
             } catch (err) {
                 addError({
@@ -202,7 +208,6 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         })();
 
         loadInProgressMap.set(key, loadPromise);
-
         try {
             return await loadPromise;
         } finally {
@@ -217,6 +222,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
     const resetContentState = () => {
         resetLoadingState();
         dispatch({ type: "RESET_STATE" });
+        contentStateRef.current = initialState;
     };
 
     const setContentType = async (contentTypeId: string | undefined) => {
@@ -239,6 +245,10 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
             key: "contentType",
             payload: contentType,
         });
+        contentStateRef.current = {
+            ...contentStateRef.current,
+            ["contentType"]: contentType,
+        };
     };
 
     const setComponent = async (compId: string | undefined) => {
@@ -259,6 +269,10 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
             key: "component",
             payload: component,
         });
+        contentStateRef.current = {
+            ...contentStateRef.current,
+            ["component"]: component,
+        };
     };
 
     // Separate function to validate space model

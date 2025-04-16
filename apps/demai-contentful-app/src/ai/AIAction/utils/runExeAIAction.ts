@@ -33,8 +33,6 @@ export default async function runExeAIAction(
             startExecutionRunTime: Date.now(),
             isRunning: true,
         });
-        console.log("aiAction.getSnapshot()", aiAction.getSnapshot());
-
         // API CHAT COMPLETETIONS
         let tools = await aiAction.getTools(aiAction.toolFilters);
         aiArg = {

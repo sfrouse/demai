@@ -30,6 +30,12 @@ export class ResearchGroupAction extends AIAction {
                 this.getContentState,
                 this.loadProperty,
             ),
+            new ChangeTokenColorSetAction(
+                this.config,
+                this.contentChangeEvent,
+                this.getContentState,
+                this.loadProperty,
+            ),
             new ResearchFromWebSiteAction(
                 this.config,
                 this.contentChangeEvent,
@@ -41,12 +47,6 @@ export class ResearchGroupAction extends AIAction {
                             ResearchFromWebSiteAction.ACTION_RESEARCH_BRAND_DESCRIPTION,
                     },
                 },
-            ),
-            new ChangeTokenColorSetAction(
-                this.config,
-                this.contentChangeEvent,
-                this.getContentState,
-                this.loadProperty,
             ),
             new ResearchFromWebSiteAction(
                 this.config,

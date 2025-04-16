@@ -44,7 +44,6 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
         <Flex
             flexDirection="row"
             alignItems="center"
-            key={aiAction.key}
             style={{
                 padding: `${tokens.spacingS} ${tokens.spacingXs} ${tokens.spacingS} ${tokens.spacingM}`,
                 borderRadius: tokens.borderRadiusSmall,
@@ -65,7 +64,10 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
                     {(aiAction.constructor as typeof AIAction).label}
                 </div>
                 {aiActionSnapshot.request && (
-                    <div style={{ position: "relative", height: 12 }}>
+                    <div
+                        key={`${aiAction.key}-request`}
+                        style={{ position: "relative", height: 12 }}
+                    >
                         <div
                             style={{
                                 position: "absolute",
@@ -88,7 +90,7 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
             </Flex>
             <div style={{ fontSize: 10 }}>
                 {aiActionSnapshot.isRunning ? (
-                    <LoadingIcon />
+                    <LoadingIcon key={`${aiAction.key}-loading`} />
                 ) : (
                     aiActionSnapshot.phase
                 )}

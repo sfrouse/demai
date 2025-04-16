@@ -113,42 +113,46 @@ const AIActionDescription = forwardRef<
                 </div>
             </div>
             {/* USER PROMPT */}
-            <div
-                style={{
-                    padding: `0 ${tokens.spacingL}`,
-                }}
-            >
-                <AIActionDescriptionTitle title="User Prompt" />
-                <span
-                    dangerouslySetInnerHTML={{
-                        __html: aiActionSnapshot.userContent
-                            ? userContentHTML
-                            : "--",
-                    }}
-                ></span>
-            </div>
-            {/* FULL PROMPT */}
-            <div
-                style={{
-                    padding: `0 ${tokens.spacingL}`,
-                }}
-            >
-                <AIActionDescriptionTitle title="Full Prompt" />
+            {aiActionSnapshot.userContent && (
                 <div
                     style={{
-                        overflow: "hidden",
-                        position: "relative",
+                        padding: `0 ${tokens.spacingL}`,
                     }}
                 >
+                    <AIActionDescriptionTitle title="User Prompt" />
                     <span
                         dangerouslySetInnerHTML={{
-                            __html: aiActionSnapshot.request
-                                ? requestHtml
+                            __html: aiActionSnapshot.userContent
+                                ? userContentHTML
                                 : "--",
                         }}
                     ></span>
                 </div>
-            </div>
+            )}
+            {/* FULL PROMPT */}
+            {aiActionSnapshot.request && (
+                <div
+                    style={{
+                        padding: `0 ${tokens.spacingL}`,
+                    }}
+                >
+                    <AIActionDescriptionTitle title="Full Prompt" />
+                    <div
+                        style={{
+                            overflow: "hidden",
+                            position: "relative",
+                        }}
+                    >
+                        <span
+                            dangerouslySetInnerHTML={{
+                                __html: aiActionSnapshot.request
+                                    ? requestHtml
+                                    : "--",
+                            }}
+                        ></span>
+                    </div>
+                </div>
+            )}
             {/* SYSTEM */}
             <div
                 style={{

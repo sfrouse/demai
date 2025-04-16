@@ -32,6 +32,10 @@ export class ResearchFromWebSiteAction extends AIAction {
         ResearchFromWebSiteAction.SOURCE_RESEARCH_DESCRIPTION,
     ];
 
+    async loadNeededData() {
+        await this.loadProperty("research");
+    }
+
     constructor(
         config: AIActionConfig,
         contentChangeEvent: () => void,

@@ -208,6 +208,7 @@ export class AIAction {
             isLoading: true,
         });
         await this.loadNeededData();
+
         this.updateSnapshot({
             isLoading: false,
         });
@@ -236,6 +237,7 @@ export class AIAction {
         this.updateSnapshot(snapshotOverrides);
         await this._loadNeededData();
         const contentState = this.getContentState();
+
         const runResults = await runAIAction(
             this,
             contentState,
@@ -278,7 +280,6 @@ export class AIAction {
 
     async runChildAction(
         childAIAction: AIAction,
-        // contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
@@ -291,7 +292,6 @@ export class AIAction {
 
     async runExeChildAction(
         childAIAction: AIAction,
-        // contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
@@ -303,7 +303,6 @@ export class AIAction {
     }
 
     async runAllChildren(
-        // contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
@@ -318,7 +317,6 @@ export class AIAction {
     }
 
     async runExeAllChildren(
-        // contentState: ContentState,
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {

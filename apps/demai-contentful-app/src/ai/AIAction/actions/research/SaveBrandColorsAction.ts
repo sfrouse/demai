@@ -6,7 +6,7 @@ import { AIAction } from "../../AIAction";
 import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 
 export class SaveBrandColorsAction extends AIAction {
-    static label = "Save Brand Colors";
+    static label = "Save Brand Information";
 
     constructor(
         config: AIActionConfig,

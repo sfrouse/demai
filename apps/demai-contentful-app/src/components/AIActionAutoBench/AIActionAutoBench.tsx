@@ -113,7 +113,6 @@ const AIActionAutoBench = ({
                             style={{ flex: 1, width: "100%" }}
                         >
                             <Select
-                                size="small"
                                 value={groupId}
                                 style={{ flex: 1, width: "100%" }}
                                 onChange={(e) => {
@@ -149,7 +148,6 @@ const AIActionAutoBench = ({
                         <Button
                             variant="secondary"
                             isLoading={isLoading}
-                            size="small"
                             onClick={async () => {
                                 await runGroup(
                                     groupId,
@@ -197,38 +195,36 @@ const AIActionAutoBench = ({
                                 localAIActionSnapshot?.childActions.length ===
                                     0 && (
                                     <AutoBenchAIAction
-                                        key={localAIAction.key}
+                                        key={`main-${localAIAction.key}`}
                                         aiAction={localAIAction}
                                     />
                                 )}
-                            {localAIActionSnapshot &&
-                                localAIActionSnapshot.childActions.map(
-                                    (childAction) => {
-                                        return (
-                                            <>
-                                                {childAction.childActions
-                                                    .length > 0 ? (
-                                                    childAction.childActions.map(
-                                                        (nestedChild) => (
-                                                            <AutoBenchAIAction
-                                                                key={
-                                                                    nestedChild.key
-                                                                }
-                                                                aiAction={
-                                                                    nestedChild
-                                                                }
-                                                            />
-                                                        ),
-                                                    )
-                                                ) : (
-                                                    <AutoBenchAIAction
-                                                        aiAction={childAction}
-                                                    />
+                            {localAIActionSnapshot?.childActions.map(
+                                (childAction) => {
+                                    return (
+                                        <React.Fragment
+                                            key={`group-${childAction.key}`}
+                                        >
+                                            <AutoBenchAIAction
+                                                key={`solo-${childAction.key}`}
+                                                aiAction={childAction}
+                                            />
+                                            {childAction.childActions.length >
+                                                0 &&
+                                                childAction.childActions.map(
+                                                    (nestedChild) => (
+                                                        <AutoBenchAIAction
+                                                            key={`nested-${nestedChild.key}`}
+                                                            aiAction={
+                                                                nestedChild
+                                                            }
+                                                        />
+                                                    ),
                                                 )}
-                                            </>
-                                        );
-                                    },
-                                )}
+                                        </React.Fragment>
+                                    );
+                                },
+                            )}
                         </Flex>
                     </Flex>
                     <Flex flexDirection="row" justifyContent="flex-end">

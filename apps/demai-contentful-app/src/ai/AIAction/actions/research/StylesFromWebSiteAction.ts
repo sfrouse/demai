@@ -16,6 +16,10 @@ const SOURCE_DESCRIPTION = "following description";
 export class StylesFromWebSiteAction extends AIAction {
     static label = "Brand Colors";
 
+    async loadNeededData() {
+        await this.loadProperty("research");
+    }
+
     constructor(
         config: AIActionConfig,
         contentChangeEvent: () => void,
@@ -75,10 +79,6 @@ enough colors to satisfy the request.
 
             return `${this.userContent ? `${this.userContent}. ` : ""}${extra}`;
         };
-    }
-
-    async loadNeededData() {
-        await this.loadProperty("research");
     }
 
     async runExe(addError: (err: AppError) => void) {

@@ -25,7 +25,6 @@ export default async function runAIAction(
     let aiArg: OpenAIChatCompletionsProps | undefined;
     try {
         aiAction.updateSnapshot(snapshotOverrides);
-
         aiAction.updateSnapshot({
             startRunTime: Date.now(),
             isRunning: true,

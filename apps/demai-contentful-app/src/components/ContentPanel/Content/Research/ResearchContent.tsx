@@ -48,7 +48,6 @@ const ResearchContent = () => {
         });
     }, [contentState.research]);
 
-    console.log("LOADING STATE", loadingState, spaceStatus);
     const isLoading = loadingState.research === true || !spaceStatus?.valid;
 
     const research = contentState.research;
