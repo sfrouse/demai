@@ -242,7 +242,37 @@ const AIActionAutoBench = ({
                             aiActionSnapshot={localAIActionSnapshot}
                         />
                     )}
-                    <Flex flexDirection="row" justifyContent="flex-end">
+                    <Flex
+                        flexDirection="row"
+                        justifyContent="flex-end"
+                        alignItems="center"
+                    >
+                        {localAIActionSnapshot?.executeRunTime ? (
+                            <div
+                                style={{ flex: 1, fontSize: tokens.fontSizeS }}
+                            >
+                                {(
+                                    localAIActionSnapshot?.executeRunTime / 1000
+                                ).toFixed(2)}
+                                ms
+                            </div>
+                        ) : (
+                            localAIActionSnapshot?.startExecutionRunTime && (
+                                <div
+                                    style={{
+                                        flex: 1,
+                                        fontSize: tokens.fontSizeS,
+                                    }}
+                                >
+                                    {(
+                                        (Date.now() -
+                                            localAIActionSnapshot?.startExecutionRunTime) /
+                                        1000
+                                    ).toFixed(2)}
+                                    ms
+                                </div>
+                            )
+                        )}
                         <Button
                             variant="transparent"
                             onClick={async () => {
