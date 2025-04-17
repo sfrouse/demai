@@ -20,7 +20,6 @@ export default async function runAIAction(
     contentState: ContentState,
     addError: (err: AppError) => void,
     snapshotOverrides: Partial<AIActionSnapshot> = {},
-    // ignoreContextContent: boolean = false,
 ): Promise<AIActionRunResults> {
     let aiArg: OpenAIChatCompletionsProps | undefined;
     try {
@@ -88,13 +87,14 @@ export default async function runAIAction(
         addError({
             service: "AI Service Run",
             showDialog: true,
-            message: `AIPromptEngine:run (ToolType: ${aiAction.toolType})`,
+            message: `AIAction:run (ToolType: ${aiAction.toolType})`,
             details: `
     Error: ${err}
     
     Request: ${aiArg || "no aiArg"}
     `,
         });
+        console.error(err);
         aiAction.updateSnapshot({
             runTime: Date.now() - aiAction.startRunTime!,
             isRunning: false,

@@ -33,20 +33,17 @@ export class CreateContentTypeAction extends AIAction {
         await this.loadProperty("research");
     }
 
+    async postExeDataUpdates(): Promise<void> {
+        await this.loadProperty("contentTypes");
+    }
+
     constructor(
         config: AIActionConfig,
-        contentChangeEvent: () => void,
         getContentState: () => ContentState,
         loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(
-            config,
-            contentChangeEvent,
-            getContentState,
-            loadProperty,
-            snapshotOverrides,
-        );
+        super(config, getContentState, loadProperty, snapshotOverrides);
 
         this.system = {
             role: "system",
@@ -169,7 +166,6 @@ ${contentState.research?.fields.products}
             await this.runExeChildAction(
                 new EditContentTypeAction(
                     this.config,
-                    this.contentChangeEvent,
                     this.getContentState,
                     this.loadProperty,
                     {
@@ -179,7 +175,6 @@ ${contentState.research?.fields.products}
                 addError,
             );
 
-            this.contentChangeEvent();
             this.updateSnapshot({
                 isRunning: false,
                 phase: AIActionPhase.executed,

@@ -10,7 +10,6 @@ const findAndSetAIAction = async (
     route: AIStateRoute,
     setAIAction: React.Dispatch<React.SetStateAction<AIAction | undefined>>,
     loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
-    resetContentState: () => void,
     getContentState: () => ContentState,
 ) => {
     if (config && route) {
@@ -25,7 +24,6 @@ const findAndSetAIAction = async (
         if (!aiActionLookup.get(uniqueLookupKey)) {
             const newAIAction = new newAIActionConstructor(
                 config,
-                resetContentState,
                 getContentState,
                 loadProperty,
             );

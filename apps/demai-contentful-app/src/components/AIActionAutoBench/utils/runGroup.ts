@@ -15,7 +15,6 @@ export default async function runGroup(
     groupId: string,
     setRoute: React.Dispatch<React.SetStateAction<AIStateRoute | undefined>>,
     aiActionConfig: AIActionConfig,
-    resetContentState: () => void,
     getContentState: () => ContentState,
     loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -66,7 +65,6 @@ export default async function runGroup(
     if (newLocalAIActionConstructor) {
         const newLocalAIAction = new newLocalAIActionConstructor(
             aiActionConfig,
-            resetContentState,
             getContentState,
             loadProperty,
         );
@@ -81,7 +79,6 @@ export default async function runGroup(
                 await newLocalAIAction.run(addError);
                 if (validateDemAI) {
                     await validateSpace();
-                    resetContentState();
                 }
                 setIsLoading(false);
             }

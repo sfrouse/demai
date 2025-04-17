@@ -18,7 +18,6 @@ interface ContentPanelHeaderProps {
     goBack?: () => void;
     children?: ReactNode;
     childrenLeft?: ReactNode;
-    showMoney?: boolean;
 }
 
 const ContentPanelHeader = ({

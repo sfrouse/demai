@@ -26,7 +26,6 @@ const Page = () => {
         setCPA,
         getContentState,
         loadProperty,
-        resetContentState,
     } = useContentStateSession();
     const { addError, errors } = useError();
     const { setAIActionConfig, aiActionConfig, setRoute, setAIAction, route } =
@@ -42,7 +41,6 @@ const Page = () => {
                     route,
                     setAIAction,
                     loadProperty,
-                    resetContentState,
                     getContentState,
                 );
             }

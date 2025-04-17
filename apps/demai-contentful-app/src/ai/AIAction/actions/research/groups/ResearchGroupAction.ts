@@ -26,19 +26,16 @@ export class ResearchGroupAction extends AIAction {
         this.addChildActions([
             new StylesFromWebSiteAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
             ),
             new ChangeTokenColorSetAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
             ),
             new ResearchFromWebSiteAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
                 {
@@ -50,7 +47,6 @@ export class ResearchGroupAction extends AIAction {
             ),
             new ResearchFromWebSiteAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
                 {
@@ -62,7 +58,6 @@ export class ResearchGroupAction extends AIAction {
             ),
             new ResearchFromWebSiteAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
                 {
@@ -74,7 +69,6 @@ export class ResearchGroupAction extends AIAction {
             ),
             new ResearchFromWebSiteAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
                 {

@@ -7,18 +7,11 @@ export class ContentfulOpenToolingAction extends AIAction {
 
     constructor(
         config: AIActionConfig,
-        contentChangeEvent: () => void,
         getContentState: () => ContentState,
         loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(
-            config,
-            contentChangeEvent,
-            getContentState,
-            loadProperty,
-            snapshotOverrides,
-        );
+        super(config, getContentState, loadProperty, snapshotOverrides);
 
         this.className = "ContentfulOpenToolingAction";
         this.system = {

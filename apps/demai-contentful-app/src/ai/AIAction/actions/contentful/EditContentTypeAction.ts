@@ -5,20 +5,17 @@ import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 export class EditContentTypeAction extends AIAction {
     static label = "Update Content Type";
 
+    async postExeDataUpdates(): Promise<void> {
+        await this.loadProperty("components");
+    }
+
     constructor(
         config: AIActionConfig,
-        contentChangeEvent: () => void,
         getContentState: () => ContentState,
         loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(
-            config,
-            contentChangeEvent,
-            getContentState,
-            loadProperty,
-            snapshotOverrides,
-        );
+        super(config, getContentState, loadProperty, snapshotOverrides);
 
         this.introMessage = "What would you like to do to this content type?";
         this.executionPrompt = "Updated your Content Types...";

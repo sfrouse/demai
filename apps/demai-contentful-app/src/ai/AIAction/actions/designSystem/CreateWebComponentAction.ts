@@ -11,20 +11,17 @@ export class CreateWebComponentAction extends AIAction {
         await this.loadProperty("research");
     }
 
+    async postExeDataUpdates(): Promise<void> {
+        await this.loadProperty("components");
+    }
+
     constructor(
         config: AIActionConfig,
-        contentChangeEvent: () => void,
         getContentState: () => ContentState,
         loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(
-            config,
-            contentChangeEvent,
-            getContentState,
-            loadProperty,
-            snapshotOverrides,
-        );
+        super(config, getContentState, loadProperty, snapshotOverrides);
 
         this.system = {
             role: "system",

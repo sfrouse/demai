@@ -6,6 +6,17 @@ import { DeleteGeneratedContentAction } from "./DeleteGeneratedContentAction";
 export class DeleteSystemContentAction extends DeleteGeneratedContentAction {
     static label = "Delete All DemAI System Content";
 
+    async postExeDataUpdates(): Promise<void> {
+        await Promise.all([
+            this.loadProperty("contentTypes"),
+            this.loadProperty("components"),
+            this.loadProperty("css"),
+            this.loadProperty("ai"),
+            this.loadProperty("tokens"),
+            this.loadProperty("research"),
+        ]);
+    }
+
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {
         const results: AIActionRunResults = {
             success: true,

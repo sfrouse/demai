@@ -22,7 +22,7 @@ const AIActionInspectorModalModal = () => {
                         title={`${
                             (inspectedAIAction.constructor as typeof AIAction)
                                 .label
-                        } Action`}
+                        } Action (${inspectedAIAction.constructor.name})`}
                         onClose={() => setInspectedAIAction(undefined)}
                     />
                     <Modal.Content>

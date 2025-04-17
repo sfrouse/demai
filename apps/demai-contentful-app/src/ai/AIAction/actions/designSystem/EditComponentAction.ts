@@ -16,20 +16,17 @@ export class EditComponentAction extends AIAction {
         await this.loadProperty("components");
     }
 
+    async postExeDataUpdates(): Promise<void> {
+        await this.loadProperty("components");
+    }
+
     constructor(
         config: AIActionConfig,
-        contentChangeEvent: () => void,
         getContentState: () => ContentState,
         loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(
-            config,
-            contentChangeEvent,
-            getContentState,
-            loadProperty,
-            snapshotOverrides,
-        );
+        super(config, getContentState, loadProperty, snapshotOverrides);
 
         this.introMessage =
             "Let's edit this component definition, what would you like to do?";

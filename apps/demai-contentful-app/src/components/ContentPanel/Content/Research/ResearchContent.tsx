@@ -6,7 +6,6 @@ import {
     ContentStateResearch,
     useContentStateSession,
 } from "../../../../contexts/ContentStateContext/ContentStateContext";
-import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import scrollBarStyles from "../../../utils/ScrollBarMinimal.module.css";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { AppInstallationParameters } from "../../../../locations/config/ConfigScreen";
@@ -18,23 +17,16 @@ import ContentSectionHeader from "../../ContentSectionHeader/ContentSectionHeade
 import ColorTokensContent from "../DesignSystem/sections/ColorTokensContent";
 import { CONTENT_PANEL_MAX_WIDTH } from "../../../../constants";
 import LoadingStyles from "../../../Loading/LoadingStyles";
-import ButtonXs from "../../../ButtonXs/ButtonXs";
 
 const ResearchContent = () => {
     const sdk = useSDK<PageAppSDK>();
-    const {
-        contentState,
-        loadProperty,
-        loadingState,
-        resetContentState,
-        spaceStatus,
-    } = useContentStateSession();
+    const { contentState, loadProperty, loadingState, spaceStatus } =
+        useContentStateSession();
     const [fieldInEditMode, setFieldInEditMode] = useState<string>("");
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [localResearch, setLocalResearch] = useState<
         ContentStateResearch | undefined
     >();
-    // }, [invalidated, cpa]);
 
     useEffect(() => {
         loadProperty("research");
@@ -83,15 +75,13 @@ const ResearchContent = () => {
         sdk.notifier.success("Research saved!");
 
         setIsSaving(false);
-        resetContentState();
+        loadProperty("research", true);
         setFieldInEditMode("");
     };
 
     return (
         <>
-            <ContentPanelHeader title="Research" invalidate showMoney>
-                <ButtonXs onClick={() => resetContentState()}>Refresh</ButtonXs>
-            </ContentPanelHeader>
+            <ContentPanelHeader title="Research" invalidate />
             <Flex
                 flexDirection="column"
                 className={scrollBarStyles["scrollbar-minimal"]}

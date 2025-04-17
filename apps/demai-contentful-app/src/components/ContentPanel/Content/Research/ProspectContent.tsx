@@ -20,8 +20,7 @@ import LoadingStyles from "../../../Loading/LoadingStyles";
 
 const ProspectContent = () => {
     const sdk = useSDK<PageAppSDK>();
-    const { contentState, loadProperty, resetContentState, spaceStatus } =
-        useContentStateSession();
+    const { contentState, loadProperty } = useContentStateSession();
     const [prospectName, setPropsectName] = useState<string>("");
     const [mainWebsite, setMainWebsite] = useState<string>("");
     const [seDescription, setSEDescription] = useState<string>("");
@@ -74,9 +73,9 @@ const ProspectContent = () => {
         await updatedEntry.publish();
 
         sdk.notifier.success("Research saved!");
-        setSubmitted(false);
 
-        resetContentState();
+        await loadProperty("research", true);
+        setSubmitted(false);
     };
 
     const handleCancel = () => {

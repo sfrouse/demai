@@ -32,7 +32,6 @@ export class AIAction {
 
     key: string; // Unique key for React lists
     className: string = "AIAction";
-    contentChangeEvent: () => void = () => {};
     isLoading: boolean = false;
     getContentState: () => ContentState;
     loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void;
@@ -95,7 +94,7 @@ export class AIAction {
     researchMCP: ResearchMCP | undefined;
     config: AIActionConfig;
 
-    // --- AI RESULTS -------------------------------------------------------------
+    // --- AI RESULTS --------------------------------------------------------------
     runAIArg: {} | undefined;
     runAIResults:
         | {
@@ -111,7 +110,7 @@ export class AIAction {
           }
         | undefined;
 
-    // ======= useSyncExternalStore ==========
+    // --- useSyncExternalStore ----------------------------------------------------
     private listeners = new Set<() => void>();
 
     subscribe = (cb: () => void) => {
@@ -162,18 +161,16 @@ export class AIAction {
     private _snapshot = this.createSnapshot();
 
     getSnapshot = () => this._snapshot;
-    // ======= useSyncExternalStore ==========
+    // --- useSyncExternalStore ----------------------------------------------------
 
     constructor(
         config: AIActionConfig,
-        resetContentState: () => void,
         getContentState: () => ContentState,
         loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
         this.key = nanoid();
         this.config = config;
-        this.contentChangeEvent = resetContentState;
         this.getContentState = getContentState;
         this.loadProperty = loadProperty;
         this.openAIClient = getOpeAIClient(this.config.openAiApiKey);
@@ -203,6 +200,7 @@ export class AIAction {
         this._loadNeededData();
     }
 
+    // --- Data Management ---------------------------------------------------------
     private async _loadNeededData() {
         this.updateSnapshot({
             isLoading: true,
@@ -214,7 +212,11 @@ export class AIAction {
         });
     }
 
+    // for subclasses
     async loadNeededData() {}
+
+    async postExeDataUpdates() {}
+    // --- Data Management --------------------------------------------------------
 
     async run(
         addError: (err: AppError) => void,
@@ -236,7 +238,9 @@ export class AIAction {
     ): Promise<AIActionRunResults> {
         this.updateSnapshot(snapshotOverrides);
         await this._loadNeededData();
+
         const contentState = this.getContentState();
+        console.log("contentState", contentState);
 
         const runResults = await runAIAction(
             this,
@@ -286,7 +290,6 @@ export class AIAction {
         this.updateSnapshot({
             childActions: [...this.childActions, childAIAction],
         });
-        childAIAction.contentChangeEvent = this.contentChangeEvent;
         await childAIAction.runAnswerOrDescribe(addError, snapshotOverrides);
     }
 
@@ -298,7 +301,6 @@ export class AIAction {
         this.updateSnapshot({
             childActions: [...this.childActions, childAIAction],
         });
-        childAIAction.contentChangeEvent = this.contentChangeEvent;
         await childAIAction.runExe(addError, snapshotOverrides);
     }
 
@@ -307,12 +309,10 @@ export class AIAction {
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
         for (const childAIAction of this.childActions) {
-            childAIAction.contentChangeEvent = this.contentChangeEvent;
             await childAIAction.runAnswerOrDescribe(
                 addError,
                 snapshotOverrides,
             );
-            this.contentChangeEvent();
         }
     }
 
@@ -321,7 +321,6 @@ export class AIAction {
         snapshotOverrides: Partial<AIActionSnapshot> = {},
     ) {
         for (const childAIAction of this.childActions) {
-            childAIAction.contentChangeEvent = this.contentChangeEvent;
             await childAIAction.runExe(addError, snapshotOverrides);
         }
     }

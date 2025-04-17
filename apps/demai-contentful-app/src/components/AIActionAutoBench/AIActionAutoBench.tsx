@@ -13,6 +13,7 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { MoneyAction } from "../../ai/AIAction/actions/MoneyAction";
 import runGroup from "./utils/runGroup";
+import AIActionDescriptionToolbar from "../AIActionDescription/components/AIActionDescriptionToolbar";
 
 const AIActionAutoBench = ({
     showAutoBench,
@@ -22,7 +23,7 @@ const AIActionAutoBench = ({
     setShowWorkBench: Dispatch<SetStateAction<boolean>>;
 }) => {
     const sdk = useSDK<PageAppSDK>();
-    const { getContentState, validateSpace, resetContentState, loadProperty } =
+    const { getContentState, validateSpace, loadProperty } =
         useContentStateSession();
     const { aiActionConfig, setRoute } = useAIState();
     const [localAIAction, setLocalAIAction] = useState<AIAction>();
@@ -76,96 +77,102 @@ const AIActionAutoBench = ({
                         maxWidth: 400,
                         width: "100%",
                         height: "100%",
-                        gap: tokens.spacingXs,
+                        // gap: tokens.spacingXs,
                         // border: "1px solid pink",
                     }}
                 >
-                    <Button
-                        style={{ minWidth: "100%" }}
-                        variant="primary"
-                        isLoading={isLoading}
-                        onClick={async () => {
-                            setIsLoading(true);
-                            const newLocalAIAction = new MoneyAction(
-                                aiActionConfig,
-                                resetContentState,
-                                getContentState,
-                                loadProperty,
-                            );
-                            setLocalAIAction(newLocalAIAction);
-                            newLocalAIAction.run(addError);
-                            setIsLoading(false);
-                        }}
-                    >
-                        Show Me the Money
-                    </Button>
                     <Flex
-                        flexDirection="row"
+                        flexDirection="column"
                         style={{
-                            alignSelf: "stretch",
-                            width: "100%",
                             gap: tokens.spacingXs,
+                            padding: `${tokens.spacingXs} 0`,
                         }}
                     >
-                        <Flex
-                            flexDirection="column"
-                            alignItems="stretch"
-                            style={{ flex: 1, width: "100%" }}
-                        >
-                            <Select
-                                value={groupId}
-                                style={{ flex: 1, width: "100%" }}
-                                onChange={(e) => {
-                                    setGroupId(e.target.value);
-                                }}
-                            >
-                                <Select.Option value="research">
-                                    Research Group
-                                </Select.Option>
-                                <Select.Option value="contentful">
-                                    Contentful Group
-                                </Select.Option>
-                                {/* <Select.Option value="designSystem">
-                                    Design System Group
-                                </Select.Option> */}
-                                <Select.Option value="layouts">
-                                    Layouts Group
-                                </Select.Option>
-                                <Select.Option value="-----">
-                                    -------
-                                </Select.Option>
-                                <Select.Option value="deleteGenerated">
-                                    Delete DemAI Generated Content
-                                </Select.Option>
-                                <Select.Option value="deleteSystem">
-                                    Delete DemAI System Content
-                                </Select.Option>
-                                <Select.Option value="deleteAll">
-                                    Delete All DemAI Content
-                                </Select.Option>
-                            </Select>
-                        </Flex>
                         <Button
-                            variant="secondary"
+                            style={{ minWidth: "100%" }}
+                            variant="primary"
                             isLoading={isLoading}
                             onClick={async () => {
-                                await runGroup(
-                                    groupId,
-                                    setRoute,
+                                setIsLoading(true);
+                                const newLocalAIAction = new MoneyAction(
                                     aiActionConfig,
-                                    resetContentState,
                                     getContentState,
                                     loadProperty,
-                                    setIsLoading,
-                                    setLocalAIAction,
-                                    validateSpace,
-                                    addError,
-                                    sdk,
                                 );
+                                setLocalAIAction(newLocalAIAction);
+                                newLocalAIAction.run(addError);
+                                setIsLoading(false);
                             }}
                         >
-                            Run Group
+                            Show Me the Money
                         </Button>
+                        <Flex
+                            flexDirection="row"
+                            style={{
+                                alignSelf: "stretch",
+                                width: "100%",
+                                gap: tokens.spacingXs,
+                            }}
+                        >
+                            <Flex
+                                flexDirection="column"
+                                alignItems="stretch"
+                                style={{ flex: 1, width: "100%" }}
+                            >
+                                <Select
+                                    value={groupId}
+                                    style={{ flex: 1, width: "100%" }}
+                                    onChange={(e) => {
+                                        setGroupId(e.target.value);
+                                    }}
+                                >
+                                    <Select.Option value="research">
+                                        Research Group
+                                    </Select.Option>
+                                    <Select.Option value="contentful">
+                                        Contentful Group
+                                    </Select.Option>
+                                    {/* <Select.Option value="designSystem">
+                                    Design System Group
+                                </Select.Option> */}
+                                    <Select.Option value="layouts">
+                                        Layouts Group
+                                    </Select.Option>
+                                    <Select.Option value="-----">
+                                        -------
+                                    </Select.Option>
+                                    <Select.Option value="deleteGenerated">
+                                        Delete DemAI Generated Content
+                                    </Select.Option>
+                                    <Select.Option value="deleteSystem">
+                                        Delete DemAI System Content
+                                    </Select.Option>
+                                    <Select.Option value="deleteAll">
+                                        Delete All DemAI Content
+                                    </Select.Option>
+                                </Select>
+                            </Flex>
+                            <Button
+                                variant="secondary"
+                                isLoading={isLoading}
+                                onClick={async () => {
+                                    await runGroup(
+                                        groupId,
+                                        setRoute,
+                                        aiActionConfig,
+                                        getContentState,
+                                        loadProperty,
+                                        setIsLoading,
+                                        setLocalAIAction,
+                                        validateSpace,
+                                        addError,
+                                        sdk,
+                                    );
+                                }}
+                            >
+                                Run Group
+                            </Button>
+                        </Flex>
                     </Flex>
                     <Flex
                         flexDirection="column"
@@ -188,29 +195,25 @@ const AIActionAutoBench = ({
                                 gap: tokens.spacing2Xs,
                                 padding: `${tokens.spacingXs}`,
                                 backgroundColor: tokens.gray100,
-                                borderRadius: tokens.borderRadiusSmall,
+                                borderRadius: `${tokens.borderRadiusSmall} ${tokens.borderRadiusSmall} 0 0`,
                             }}
                         >
-                            {localAIAction &&
+                            {/* {localAIAction &&
                                 localAIActionSnapshot?.childActions.length ===
                                     0 && (
                                     <AutoBenchAIAction
                                         key={`main-${localAIAction.key}`}
                                         aiAction={localAIAction}
                                     />
-                                )}
+                                )} */}
                             {localAIActionSnapshot?.childActions.map(
                                 (childAction) => {
                                     return (
                                         <React.Fragment
                                             key={`group-${childAction.key}`}
                                         >
-                                            <AutoBenchAIAction
-                                                key={`solo-${childAction.key}`}
-                                                aiAction={childAction}
-                                            />
                                             {childAction.childActions.length >
-                                                0 &&
+                                            1 ? (
                                                 childAction.childActions.map(
                                                     (nestedChild) => (
                                                         <AutoBenchAIAction
@@ -220,13 +223,25 @@ const AIActionAutoBench = ({
                                                             }
                                                         />
                                                     ),
-                                                )}
+                                                )
+                                            ) : (
+                                                <AutoBenchAIAction
+                                                    key={`solo-${childAction.key}`}
+                                                    aiAction={childAction}
+                                                />
+                                            )}
                                         </React.Fragment>
                                     );
                                 },
                             )}
                         </Flex>
                     </Flex>
+                    {localAIAction && localAIActionSnapshot && (
+                        <AIActionDescriptionToolbar
+                            aiAction={localAIAction}
+                            aiActionSnapshot={localAIActionSnapshot}
+                        />
+                    )}
                     <Flex flexDirection="row" justifyContent="flex-end">
                         <Button
                             variant="transparent"

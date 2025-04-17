@@ -27,13 +27,11 @@ export class DeleteAllContentGroupAction extends AIAction {
         this.addChildActions([
             new DeleteGeneratedContentAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
             ),
             new DeleteSystemContentAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
             ),

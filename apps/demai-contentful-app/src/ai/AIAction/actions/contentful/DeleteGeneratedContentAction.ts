@@ -11,6 +11,11 @@ import { DEMAI_GENERATED_PROPERTY_IDENTIFIER } from "../../../../constants";
 export class DeleteGeneratedContentAction extends AIAction {
     static label = "Delete Generated Content";
 
+    async postExeDataUpdates(): Promise<void> {
+        await this.loadProperty("contentTypes");
+        await this.loadProperty("components");
+    }
+
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {
         const results: AIActionRunResults = {
             success: true,
@@ -88,11 +93,6 @@ export class DeleteGeneratedContentAction extends AIAction {
                         await contentType.unpublish();
                         await contentType.delete();
                     }
-                    this.contentChangeEvent();
-                    console.log(
-                        `Deleted content type: ${contentType.sys.id}`,
-                        contentType,
-                    );
                     total = total + 1;
                 }
             }
@@ -134,8 +134,6 @@ export class DeleteGeneratedContentAction extends AIAction {
                         await entry.unpublish();
                     }
                     await entry.delete();
-                    this.contentChangeEvent();
-                    console.log(`Deleted entry: ${entry.sys.id}`);
                     total += 1;
                 } catch (entryErr) {
                     addError({

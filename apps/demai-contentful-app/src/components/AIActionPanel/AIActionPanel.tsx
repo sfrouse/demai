@@ -13,11 +13,10 @@ import AIActionDescriptionToolbar from "../AIActionDescription/components/AIActi
 import AIActionAutoBench from "../AIActionAutoBench/AIActionAutoBench";
 
 const AIActionPanel = () => {
-    const { aiAction, route, setRoute, invalidated, setAIAction } =
-        useAIState();
+    const { aiAction, route, setRoute } = useAIState();
     const aiActionSnapshot = useAIAction(aiAction);
     const scrollBottomRef = useRef<HTMLDivElement>(null);
-    const [showAutoBench, setShowAutoBench] = useState<boolean>(false);
+    const [showAutoBench, setShowAutoBench] = useState<boolean>(true);
 
     useEffect(() => {
         setTimeout(() => {
@@ -29,7 +28,7 @@ const AIActionPanel = () => {
         setTimeout(() => {
             scrollBottomRef.current?.scrollIntoView({ behavior: "smooth" });
         }, 200);
-    }, [aiActionSnapshot, invalidated]);
+    }, [aiActionSnapshot]);
 
     return (
         <Flex

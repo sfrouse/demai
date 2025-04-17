@@ -27,13 +27,11 @@ export class MoneyAction extends AIAction {
         this.addChildActions([
             new ResearchGroupAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
             ),
             new ContentfulGroupAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
             ),

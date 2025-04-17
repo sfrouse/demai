@@ -28,13 +28,11 @@ export class ContentfulGroupAction extends AIAction {
         this.addChildActions([
             new DeleteGeneratedContentAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
             ),
             new CreateContentTypeAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
                 {
@@ -47,7 +45,6 @@ export class ContentfulGroupAction extends AIAction {
             ),
             new ContentfulEntryPerCTypeAction(
                 this.config,
-                this.contentChangeEvent,
                 this.getContentState,
                 this.loadProperty,
             ),

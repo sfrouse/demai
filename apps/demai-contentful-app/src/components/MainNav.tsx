@@ -22,7 +22,6 @@ type NAVIGATION_ENTRY = {
     label: string;
     section_header?: string;
     end?: boolean;
-    // aiStateEngines: AIPromptEngineID[];
     aiActions: AIActionConstructor[];
 };
 

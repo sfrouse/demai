@@ -33,7 +33,6 @@ export class ContentfulEntryPerCTypeAction extends AIAction {
                 (ctype) =>
                     new CreateEntryAction(
                         this.config,
-                        this.contentChangeEvent,
                         this.getContentState,
                         this.loadProperty,
                         {

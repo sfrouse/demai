@@ -26,7 +26,7 @@ export enum COMP_DETAIL_NAVIGATION {
 
 export default function CompDetailContent() {
     const sdk = useSDK<PageAppSDK>();
-    const { contentState, resetContentState } = useContentStateSession();
+    const { contentState } = useContentStateSession();
     const { setRoute, route, aiAction } = useAIState();
     const [comp, setComp] = useState<any>(); // typings are getting CMA and Contentful confused...
     const [localCDef, setLocalCDef] = useState<string>("");
@@ -85,7 +85,6 @@ export default function CompDetailContent() {
                 localJavaScript,
             );
             setIsSaving(false);
-            resetContentState();
         }
     }, [localBindings, localCDef, localJavaScript, sdk, comp]);
 

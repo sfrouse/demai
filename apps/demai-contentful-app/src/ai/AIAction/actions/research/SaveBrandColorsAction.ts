@@ -8,20 +8,17 @@ import { AIActionConfig, AIActionSnapshot } from "../../AIActionTypes";
 export class SaveBrandColorsAction extends AIAction {
     static label = "Save Brand Information";
 
+    async postExeDataUpdates() {
+        await this.loadProperty("research", true);
+    }
+
     constructor(
         config: AIActionConfig,
-        contentChangeEvent: () => void,
         getContentState: () => ContentState,
         loadProperty: (key: keyof ContentState, forceRefresh?: boolean) => void,
         snapshotOverrides?: Partial<AIActionSnapshot>,
     ) {
-        super(
-            config,
-            contentChangeEvent,
-            getContentState,
-            loadProperty,
-            snapshotOverrides,
-        );
+        super(config, getContentState, loadProperty, snapshotOverrides);
 
         this.model = AIModels.gpt4o;
         this.introMessage =

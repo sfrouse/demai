@@ -94,7 +94,6 @@ ${aiAction.response}`,
                         JSON.parse(processedToolCall.function.arguments),
                     );
                     toolResults.push(exeResult);
-                    aiAction.contentChangeEvent();
                 } catch (err) {
                     addError({
                         service: "AI/MCP Tool Execution",
@@ -114,7 +113,7 @@ ${aiAction.response}`,
                         phase: AIActionPhase.executed,
                         errors: [`${err}`],
                     });
-                    aiAction.contentChangeEvent();
+                    await aiAction.postExeDataUpdates();
                     return {
                         success: false,
                         errors: [`${err}`],
@@ -138,6 +137,7 @@ ${aiAction.response}`,
             }`,
             errors: [],
         });
+        await aiAction.postExeDataUpdates();
         return {
             success: true,
             result: aiAction.executionResponse,
@@ -147,7 +147,7 @@ ${aiAction.response}`,
             toolResults,
         };
     } catch (err) {
-        console.error("AIPromptEngine: ", err);
+        console.error("AIAction: ", err);
         let aiArgStr = "Failed to parse";
         try {
             aiArgStr = JSON.stringify(aiArgStr, null, 2);
@@ -155,7 +155,7 @@ ${aiAction.response}`,
         addError({
             service: "AI Service runExe",
             showDialog: true,
-            message: `AIPromptEngine:runExe (ToolType: ${aiAction.toolType})`,
+            message: `AIAction:runExe (ToolType: ${aiAction.toolType})`,
             details: `
     Error: ${err}
     
@@ -169,7 +169,7 @@ ${aiAction.response}`,
             phase: AIActionPhase.executed,
             errors: [`${err}`],
         });
-        aiAction.contentChangeEvent();
+        await aiAction.postExeDataUpdates();
         return {
             success: false,
             errors: [`${err}`],

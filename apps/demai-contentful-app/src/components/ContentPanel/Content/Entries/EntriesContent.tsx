@@ -14,7 +14,7 @@ import LoadingStyles from "../../../Loading/LoadingStyles";
 
 const EntriesContent = () => {
     const sdk = useSDK<PageAppSDK>();
-    const { contentState, loadProperty, loadingState, resetContentState } =
+    const { contentState, loadProperty, loadingState } =
         useContentStateSession();
     const [selectedContentType, setSelectedContentType] =
         useState<string>("all");
@@ -58,7 +58,7 @@ const EntriesContent = () => {
             } catch (err: any) {
                 sdk.notifier.error(`error: ${err.message}`);
             }
-            resetContentState();
+            await loadProperty("entries", true);
             setLocalLoading(false);
         }
     };
