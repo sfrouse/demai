@@ -9,13 +9,16 @@ import contentTypeToAI from "../../utils/contentTypeToAI";
 export class CreateBindingAction extends AIAction {
     static label = "Create Bindings";
 
+    static BINDING_CTYPE_ACTION = "ctypeId";
+    static BINDING_COMPONENT_ACTION = "componentId";
+
     async loadNeededData() {
         await this.loadProperty("contentTypes");
         await this.loadProperty("components");
     }
 
     async postExeDataUpdates(): Promise<void> {
-        await this.loadProperty("components");
+        await this.loadProperty("components", true);
     }
 
     constructor(
@@ -65,13 +68,13 @@ Just make sure that the types of data are the same on both sides, boolean to boo
             return [
                 "Create a binding between ",
                 {
-                    id: "componentId",
+                    id: CreateBindingAction.BINDING_COMPONENT_ACTION,
                     options: componentOptions,
                     defaultValue: defaultComponentValue,
                 },
                 "component and this content type",
                 {
-                    id: "ctypeId",
+                    id: CreateBindingAction.BINDING_CTYPE_ACTION,
                     options: contentTypeOptions,
                     defaultValue: defaultCTypeValue,
                 },
@@ -81,12 +84,19 @@ Just make sure that the types of data are the same on both sides, boolean to boo
             const component = contentState.components?.find(
                 (comp) =>
                     comp.sys.id ===
-                    this.contextContentSelections["componentId"],
+                    this.contextContentSelections[
+                        CreateBindingAction.BINDING_COMPONENT_ACTION
+                    ],
             );
             const contentType = contentState.contentTypes?.find(
                 (ct: ContentType) =>
-                    ct.sys.id === this.contextContentSelections["ctypeId"],
+                    ct.sys.id ===
+                    this.contextContentSelections[
+                        CreateBindingAction.BINDING_CTYPE_ACTION
+                    ],
             );
+
+            console.log("contentType", contentType);
 
             const cDef = component?.fields.componentDefinition
                 ? component.fields.componentDefinition

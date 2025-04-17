@@ -8,12 +8,12 @@ export class DeleteSystemContentAction extends DeleteGeneratedContentAction {
 
     async postExeDataUpdates(): Promise<void> {
         await Promise.all([
-            this.loadProperty("contentTypes"),
-            this.loadProperty("components"),
-            this.loadProperty("css"),
-            this.loadProperty("ai"),
-            this.loadProperty("tokens"),
-            this.loadProperty("research"),
+            this.loadProperty("contentTypes", true),
+            this.loadProperty("components", true),
+            this.loadProperty("css", true),
+            this.loadProperty("ai", true),
+            this.loadProperty("tokens", true),
+            this.loadProperty("research", true),
         ]);
     }
 

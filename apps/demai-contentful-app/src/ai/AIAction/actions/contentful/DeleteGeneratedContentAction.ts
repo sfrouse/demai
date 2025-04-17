@@ -12,8 +12,8 @@ export class DeleteGeneratedContentAction extends AIAction {
     static label = "Delete Generated Content";
 
     async postExeDataUpdates(): Promise<void> {
-        await this.loadProperty("contentTypes");
-        await this.loadProperty("components");
+        await this.loadProperty("contentTypes", true);
+        await this.loadProperty("components", true);
     }
 
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {

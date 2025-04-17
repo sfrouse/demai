@@ -13,9 +13,11 @@ import { DEMAI_RESEARCH_SINGLETON_ENTRY_ID } from "../../ai/mcp/researchMCP/vali
 import getContentTypes from "./services/getContentTypes";
 import getEntries from "./services/getEntries";
 import { useError } from "../ErrorContext/ErrorContext";
+import getPageControllers from "./services/getPageControllers";
 
 // Define the shape of your session data
 export interface ContentState {
+    systemContentTypes?: ContentType[];
     contentTypes?: ContentType[];
     contentType?: ContentType;
     tokens?: any;
@@ -24,6 +26,7 @@ export interface ContentState {
     components?: Entry[];
     component?: Entry;
     entries?: Entry[];
+    pageControllers?: Entry[];
     research?: {
         fields: ContentStateResearch;
         contentTypeId: string;
@@ -75,6 +78,7 @@ const ContentStateContext = createContext<
               key: keyof ContentState,
               forceRefresh?: boolean,
           ) => void;
+          updateProperty: (key: keyof ContentState) => void;
           loadingState: { [key in keyof ContentState]?: boolean };
           resetLoadingState: () => void;
           spaceStatus: IMCPClientValidation | undefined;
@@ -149,8 +153,29 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
                         });
                         break;
                     }
+                    case "systemContentTypes": {
+                        const params = sdk.parameters
+                            .installation as AppInstallationParameters;
+                        payload = await getContentTypes(
+                            {
+                                cma: params.cma,
+                                spaceId: sdk.ids.space,
+                                environmentId: sdk.ids.environment,
+                                openAiApiKey: params.openai,
+                                cpa: "",
+                            },
+                            true,
+                        );
+                        break;
+                    }
                     case "entries":
                         payload = await getEntries(previewClient, addError);
+                        break;
+                    case "pageControllers":
+                        payload = await getPageControllers(
+                            previewClient,
+                            addError,
+                        );
                         break;
                     case "tokens":
                         payload = await getLatestTokens(
@@ -175,12 +200,17 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
                         break;
                     case "components":
                         payload = await getComponents(previewClient, addError);
+                        if (contentState.component) {
+                            setComponent(
+                                contentState.component.sys.id,
+                                payload,
+                            );
+                        }
                         break;
                     case "research": {
                         payload = await previewClient.getEntry(
                             DEMAI_RESEARCH_SINGLETON_ENTRY_ID,
                         );
-
                         break;
                     }
                     default:
@@ -213,6 +243,10 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         } finally {
             loadInProgressMap.delete(key);
         }
+    };
+
+    const updateProperty = (key: keyof ContentState) => {
+        return loadProperty(key, true);
     };
 
     const resetLoadingState = () => {
@@ -251,7 +285,10 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
         };
     };
 
-    const setComponent = async (compId: string | undefined) => {
+    const setComponent = async (
+        compId: string | undefined,
+        componentsOverride?: Entry[],
+    ) => {
         if (!compId) {
             dispatch({
                 type: "SET_PROPERTY",
@@ -259,7 +296,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
                 payload: undefined,
             });
         }
-        let components = contentState.components;
+        let components = componentsOverride || contentState.components;
         if (!components) {
             components = await loadProperty("components");
         }
@@ -319,6 +356,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
                 contentState,
                 getContentState,
                 loadProperty,
+                updateProperty,
                 loadingState,
                 resetLoadingState,
                 spaceStatus,

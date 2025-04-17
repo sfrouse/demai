@@ -17,6 +17,7 @@ import { CreateComponentDefinitionAction } from "../ai/AIAction/actions/designSy
 import { CreateWebComponentAction } from "../ai/AIAction/actions/designSystem/CreateWebComponentAction";
 import { CreateBindingAction } from "../ai/AIAction/actions/designSystem/CreateBindingAction";
 import { AIActionConstructor } from "../contexts/AIStateContext/AIStateRouting";
+import { CreatePageControllerTool } from "../ai/AIAction/actions/designSystem/layouts/CreatePageControllerAction";
 
 type NAVIGATION_ENTRY = {
     label: string;
@@ -68,7 +69,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         label: "Pages",
         section_header: "Layouts",
         end: true,
-        aiActions: [ContentfulOpenToolingAction],
+        aiActions: [CreatePageControllerTool],
     },
     space: {
         label: "Space",
@@ -81,7 +82,7 @@ export type PromptAreas = keyof typeof NAVIGATION;
 
 const MainNav = () => {
     const { spaceStatus } = useContentStateSession();
-    const { route, setRoute } = useAIState();
+    const { route, setRoute, ignoreStatusWarning } = useAIState();
     const { errors } = useError();
     const navEntries = Object.entries(NAVIGATION) as [
         PromptAreas,
@@ -94,6 +95,9 @@ const MainNav = () => {
             window.location.hostname === "127.0.0.1" ||
             window.location.hostname.startsWith("192.168.") || // local network
             window.location.hostname === "[::1]"); // IPv6 localhost
+
+    const isStatusDisabled =
+        spaceStatus?.valid === false && !ignoreStatusWarning;
 
     return (
         <NavList
@@ -137,7 +141,7 @@ const MainNav = () => {
                                         });
                                     }}
                                     isActive={route?.navigation === key}
-                                    isDisabled={spaceStatus?.valid === false}
+                                    isDisabled={isStatusDisabled}
                                 >
                                     {label}
                                 </NavList.Item>
@@ -163,7 +167,7 @@ const MainNav = () => {
                             });
                         }}
                         isActive={route?.navigation === "errors"}
-                        isDisabled={spaceStatus?.valid === false}
+                        isDisabled={isStatusDisabled}
                     >
                         Errors ({errors.length})
                     </NavList.Item>
@@ -177,7 +181,7 @@ const MainNav = () => {
                         });
                     }}
                     isActive={route?.navigation === "space"}
-                    isDisabled={spaceStatus?.valid === false}
+                    isDisabled={isStatusDisabled}
                 >
                     Settings
                 </NavList.Item>

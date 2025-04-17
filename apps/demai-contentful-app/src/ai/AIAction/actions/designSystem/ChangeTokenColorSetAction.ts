@@ -14,7 +14,7 @@ export class ChangeTokenColorSetAction extends AIAction {
     }
 
     async postExeDataUpdates(): Promise<void> {
-        await this.loadProperty("tokens");
+        await this.loadProperty("tokens", true);
     }
 
     constructor(

@@ -10,6 +10,7 @@ import { AIStateRoute } from "../../../contexts/AIStateContext/AIStateRouting";
 import { ContentState } from "../../../contexts/ContentStateContext/ContentStateContext";
 import { AppError } from "../../../contexts/ErrorContext/ErrorContext";
 import { NAVIGATION } from "../../MainNav";
+import { DesignSystemGroupAction } from "../../../ai/AIAction/actions/designSystem/groups/DesignSystemGroupAction";
 
 export default async function runGroup(
     groupId: string,
@@ -43,6 +44,14 @@ export default async function runGroup(
             setRoute({
                 navigation: "content_model",
                 aiActions: NAVIGATION["content_model"].aiActions,
+                aiActionFocus: 0,
+            });
+            break;
+        case "designSystem":
+            newLocalAIActionConstructor = DesignSystemGroupAction;
+            setRoute({
+                navigation: "design_tokens",
+                aiActions: NAVIGATION["design_tokens"].aiActions,
                 aiActionFocus: 0,
             });
             break;

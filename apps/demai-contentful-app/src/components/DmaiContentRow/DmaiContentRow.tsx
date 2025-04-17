@@ -21,6 +21,8 @@ interface DmaiContentRowProps {
     badges?: { text: string; variant: "primary" | "secondary" }[];
     editOnClick?: () => void;
     deleteOnClick?: () => void;
+    publishOnClick?: () => void;
+    otherMenuItems?: React.ReactElement<typeof Menu.Item>[];
 }
 
 export default function DmaiContentRow({
@@ -32,6 +34,8 @@ export default function DmaiContentRow({
     badges,
     editOnClick,
     deleteOnClick,
+    publishOnClick,
+    otherMenuItems = [],
 }: DmaiContentRowProps) {
     return (
         <Flex
@@ -155,6 +159,18 @@ export default function DmaiContentRow({
                                     Delete
                                 </Menu.Item>
                             )}
+                            {publishOnClick && (
+                                <Menu.Item
+                                    key={"publish"}
+                                    onClick={(e: React.MouseEvent) => {
+                                        publishOnClick();
+                                        e.stopPropagation();
+                                    }}
+                                >
+                                    Publish
+                                </Menu.Item>
+                            )}
+                            {otherMenuItems}
                         </Menu.List>
                     </Menu>
                 </Flex>

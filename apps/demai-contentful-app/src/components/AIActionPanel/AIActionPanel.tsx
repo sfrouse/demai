@@ -11,12 +11,13 @@ import Divider from "../Divider";
 import AIActionDescription from "../AIActionDescription/AIActionDescription";
 import AIActionDescriptionToolbar from "../AIActionDescription/components/AIActionDescriptionToolbar";
 import AIActionAutoBench from "../AIActionAutoBench/AIActionAutoBench";
+import AutoBenchAIAction from "../AIActionAutoBench/components/AutoBenchAIAction";
 
 const AIActionPanel = () => {
     const { aiAction, route, setRoute } = useAIState();
     const aiActionSnapshot = useAIAction(aiAction);
     const scrollBottomRef = useRef<HTMLDivElement>(null);
-    const [showAutoBench, setShowAutoBench] = useState<boolean>(true);
+    const [showAutoBench, setShowAutoBench] = useState<boolean>(false); // true);
 
     useEffect(() => {
         setTimeout(() => {
@@ -95,10 +96,7 @@ const AIActionPanel = () => {
                 <div ref={scrollBottomRef}></div>
             </div>
             {aiAction && aiActionSnapshot && (
-                <AIActionDescriptionToolbar
-                    aiAction={aiAction}
-                    aiActionSnapshot={aiActionSnapshot}
-                />
+                <AutoBenchAIAction aiAction={aiAction} corners={false} />
             )}
             <Divider style={{ marginBottom: 0, marginTop: 0 }} />
             <AIActionEditor />

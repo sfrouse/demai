@@ -34,7 +34,7 @@ export class CreateContentTypeAction extends AIAction {
     }
 
     async postExeDataUpdates(): Promise<void> {
-        await this.loadProperty("contentTypes");
+        await this.loadProperty("contentTypes", true);
     }
 
     constructor(

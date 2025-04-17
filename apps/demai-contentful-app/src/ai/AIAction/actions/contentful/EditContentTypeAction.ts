@@ -6,7 +6,7 @@ export class EditContentTypeAction extends AIAction {
     static label = "Update Content Type";
 
     async postExeDataUpdates(): Promise<void> {
-        await this.loadProperty("components");
+        await this.loadProperty("components", true);
     }
 
     constructor(

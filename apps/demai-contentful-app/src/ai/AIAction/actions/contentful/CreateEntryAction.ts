@@ -25,7 +25,7 @@ export class CreateEntryAction extends AIAction {
     }
 
     async postExeDataUpdates(): Promise<void> {
-        await this.loadProperty("components");
+        await this.loadProperty("components", true);
     }
 
     constructor(

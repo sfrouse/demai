@@ -1,17 +1,17 @@
-import { AppError } from "../../../contexts/ErrorContext/ErrorContext";
-import { AIAction } from "../AIAction";
+import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
+import { AIAction } from "../../../AIAction";
 import {
     AIActionExecuteResults,
     AIActionPhase,
     AIActionRunResults,
-} from "../AIActionTypes";
-import { ContentfulGroupAction } from "./contentful/groups/ContentfulGroupAction";
-import { DesignSystemGroupAction } from "./designSystem/groups/DesignSystemGroupAction";
-import { ResearchGroupAction } from "./research/groups/ResearchGroupAction";
+} from "../../../AIActionTypes";
+import { ChangeTokenColorSetAction } from "../ChangeTokenColorSetAction";
+import { BindingPerCTypeAction } from "./BindingPerCTypeAction";
 
-export class MoneyAction extends AIAction {
-    static label = "Contentful Group";
+export class DesignSystemGroupAction extends AIAction {
+    static label = "Design System Group";
 
+    // no preload b/c children should manage that
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {
         const results: AIActionRunResults = {
             success: true,
@@ -20,33 +20,32 @@ export class MoneyAction extends AIAction {
 
         this.updateSnapshot({
             isRunning: true,
-            request: "Run contentful group",
+            request: "Run Design System Group",
             startRunTime: Date.now(),
             startExecutionRunTime: Date.now(),
         });
 
         this.addChildActions([
-            new ResearchGroupAction(
+            new ChangeTokenColorSetAction(
                 this.config,
                 this.getContentState,
                 this.loadProperty,
             ),
-            new ContentfulGroupAction(
-                this.config,
-                this.getContentState,
-                this.loadProperty,
-            ),
-            new DesignSystemGroupAction(
+            new BindingPerCTypeAction(
                 this.config,
                 this.getContentState,
                 this.loadProperty,
             ),
         ]);
 
-        await this.runAllChildren(addError, {
-            ignoreContextContent: false,
-            autoExecute: true, // false,
-        });
+        await this.runAllChildren(
+            addError,
+            {
+                ignoreContextContent: false,
+                autoExecute: true, // false,
+            },
+            false,
+        );
 
         this.updateSnapshot({
             isRunning: false,

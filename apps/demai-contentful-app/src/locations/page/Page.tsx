@@ -28,8 +28,14 @@ const Page = () => {
         loadProperty,
     } = useContentStateSession();
     const { addError, errors } = useError();
-    const { setAIActionConfig, aiActionConfig, setRoute, setAIAction, route } =
-        useAIState();
+    const {
+        setAIActionConfig,
+        aiActionConfig,
+        setRoute,
+        setAIAction,
+        route,
+        ignoreStatusWarning,
+    } = useAIState();
     const [configReady, setConfigReady] = useState<boolean>(false);
 
     // MAIN AISTATE MANEGEMENT
@@ -110,10 +116,14 @@ const Page = () => {
                 };
                 setAIActionConfig(newAIConfig);
                 validateSpace();
+                // DEFAULT ROUTE
                 setRoute({
-                    navigation: "prospect",
-                    aiActions: NAVIGATION["prospect"].aiActions,
+                    navigation: "pages",
+                    aiActions: NAVIGATION["pages"].aiActions,
                     aiActionFocus: 0,
+                    // navigation: "prospect",
+                    // aiActions: NAVIGATION["prospect"].aiActions,
+                    // aiActionFocus: 0,
                 });
                 setConfigReady(true);
             } catch (err: any) {
@@ -128,7 +138,7 @@ const Page = () => {
     }, []);
 
     useEffect(() => {
-        if (spaceStatus?.valid === false) {
+        if (spaceStatus?.valid === false && ignoreStatusWarning === false) {
             setRoute({
                 navigation: "space",
                 aiActions: NAVIGATION["space"].aiActions,
@@ -186,7 +196,6 @@ const Page = () => {
                     <>
                         <MainNav />
                         <ContentPanel />
-                        {/* <ConversationPanel /> */}
                         <AIActionPanel />
                     </>
                 )}

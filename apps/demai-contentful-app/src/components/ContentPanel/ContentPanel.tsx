@@ -10,58 +10,61 @@ import ContentTypeDetailContent from "./Content/ContentTypes/ContentTypeDetailCo
 import ProspectContent from "./Content/Research/ProspectContent";
 import ErrorsContent from "./Content/Errors/ErrorsContent";
 import SettingsContent from "./Content/SettingsContent";
+import PageControllers from "./Content/PageControllers/PageControllers";
 
 const ContentPanel = () => {
-  const { route } = useAIState();
+    const { route } = useAIState();
 
-  const renderContent = () => {
-    switch (route?.navigation) {
-      case "content_model":
-        return route?.contentTypeId ? (
-          <ContentTypeDetailContent />
-        ) : (
-          <ContentTypesContent />
-        );
-      case "design_tokens":
-        return <DSysTokensContent />;
-      case "components":
-        return <ComponentsContent />;
-      case "space":
-        return <SettingsContent />;
-      case "entries":
-        return <EntriesContent />;
-      case "research":
-        return <ResearchContent />;
-      case "prospect":
-        return <ProspectContent />;
-      case "error":
-        return <ErrorsContent />;
-      default:
-        return (
-          <Flex
-            style={{ width: "100%", height: "100%" }}
-            justifyContent="center"
-            alignItems="center"
-          >
-            no content found
-          </Flex>
-        );
-    }
-  };
+    const renderContent = () => {
+        switch (route?.navigation) {
+            case "content_model":
+                return route?.contentTypeId ? (
+                    <ContentTypeDetailContent />
+                ) : (
+                    <ContentTypesContent />
+                );
+            case "design_tokens":
+                return <DSysTokensContent />;
+            case "components":
+                return <ComponentsContent />;
+            case "space":
+                return <SettingsContent />;
+            case "entries":
+                return <EntriesContent />;
+            case "research":
+                return <ResearchContent />;
+            case "prospect":
+                return <ProspectContent />;
+            case "pages":
+                return <PageControllers />;
+            case "error":
+                return <ErrorsContent />;
+            default:
+                return (
+                    <Flex
+                        style={{ width: "100%", height: "100%" }}
+                        justifyContent="center"
+                        alignItems="center"
+                    >
+                        no content found
+                    </Flex>
+                );
+        }
+    };
 
-  return (
-    <Flex
-      aria-label="Content Panel"
-      flexDirection="column"
-      style={{
-        flex: 1,
-        // padding: 20,
-        borderRight: `1px solid ${tokens.gray200}`,
-      }}
-    >
-      {renderContent()}
-    </Flex>
-  );
+    return (
+        <Flex
+            aria-label="Content Panel"
+            flexDirection="column"
+            style={{
+                flex: 1,
+                // padding: 20,
+                borderRight: `1px solid ${tokens.gray200}`,
+            }}
+        >
+            {renderContent()}
+        </Flex>
+    );
 };
 
 export default ContentPanel;

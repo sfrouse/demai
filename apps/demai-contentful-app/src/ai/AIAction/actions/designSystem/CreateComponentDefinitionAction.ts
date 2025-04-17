@@ -12,7 +12,7 @@ export class CreateComponentDefinitionAction extends AIAction {
     }
 
     async postExeDataUpdates(): Promise<void> {
-        await this.loadProperty("components");
+        await this.loadProperty("components", true);
     }
 
     constructor(

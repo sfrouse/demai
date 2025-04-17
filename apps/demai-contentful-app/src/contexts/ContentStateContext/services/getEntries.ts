@@ -1,5 +1,6 @@
 import { ContentfulClientApi } from "contentful";
 import { AppError } from "../../ErrorContext/ErrorContext";
+import { DEMAI_CONTROLLER_CTYPE_ID } from "../../../ai/mcp/designSystemMCP/validate/ctypes/demaiControllerCType";
 
 export default async function getEntries(
     previewClient: ContentfulClientApi<undefined> | undefined,
@@ -9,11 +10,13 @@ export default async function getEntries(
     try {
         const componentEntries = await previewClient.getEntries({ limit: 100 });
         return (componentEntries.items || [])
-            .filter(
-                (item) =>
+            .filter((item) => {
+                return (
                     !item.sys.id.startsWith("demai-") &&
-                    !item.sys.id.startsWith("dmai-"),
-            )
+                    !item.sys.id.startsWith("dmai-") &&
+                    item.sys.contentType.sys.id !== DEMAI_CONTROLLER_CTYPE_ID
+                );
+            })
             .sort((a, b) => {
                 return a.sys.id.localeCompare(b.sys.id);
             });

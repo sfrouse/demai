@@ -26,7 +26,7 @@ export enum COMP_DETAIL_NAVIGATION {
 
 export default function CompDetailContent() {
     const sdk = useSDK<PageAppSDK>();
-    const { contentState } = useContentStateSession();
+    const { contentState, loadProperty } = useContentStateSession();
     const { setRoute, route, aiAction } = useAIState();
     const [comp, setComp] = useState<any>(); // typings are getting CMA and Contentful confused...
     const [localCDef, setLocalCDef] = useState<string>("");
@@ -41,6 +41,7 @@ export default function CompDetailContent() {
     };
 
     useEffect(() => {
+        console.log("LOADING");
         if (contentState.components) {
             const newComp = contentState.components?.find(
                 (comp) => comp.sys.id === route?.componentId,
@@ -84,6 +85,7 @@ export default function CompDetailContent() {
                 localBindings,
                 localJavaScript,
             );
+            await loadProperty("components", true);
             setIsSaving(false);
         }
     }, [localBindings, localCDef, localJavaScript, sdk, comp]);

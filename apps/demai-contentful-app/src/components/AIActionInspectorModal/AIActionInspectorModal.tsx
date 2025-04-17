@@ -3,6 +3,7 @@ import useAIState from "../../contexts/AIStateContext/useAIState";
 import AIActionDescription from "../AIActionDescription/AIActionDescription";
 import { AIAction, useAIAction } from "../../ai/AIAction/AIAction";
 import AIActionDescriptionToolbar from "../AIActionDescription/components/AIActionDescriptionToolbar";
+import AutoBenchAIAction from "../AIActionAutoBench/components/AutoBenchAIAction";
 
 const AIActionInspectorModalModal = () => {
     const { inspectedAIAction, setInspectedAIAction } = useAIState();
@@ -31,9 +32,9 @@ const AIActionInspectorModalModal = () => {
                             aiActionSnapshot={aiActionSnapshot}
                         />
                     </Modal.Content>
-                    <AIActionDescriptionToolbar
+                    <AutoBenchAIAction
                         aiAction={inspectedAIAction}
-                        aiActionSnapshot={aiActionSnapshot}
+                        corners={false}
                     />
                     <Modal.Controls>
                         <Button

@@ -238,10 +238,7 @@ export class AIAction {
     ): Promise<AIActionRunResults> {
         this.updateSnapshot(snapshotOverrides);
         await this._loadNeededData();
-
         const contentState = this.getContentState();
-        console.log("contentState", contentState);
-
         const runResults = await runAIAction(
             this,
             contentState,
@@ -307,11 +304,20 @@ export class AIAction {
     async runAllChildren(
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
+        sequentially: boolean = true,
     ) {
-        for (const childAIAction of this.childActions) {
-            await childAIAction.runAnswerOrDescribe(
-                addError,
-                snapshotOverrides,
+        if (sequentially) {
+            for (const childAIAction of this.childActions) {
+                await childAIAction.runAnswerOrDescribe(
+                    addError,
+                    snapshotOverrides,
+                );
+            }
+        } else {
+            await Promise.all(
+                this.childActions.map((child) =>
+                    child.runAnswerOrDescribe(addError, snapshotOverrides),
+                ),
             );
         }
     }
@@ -319,9 +325,18 @@ export class AIAction {
     async runExeAllChildren(
         addError: (err: AppError) => void,
         snapshotOverrides: Partial<AIActionSnapshot> = {},
+        sequentially: boolean = true,
     ) {
-        for (const childAIAction of this.childActions) {
-            await childAIAction.runExe(addError, snapshotOverrides);
+        if (sequentially) {
+            for (const childAIAction of this.childActions) {
+                await childAIAction.runExe(addError, snapshotOverrides);
+            }
+        } else {
+            await Promise.all(
+                this.childActions.map((child) =>
+                    child.runExe(addError, snapshotOverrides),
+                ),
+            );
         }
     }
     // ====== GROUPS ====================

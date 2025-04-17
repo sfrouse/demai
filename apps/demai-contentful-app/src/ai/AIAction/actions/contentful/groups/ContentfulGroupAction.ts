@@ -12,6 +12,7 @@ import { ContentfulEntryPerCTypeAction } from "./ContentfulEntryPerCTypeAction";
 export class ContentfulGroupAction extends AIAction {
     static label = "Contentful Group";
 
+    // no preload b/c children should manage that
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {
         const results: AIActionRunResults = {
             success: true,

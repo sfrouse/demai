@@ -6,7 +6,13 @@ import LoadingIcon from "../../Loading/LoadingIcon";
 import * as icons from "@contentful/f36-icons";
 import useAIState from "../../../contexts/AIStateContext/useAIState";
 
-const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
+const AutoBenchAIAction = ({
+    aiAction,
+    corners = true,
+}: {
+    aiAction: AIAction;
+    corners?: boolean;
+}) => {
     const { setInspectedAIAction } = useAIState();
     const aiActionSnapshot = useAIAction(aiAction);
 
@@ -46,7 +52,7 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
             alignItems="center"
             style={{
                 padding: `${tokens.spacingS} ${tokens.spacingXs} ${tokens.spacingS} ${tokens.spacingM}`,
-                borderRadius: tokens.borderRadiusSmall,
+                borderRadius: corners ? tokens.borderRadiusSmall : 0,
                 color: foreColor,
                 backgroundColor: bgColor,
                 gap: tokens.spacingS,
@@ -55,19 +61,42 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
             <Flex flexDirection="column" style={{ flex: 1 }}>
                 <div
                     style={{
-                        flex: 1,
                         fontSize: tokens.fontSizeS,
                         lineHeight: tokens.lineHeightS,
                         fontWeight: tokens.fontWeightDemiBold,
+                        position: "relative",
                     }}
                 >
-                    {(aiAction.constructor as typeof AIAction).label}
+                    &nbsp;
+                    <div
+                        style={{
+                            position: "absolute",
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            color: foreColor,
+                        }}
+                    >
+                        {(aiAction.constructor as typeof AIAction).label}{" "}
+                        <span style={{ fontSize: 10, fontWeight: "normal" }}>
+                            {aiAction.constructor.name}
+                        </span>
+                    </div>
                 </div>
                 {aiActionSnapshot.request && (
                     <div
                         key={`${aiAction.key}-request`}
-                        style={{ position: "relative", height: 12 }}
+                        style={{
+                            fontSize: 11,
+                            lineHeight: `14px`,
+                            position: "relative",
+                        }}
                     >
+                        &nbsp;
                         <div
                             style={{
                                 position: "absolute",
@@ -75,8 +104,6 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
                                 right: 0,
                                 top: 0,
                                 bottom: 0,
-                                fontSize: 11,
-                                lineHeight: 1.2,
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
@@ -87,13 +114,26 @@ const AutoBenchAIAction = ({ aiAction }: { aiAction: AIAction }) => {
                         </div>
                     </div>
                 )}
+                <div
+                    style={{
+                        fontSize: 10,
+                        lineHeight: `14px`,
+                        fontStyle: "italic",
+                    }}
+                >
+                    {aiActionSnapshot.phase}{" "}
+                    {aiActionSnapshot.runTime &&
+                        `run: ${(aiActionSnapshot.runTime / 1000).toFixed(0)}s`}
+                    {aiActionSnapshot.executeRunTime &&
+                        `, exe: ${(
+                            aiActionSnapshot.executeRunTime / 1000
+                        ).toFixed(0)}s`}
+                </div>
             </Flex>
             <div style={{ fontSize: 10 }}>
                 {aiActionSnapshot.isRunning ? (
                     <LoadingIcon key={`${aiAction.key}-loading`} />
-                ) : (
-                    aiActionSnapshot.phase
-                )}
+                ) : null}
             </div>
             <IconButton
                 size="small"

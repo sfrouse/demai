@@ -1,7 +1,6 @@
 import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
 import { AIAction } from "../../../AIAction";
 import { AIActionPhase, AIActionRunResults } from "../../../AIActionTypes";
-import { ChangeTokenColorSetAction } from "../../designSystem/ChangeTokenColorSetAction";
 import { ResearchFromWebSiteAction } from "../ResearchFromWebSiteAction";
 import { StylesFromWebSiteAction } from "../StylesFromWebSiteAction";
 
@@ -25,11 +24,6 @@ export class ResearchGroupAction extends AIAction {
 
         this.addChildActions([
             new StylesFromWebSiteAction(
-                this.config,
-                this.getContentState,
-                this.loadProperty,
-            ),
-            new ChangeTokenColorSetAction(
                 this.config,
                 this.getContentState,
                 this.loadProperty,

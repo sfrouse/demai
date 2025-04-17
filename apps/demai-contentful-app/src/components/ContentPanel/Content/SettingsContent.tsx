@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Flex, Text } from "@contentful/f36-components";
+import { Button, Checkbox, Flex, Text } from "@contentful/f36-components";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { AppInstallationParameters } from "../../../locations/config/ConfigScreen";
 import ContentPanelHeader from "../ContentPanelHeader";
@@ -38,6 +38,7 @@ const SettingsContent = () => {
     const sdk = useSDK<PageAppSDK>();
     const { validateSpace, spaceStatus, resetLoadingState, resetContentState } =
         useContentStateSession();
+    const { ignoreStatusWarning, setIgnoreStatusWarning } = useAIState();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<(string | null)[]>([]);
 
@@ -128,6 +129,15 @@ const SettingsContent = () => {
                         >
                             Install / Update DemAI
                         </Button>
+                        <Checkbox
+                            name="ignore status warnings"
+                            isChecked={ignoreStatusWarning}
+                            onChange={() =>
+                                setIgnoreStatusWarning((prev) => !prev)
+                            }
+                        >
+                            Ignore Status Warnings
+                        </Checkbox>
                     </Flex>
                     <div style={{ flex: 1, position: "relative" }}>
                         <div

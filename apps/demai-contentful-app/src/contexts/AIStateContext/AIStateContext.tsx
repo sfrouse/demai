@@ -32,6 +32,9 @@ export interface AIStateContextType {
 
     ignoreContextContent: boolean;
     setIgnoreContextContent: React.Dispatch<React.SetStateAction<boolean>>;
+
+    ignoreStatusWarning: boolean;
+    setIgnoreStatusWarning: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // const aiActionLookup = new Map<string, AIAction>();
@@ -47,6 +50,8 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
         useState<boolean>(false);
     const [route, setRoute] = useState<AIStateRoute>();
     const [inspectedContent, setInspectedContent] = useState<string>();
+    const [ignoreStatusWarning, setIgnoreStatusWarning] =
+        useState<boolean>(false);
 
     return (
         <AIStateContext.Provider
@@ -65,6 +70,8 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
                 setInspectedAIAction,
                 inspectedContent,
                 setInspectedContent,
+                ignoreStatusWarning,
+                setIgnoreStatusWarning,
             }}
         >
             {children}

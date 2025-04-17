@@ -13,7 +13,7 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
 import { MoneyAction } from "../../ai/AIAction/actions/MoneyAction";
 import runGroup from "./utils/runGroup";
-import AIActionDescriptionToolbar from "../AIActionDescription/components/AIActionDescriptionToolbar";
+import Stopwatch from "../Stopwatch/Stopwatch";
 
 const AIActionAutoBench = ({
     showAutoBench,
@@ -132,9 +132,9 @@ const AIActionAutoBench = ({
                                     <Select.Option value="contentful">
                                         Contentful Group
                                     </Select.Option>
-                                    {/* <Select.Option value="designSystem">
-                                    Design System Group
-                                </Select.Option> */}
+                                    <Select.Option value="designSystem">
+                                        Design System Group
+                                    </Select.Option>
                                     <Select.Option value="layouts">
                                         Layouts Group
                                     </Select.Option>
@@ -237,9 +237,9 @@ const AIActionAutoBench = ({
                         </Flex>
                     </Flex>
                     {localAIAction && localAIActionSnapshot && (
-                        <AIActionDescriptionToolbar
+                        <AutoBenchAIAction
                             aiAction={localAIAction}
-                            aiActionSnapshot={localAIActionSnapshot}
+                            corners={false}
                         />
                     )}
                     <Flex
@@ -247,14 +247,13 @@ const AIActionAutoBench = ({
                         justifyContent="flex-end"
                         alignItems="center"
                     >
-                        {localAIActionSnapshot?.executeRunTime ? (
+                        {/* {localAIActionSnapshot?.executeRunTime ? (
                             <div
                                 style={{ flex: 1, fontSize: tokens.fontSizeS }}
                             >
-                                {(
-                                    localAIActionSnapshot?.executeRunTime / 1000
-                                ).toFixed(2)}
-                                ms
+                                {renderTime(
+                                    localAIActionSnapshot.executeRunTime,
+                                )}
                             </div>
                         ) : (
                             localAIActionSnapshot?.startExecutionRunTime && (
@@ -264,15 +263,20 @@ const AIActionAutoBench = ({
                                         fontSize: tokens.fontSizeS,
                                     }}
                                 >
-                                    {(
-                                        (Date.now() -
-                                            localAIActionSnapshot?.startExecutionRunTime) /
-                                        1000
-                                    ).toFixed(2)}
-                                    ms
+                                    {renderTime(
+                                        Date.now() -
+                                            localAIActionSnapshot.startExecutionRunTime,
+                                    )}
                                 </div>
                             )
-                        )}
+                        )} */}
+                        <Stopwatch
+                            startTime={
+                                localAIActionSnapshot?.startExecutionRunTime
+                            }
+                            finalTime={localAIActionSnapshot?.executeRunTime}
+                        />
+                        <div style={{ flex: 1 }}></div>
                         <Button
                             variant="transparent"
                             onClick={async () => {
