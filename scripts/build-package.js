@@ -14,6 +14,3 @@ execSync('npm install', { cwd: fullPath, stdio: 'inherit' });
 
 console.log(`🔧 Building ${fullPath}...`);
 execSync('npm run build', { cwd: fullPath, stdio: 'inherit' });
-
-console.log(`📦 Publishing ${fullPath} with yalc...`);
-execSync('yalc publish --push', { cwd: fullPath, stdio: 'inherit' });

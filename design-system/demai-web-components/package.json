@@ -14,7 +14,7 @@
         "build:preview": "npx component-definitions preview --file=./dist/preview/index.html --js=../index.js --css=../tokens/tokens.css --cdef=../cdef",
         "build:figma": "figma connect publish -r ./dist/cdef",
         "build:storybook": "storybook build",
-        "build:yalc": "yalc publish && yalc push",
+        "build:yalc": "npx yalc publish && npx yalc push",
         "server": "http-server ./dist -p 1234 --cors=* -c-1",
         "lint": "npx component-definitions lint",
         "validate": "node --experimental-json-modules ./scripts/definitions/jsonSchemaLoading.mjs",

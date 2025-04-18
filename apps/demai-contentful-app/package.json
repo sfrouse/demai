@@ -35,7 +35,7 @@
         "react-dom": "18.3.1"
     },
     "scripts": {
-        "postinstall": "yalc add demai-design-system-core && yalc add demai-component-definitions",
+        "postinstall": "npx yalc add demai-design-system-core && npx yalc add demai-component-definitions",
         "dev": "npm run build:precompile && npm run clearCache && vite dev",
         "build": "npm run build:precompile && vite build",
         "build:precompile": "node ./scripts/precompile.mjs",

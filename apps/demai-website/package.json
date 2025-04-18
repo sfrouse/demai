@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "yalc add demai-design-system-core",
+    "postinstall": "npx yalc add demai-design-system-core",
     "dev": "npm run build:updatedsys && next dev -p 4000",
     "build": "npm run build:updatedsys && npm run build:next",
     "build:next": "next build",

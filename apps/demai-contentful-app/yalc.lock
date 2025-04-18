@@ -2,11 +2,11 @@
   "version": "v1",
   "packages": {
     "demai-design-system-core": {
-      "signature": "73e506a3ad3698efc46bf363e9a84d3a",
+      "signature": "66b40a4a7f5f481b3bb12babdd7596bf",
       "file": true
     },
     "demai-component-definitions": {
-      "signature": "0eec9efee94d43e3a5a5db5caf4a7a4a",
+      "signature": "33f94378fb71074f3fbed90d19e08496",
       "file": true
     }
   }

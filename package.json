@@ -14,5 +14,8 @@
     },
     "author": "",
     "license": "ISC",
-    "description": ""
+    "description": "",
+    "devDependencies": {
+        "yalc": "^1.0.0-pre.53"
+    }
 }

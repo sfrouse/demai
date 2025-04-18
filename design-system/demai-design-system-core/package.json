@@ -10,7 +10,7 @@
     ],
     "scripts": {
         "build": "node ./src/tokens/scripts/transform.mjs",
-        "postbuild": "yalc publish || yalc push"
+        "postbuild": "npx yalc publish || npx yalc push"
     },
     "author": "",
     "license": "ISC"
