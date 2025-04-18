@@ -124,8 +124,8 @@ const ComponentsContent = () => {
                                 if (!a.fields?.title || !b.fields?.title) {
                                     return 0;
                                 }
-                                return a.fields?.title.localeCompare(
-                                    b.fields?.title,
+                                return `${a.fields?.title}`.localeCompare(
+                                    `${b.fields?.title}`,
                                 );
                             }) // Sort by title
                             .map((comp: any) => (
@@ -137,7 +137,7 @@ const ComponentsContent = () => {
                                             navigation: "components",
                                             componentId: comp.sys.id,
                                             componentFocusId:
-                                                COMP_DETAIL_NAVIGATION.DEFINITION,
+                                                COMP_DETAIL_NAVIGATION.WEB_COMP,
                                             aiActions: [EditComponentAction],
                                             aiActionFocus: 0,
                                         });

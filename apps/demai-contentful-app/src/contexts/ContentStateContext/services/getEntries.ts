@@ -1,6 +1,5 @@
 import { ContentfulClientApi } from "contentful";
 import { AppError } from "../../ErrorContext/ErrorContext";
-import { DEMAI_CONTROLLER_CTYPE_ID } from "../../../ai/mcp/designSystemMCP/validate/ctypes/demaiControllerCType";
 
 export default async function getEntries(
     previewClient: ContentfulClientApi<undefined> | undefined,
@@ -14,7 +13,7 @@ export default async function getEntries(
                 return (
                     !item.sys.id.startsWith("demai-") &&
                     !item.sys.id.startsWith("dmai-") &&
-                    item.sys.contentType.sys.id !== DEMAI_CONTROLLER_CTYPE_ID
+                    !item.sys.contentType.sys.id.startsWith("demai-")
                 );
             })
             .sort((a, b) => {

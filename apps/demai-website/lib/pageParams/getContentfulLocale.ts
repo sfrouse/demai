@@ -14,8 +14,10 @@ export default async function getContentfulLocale(
       cpa,
       environment
     );
+
     if (contentfulClient) {
       const locales = await contentfulClient.getLocales();
+      console.log("locales", locales);
       const targetLocal = locales.items.find(
         (sourceLocale) => sourceLocale.code === locale
       );

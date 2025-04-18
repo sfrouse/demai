@@ -9,6 +9,7 @@ export type AIStateRoute = {
     contentTypeId?: string;
     componentId?: string;
     componentFocusId?: COMP_DETAIL_NAVIGATION;
+    pageControllerSlug?: string;
     aiActions: AIActionConstructor[];
     aiActionFocus: number;
 };

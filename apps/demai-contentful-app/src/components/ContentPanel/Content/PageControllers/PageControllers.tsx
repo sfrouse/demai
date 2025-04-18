@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Flex } from "@contentful/f36-components";
+import { Button, Flex, Menu, Select, Text } from "@contentful/f36-components";
 import ContentPanelHeader from "../../ContentPanelHeader";
 import tokens from "@contentful/f36-tokens";
 import { useContentStateSession } from "../../../../contexts/ContentStateContext/ContentStateContext";
@@ -8,23 +8,27 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
 import getEntryStatus from "../../../utils/entryStatus";
 import scrollBarStyles from "../../../utils/ScrollBarMinimal.module.css";
-import { Entry } from "contentful-management";
 import LoadingStyles from "../../../Loading/LoadingStyles";
 import createPageControllerFunction from "../../../../ai/mcp/designSystemMCP/tools/createPageController/createPageController.function";
 import { DesignSystemMCPClient } from "../../../../ai/mcp/designSystemMCP/DesignSystemMCPClient";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import test from "./test";
+import publishPageControllers from "./publishPageControllers";
+import { Entry } from "contentful";
+import Divider from "../../../Divider";
 
 const PageControllers = () => {
     const sdk = useSDK<PageAppSDK>();
     const { contentState, loadProperty, loadingState } =
         useContentStateSession();
-    const { aiActionConfig } = useAIState();
+    const { aiActionConfig, setRoute, route } = useAIState();
     const [localLoading, setLocalLoading] = useState<boolean>(false);
+    const [seletedViews, setSelectedViews] = useState<string>("demai-page");
 
     useEffect(() => {
         loadProperty("pageControllers");
         loadProperty("systemContentTypes");
+        loadProperty("components");
     }, [contentState]);
 
     const isLoading =
@@ -40,9 +44,8 @@ const PageControllers = () => {
         if (doDelete) {
             try {
                 setLocalLoading(true);
-
                 if (entry.fields.view) {
-                    const viewEntry = entry.fields.view;
+                    const viewEntry = entry.fields.view as Entry;
                     if (viewEntry.sys.publishedVersion) {
                         await sdk.cma.entry.unpublish({
                             entryId: viewEntry.sys.id,
@@ -68,23 +71,15 @@ const PageControllers = () => {
         }
     };
 
-    const handlePublish = async (entry: Entry) => {
-        try {
-            setLocalLoading(true);
-            const latestEntry = await sdk.cma.entry.get({
-                entryId: entry.sys.id,
-            });
-            await sdk.cma.entry.publish(
-                { entryId: latestEntry.sys.id },
-                latestEntry,
-            );
-            sdk.notifier.success(`publish entry with id: ${entry.sys.id}`);
-        } catch (err: any) {
-            sdk.notifier.error(`error: ${err.message}`);
+    const filteredPages = contentState.pageControllers?.filter((page) => {
+        if (
+            seletedViews === "all" ||
+            (page.fields.view as Entry)?.sys.contentType.sys.id === seletedViews
+        ) {
+            return true;
         }
-        await loadProperty("pageControllers", true);
-        setLocalLoading(false);
-    };
+        return false;
+    });
 
     return (
         <>
@@ -124,75 +119,154 @@ const PageControllers = () => {
                     }}
                 >
                     <Flex
-                        flexDirection="column"
-                        alignItems="center"
-                        className={scrollBarStyles["scrollbar-minimal"]}
                         style={{
-                            overflowY: "auto",
-                            flex: 1,
-                            position: "relative",
-                            padding: `${tokens.spacingM} ${tokens.spacingL} 0 ${tokens.spacingL}`,
+                            padding: `${tokens.spacingM} ${tokens.spacingL}`,
                         }}
+                        flexDirection="row"
+                        alignItems="baseline"
+                        gap={tokens.spacingS}
                     >
-                        {contentState.pageControllers?.length === 0 && (
-                            <div
-                                style={{
-                                    position: "absolute",
-                                    left: 0,
-                                    right: 0,
-                                    top: 0,
-                                    bottom: 0,
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    color: tokens.gray500,
-                                }}
-                            >
-                                no entries found
-                            </div>
-                        )}
-                        <Flex
-                            flexDirection="column"
-                            style={{ maxWidth: 800, width: "100%" }}
+                        <Text>filter:</Text>
+                        <Select
+                            style={{ flex: 1, width: "100%" }}
+                            value={seletedViews}
+                            onChange={(event) => {
+                                setSelectedViews(event.target.value);
+                            }}
                         >
-                            {contentState.pageControllers?.map((entry) => {
-                                const contentType =
-                                    contentState.systemContentTypes?.find(
-                                        (ctype) =>
-                                            ctype.sys.id ===
-                                            entry.sys.contentType.sys.id,
-                                    );
-                                let title = entry.sys.id;
-                                if (contentType?.displayField) {
-                                    title =
-                                        entry.fields[
-                                            contentType.displayField
-                                        ] || title;
-                                }
+                            <Select.Option value="all">All Views</Select.Option>
+                            {contentState.components?.map((component) => {
                                 return (
-                                    <DmaiContentRow
-                                        key={`ctype-${entry.sys.id}`}
-                                        editOnClick={() => {
-                                            sdk.navigator.openEntry(
-                                                entry.sys.id,
-                                                {
-                                                    slideIn: true,
-                                                },
-                                            );
-                                        }}
-                                        deleteOnClick={async () =>
-                                            handleDelete(entry)
-                                        }
-                                        publishOnClick={async () => {
-                                            handlePublish(entry);
-                                        }}
-                                        title={title}
-                                        id={`${contentType?.name} - ${entry.sys.id}`}
-                                        status={getEntryStatus(entry)}
-                                    />
+                                    <Select.Option
+                                        value={component.sys.id}
+                                        key={`${component.sys.id}`}
+                                    >
+                                        {String(component.fields.title)}
+                                    </Select.Option>
                                 );
                             })}
+                        </Select>
+                    </Flex>
+                    <Divider style={{ margin: 0 }} />
+                    <Flex style={{ flex: 1, overflow: "hidden" }}>
+                        <Flex
+                            flexDirection="column"
+                            alignItems="center"
+                            className={scrollBarStyles["scrollbar-minimal"]}
+                            style={{
+                                overflowY: "auto",
+                                flex: 1,
+                                position: "relative",
+                                padding: `${tokens.spacingM} ${tokens.spacingL} 0 ${tokens.spacingL}`,
+                            }}
+                        >
+                            {filteredPages?.length === 0 && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        left: 0,
+                                        right: 0,
+                                        top: 0,
+                                        bottom: 0,
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        color: tokens.gray500,
+                                    }}
+                                >
+                                    no entries found
+                                </div>
+                            )}
+                            <Flex
+                                flexDirection="column"
+                                style={{ maxWidth: 800, width: "100%" }}
+                            >
+                                {filteredPages?.map((entry) => {
+                                    const contentType =
+                                        contentState.systemContentTypes?.find(
+                                            (ctype) =>
+                                                ctype.sys.id ===
+                                                entry.sys.contentType.sys.id,
+                                        );
+                                    let title = entry.sys.id;
+                                    if (contentType?.displayField) {
+                                        title =
+                                            String(
+                                                entry.fields[
+                                                    contentType.displayField
+                                                ],
+                                            ) || title;
+                                    }
+                                    return (
+                                        <DmaiContentRow
+                                            key={`ctype-${entry.sys.id}`}
+                                            onClick={async () => {
+                                                if (route) {
+                                                    setRoute({
+                                                        ...route,
+                                                        pageControllerSlug: `${entry.fields.slug}`,
+                                                    });
+                                                }
+                                            }}
+                                            editOnClick={() => {
+                                                sdk.navigator.openEntry(
+                                                    entry.sys.id,
+                                                    {
+                                                        slideIn: true,
+                                                    },
+                                                );
+                                            }}
+                                            deleteOnClick={async () =>
+                                                handleDelete(entry)
+                                            }
+                                            publishOnClick={async () => {
+                                                publishPageControllers(
+                                                    entry,
+                                                    sdk,
+                                                    setLocalLoading,
+                                                    loadProperty,
+                                                );
+                                            }}
+                                            otherMenuItems={[
+                                                <Menu.Item
+                                                    key={"open-page-preview"}
+                                                    onClick={(
+                                                        e: React.MouseEvent,
+                                                    ) => {
+                                                        window.open(
+                                                            `http://localhost:4000${entry.fields.slug}?space=${sdk.ids.space}&env=${sdk.ids.environment}`,
+                                                            "_blank",
+                                                        );
+                                                        e.stopPropagation();
+                                                    }}
+                                                >
+                                                    View in WebSite
+                                                </Menu.Item>,
+                                            ]}
+                                            title={`${title} ${entry.fields.slug}`}
+                                            id={`${contentType?.name} - ${entry.sys.id}`}
+                                            status={getEntryStatus(entry)}
+                                        />
+                                    );
+                                })}
+                            </Flex>
                         </Flex>
+                        <div
+                            style={{
+                                width: "52%",
+                                height: "100%",
+                                borderLeft: `1px solid ${tokens.gray200}`,
+                            }}
+                        >
+                            <iframe
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    border: "none",
+                                }}
+                                src={`http://localhost:4000${route?.pageControllerSlug}?space=${sdk.ids.space}&env=${sdk.ids.environment}`}
+                            ></iframe>
+                        </div>
                     </Flex>
                 </Flex>
             </Flex>

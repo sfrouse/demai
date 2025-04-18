@@ -9,8 +9,8 @@ import { PageAppSDK } from "@contentful/app-sdk";
 import getEntryStatus from "../../../utils/entryStatus";
 import scrollBarStyles from "../../../utils/ScrollBarMinimal.module.css";
 import Divider from "../../../Divider";
-import { Entry } from "contentful-management";
 import LoadingStyles from "../../../Loading/LoadingStyles";
+import { Entry } from "contentful";
 
 const EntriesContent = () => {
     const sdk = useSDK<PageAppSDK>();
@@ -61,6 +61,24 @@ const EntriesContent = () => {
             await loadProperty("entries", true);
             setLocalLoading(false);
         }
+    };
+
+    const handlePublish = async (entry: Entry) => {
+        try {
+            setLocalLoading(true);
+            const latestEntry = await sdk.cma.entry.get({
+                entryId: entry.sys.id,
+            });
+            await sdk.cma.entry.publish(
+                { entryId: latestEntry.sys.id },
+                latestEntry,
+            );
+            sdk.notifier.success(`publish entry with id: ${entry.sys.id}`);
+        } catch (err: any) {
+            sdk.notifier.error(`error: ${err.message}`);
+        }
+        await loadProperty("entries", true);
+        setLocalLoading(false);
     };
 
     return (
@@ -157,10 +175,11 @@ const EntriesContent = () => {
                                     );
                                 let title = entry.sys.id;
                                 if (contentType?.displayField) {
-                                    title =
+                                    title = String(
                                         entry.fields[
                                             contentType.displayField
-                                        ] || title;
+                                        ] || title,
+                                    );
                                 }
                                 return (
                                     <DmaiContentRow
@@ -176,6 +195,9 @@ const EntriesContent = () => {
                                         deleteOnClick={async () =>
                                             handleDelete(entry)
                                         }
+                                        publishOnClick={async () => {
+                                            handlePublish(entry);
+                                        }}
                                         title={title}
                                         id={`${contentType?.name} - ${entry.sys.id}`}
                                         status={getEntryStatus(entry)}

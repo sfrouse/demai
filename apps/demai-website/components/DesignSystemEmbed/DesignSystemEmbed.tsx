@@ -1,8 +1,8 @@
 "use client";
 
-// import "demai-design-system-core/dist/tokens/css/tokens.css?v=35";
+// import "demai-design-system-core/dist/tokens/css/tokens.css?v=36";
 import "@lit-labs/ssr-client/lit-element-hydrate-support.js";
-// import "demai-web-components/dist-node/index.js?v=48";
+// import "demai-web-components/dist-node/index.js?v=49";
 import React from "react";
 
 const DesignSystemEmbed: React.FC = () => {

@@ -130,7 +130,7 @@ const AutoBenchAIAction = ({
                         ).toFixed(0)}s`}
                 </div>
             </Flex>
-            <div style={{ fontSize: 10 }}>
+            <div>
                 {aiActionSnapshot.isRunning ? (
                     <LoadingIcon key={`${aiAction.key}-loading`} />
                 ) : null}

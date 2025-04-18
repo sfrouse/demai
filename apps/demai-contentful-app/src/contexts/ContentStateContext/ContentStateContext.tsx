@@ -1,6 +1,6 @@
 import { PageAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import { ContentType, Entry } from "contentful-management";
+import { ContentType } from "contentful-management";
 import * as contentful from "contentful";
 import React, { createContext, useContext, useReducer, useState } from "react";
 import getLatestTokens from "./services/getLatestTokens";
@@ -23,10 +23,10 @@ export interface ContentState {
     tokens?: any;
     css?: string;
     ai?: string;
-    components?: Entry[];
-    component?: Entry;
-    entries?: Entry[];
-    pageControllers?: Entry[];
+    components?: contentful.Entry[];
+    component?: contentful.Entry;
+    entries?: contentful.Entry[];
+    pageControllers?: contentful.Entry[];
     research?: {
         fields: ContentStateResearch;
         contentTypeId: string;
@@ -287,7 +287,7 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const setComponent = async (
         compId: string | undefined,
-        componentsOverride?: Entry[],
+        componentsOverride?: contentful.Entry[],
     ) => {
         if (!compId) {
             dispatch({

@@ -34,6 +34,7 @@ export default async function SlugPage({
   searchParams: Promise<Record<string, string>>;
 }) {
   const { slug } = await params;
+  console.log("slug", slug);
   const finalParams = await getPageParams(slug, await searchParams);
   return RootPage({
     params: finalParams,

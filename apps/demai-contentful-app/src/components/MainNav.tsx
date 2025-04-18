@@ -43,7 +43,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         aiActions: [CreateContentTypeAction],
     },
     entries: {
-        label: "Entries / Content",
+        label: "Entries",
         aiActions: [CreateEntryAction],
     },
     personalization: {

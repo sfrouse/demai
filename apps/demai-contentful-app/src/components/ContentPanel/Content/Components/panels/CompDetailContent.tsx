@@ -41,7 +41,6 @@ export default function CompDetailContent() {
     };
 
     useEffect(() => {
-        console.log("LOADING");
         if (contentState.components) {
             const newComp = contentState.components?.find(
                 (comp) => comp.sys.id === route?.componentId,
@@ -49,19 +48,21 @@ export default function CompDetailContent() {
             setComp(newComp as any);
             if (newComp) {
                 setLocalCDef(
-                    newComp.fields.componentDefinition &&
+                    `${
+                        newComp.fields.componentDefinition &&
                         JSON.stringify(
                             newComp.fields.componentDefinition,
                             null,
                             2,
-                        ),
+                        )
+                    }`,
                 );
-                setLocalJavaScript(
-                    newComp.fields.javascript && newComp.fields.javascript,
-                );
+                setLocalJavaScript(`${newComp.fields.javascript}`);
                 setLocalBindings(
-                    newComp.fields.bindings &&
-                        JSON.stringify(newComp.fields.bindings, null, 2),
+                    `${
+                        newComp.fields.bindings &&
+                        JSON.stringify(newComp.fields.bindings, null, 2)
+                    }`,
                 );
             }
         }
@@ -147,7 +148,6 @@ export default function CompDetailContent() {
                         flexDirection: "column",
                     }}
                     onTabChange={(tab: string) => {
-                        // const index = parseInt(tab);
                         setRoute({
                             navigation: "components",
                             componentId: comp.sys.id,
@@ -158,11 +158,11 @@ export default function CompDetailContent() {
                     }}
                 >
                     <Tabs.List>
-                        <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.DEFINITION}>
-                            Definition
-                        </Tabs.Tab>
                         <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.WEB_COMP}>
                             Web Comp
+                        </Tabs.Tab>
+                        <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.DEFINITION}>
+                            Definition
                         </Tabs.Tab>
                         <Tabs.Tab panelId={COMP_DETAIL_NAVIGATION.BINDINGS}>
                             Bindings

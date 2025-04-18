@@ -11,6 +11,7 @@ import ProspectContent from "./Content/Research/ProspectContent";
 import ErrorsContent from "./Content/Errors/ErrorsContent";
 import SettingsContent from "./Content/SettingsContent";
 import PageControllers from "./Content/PageControllers/PageControllers";
+import PageControllerDetail from "./Content/PageControllers/PageControllerDetail";
 
 const ContentPanel = () => {
     const { route } = useAIState();
@@ -36,7 +37,11 @@ const ContentPanel = () => {
             case "prospect":
                 return <ProspectContent />;
             case "pages":
+                // return route?.pageControllerSlug ? (
+                //     <PageControllerDetail />
+                // ) : (
                 return <PageControllers />;
+            // );
             case "error":
                 return <ErrorsContent />;
             default:
