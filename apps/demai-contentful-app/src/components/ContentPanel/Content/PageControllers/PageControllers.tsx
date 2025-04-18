@@ -264,7 +264,7 @@ const PageControllers = () => {
                                     height: "100%",
                                     border: "none",
                                 }}
-                                src={`http://localhost:4000${route?.pageControllerSlug}?space=${sdk.ids.space}&env=${sdk.ids.environment}`}
+                                src={`http://localhost:3000${route?.pageControllerSlug}?space=${sdk.ids.space}&env=${sdk.ids.environment}`}
                             ></iframe>
                         </div>
                     </Flex>
