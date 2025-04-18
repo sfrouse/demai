@@ -229,6 +229,27 @@ export default function CompDetailContent() {
                 >
                     Update C.Type
                 </Button>
+                <Button
+                    variant="secondary"
+                    onClick={async () => {
+                        const escaped = localJavaScript
+                            .replace(/`/g, "\\`")
+                            .replace(/\$/g, "\\$");
+
+                        navigator.clipboard
+                            .writeText(escaped)
+                            .then(() => {
+                                sdk.notifier.success("Copied to clipboard");
+                            })
+                            .catch((err) => {
+                                console.error("Failed to copy:", err);
+                                sdk.notifier.error("Copied to clipboard");
+                            });
+                    }}
+                    isDisabled={isSaving}
+                >
+                    Copy Code
+                </Button>
                 {validationResults && (
                     <Flex
                         flexDirection="row"

@@ -21,13 +21,13 @@ const PageControllerDetail = () => {
     const pageController = contentState.pageControllers?.find(
         (page) => page.fields.slug === route?.pageControllerSlug,
     );
-    if (!pageController) {
-        setRoute({
-            navigation: "pages",
-            aiActions: NAVIGATION["pages"].aiActions,
-            aiActionFocus: 0,
-        });
-    }
+    // if (!pageController) {
+    //     setRoute({
+    //         navigation: "pages",
+    //         aiActions: NAVIGATION["pages"].aiActions,
+    //         aiActionFocus: 0,
+    //     });
+    // }
     const isLoading = loadingState.pageControllers === true || !pageController;
 
     return (

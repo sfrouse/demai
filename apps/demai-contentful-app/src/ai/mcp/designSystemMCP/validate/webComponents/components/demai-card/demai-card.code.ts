@@ -21,6 +21,7 @@ class DemaiCard extends LitElement {
                 background: white;
                 padding: 1rem;
                 font-family: sans-serif;
+                font: var( --demai-type-body-md );
             }
 
             :host([disabled]) {
@@ -36,8 +37,7 @@ class DemaiCard extends LitElement {
             }
 
             .label {
-                font-weight: bold;
-                font-size: 1.2rem;
+                font: var( --demai-type-heading-sm );
             }
 
             .content {

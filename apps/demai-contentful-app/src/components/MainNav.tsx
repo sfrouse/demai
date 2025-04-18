@@ -44,13 +44,14 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
     },
     entries: {
         label: "Entries",
+        end: true,
         aiActions: [CreateEntryAction],
     },
-    personalization: {
-        label: "Personalization",
-        end: true,
-        aiActions: [ContentfulOpenToolingAction],
-    },
+    // personalization: {
+    //     label: "Personalization",
+    //     end: true,
+    //     aiActions: [ContentfulOpenToolingAction],
+    // },
     design_tokens: {
         label: "Design Tokens",
         section_header: "Design System",
@@ -115,7 +116,9 @@ const MainNav = () => {
             <Flex
                 flexDirection="column"
                 flex="1"
-                style={{ padding: `${tokens.spacingS} ${tokens.spacingL}` }}
+                style={{
+                    padding: `${tokens.spacingS} ${tokens.spacingL}`,
+                }}
             >
                 {navEntries.map(
                     ([key, { label, end, section_header }], index) => {
@@ -132,6 +135,7 @@ const MainNav = () => {
                                     </SectionHeading>
                                 )}
                                 <NavList.Item
+                                    style={{ marginBottom: 2 }}
                                     onClick={() => {
                                         setRoute({
                                             navigation: key,

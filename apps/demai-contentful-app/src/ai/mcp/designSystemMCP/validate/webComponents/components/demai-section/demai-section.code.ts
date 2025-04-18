@@ -1,12 +1,12 @@
 const demaiSectionCode = `
-
 import { LitElement, html, css } from 'lit';
 
-class DemaiSection extends LitElement {
+class DemaiPage extends LitElement {
   static get properties() {
     return {
       label: { type: String },
       design: { type: String },
+      disabled: { type: Boolean }
     };
   }
 
@@ -16,23 +16,28 @@ class DemaiSection extends LitElement {
         display: block;
         width: 100%;
       }
-        .section {
-          border: 1px solid var( --demai-border-default );
+
+      .page {
+        font: var( --demai-type-body-md );
+        width: 100%;
+      }
+
+      .page, .page * {
+        box-sizing: border-box;
+      }
+
+        .header {
+          padding: var( --demai-spacing-3x );
           width: 100%;
-          min-height: 200px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
+          background-color: var( --demai-background-primary-default );
         }
 
-          .body {
-            max-width: 900px;
-            border: 1px solid var( --demai-border-default );
-            width: 100%;
-            height: 100%;
-            flex: 1;
-          }
+        .footer {
+          padding: var( --demai-spacing-3x );
+          width: 100%;
+          color: var( --demai-text-inverted );
+          background-color: var( --demai-background-secondary-default );
+        }
     \`;
   }
 
@@ -45,16 +50,19 @@ class DemaiSection extends LitElement {
 
   render() {
     return html\`
-      <div class="section">
-        <div class="body">
-          <slot>
-          </slot>
-        </div>
+    <div class="page">
+      <div class="header">
+       header
       </div>
+      <slot></slot>
+      <div class="footer">
+       footer
+      </div>
+    </div>
     \`;
   }
 }
 
-customElements.define('demai-section', DemaiSection);`;
+customElements.define('demai-page', DemaiPage);`;
 
 export default demaiSectionCode;
