@@ -1,0 +1,18 @@
+{
+    "name": "demai",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "build": "npm run build:all",
+        "build:all": "npm run build:comp-defs && npm run build:dsys-core && npm run build:website && npm run build:ctf-app",
+        "build:comp-defs": "npm run build:one ./design-system/component-definitions/",
+        "build:dsys-core": "npm run build:one ./design-system/demai-design-system-core/",
+        "build:website": "npm run build:one ./apps/demai-website/",
+        "build:ctf-app": "npm run build:one ./apps/demai-contentful-app/",
+        "build:one": "node ./scripts/build-package.js",
+        "start": "npm run build:all && npm --prefix apps/demai-website run dev"
+    },
+    "author": "",
+    "license": "ISC",
+    "description": ""
+}

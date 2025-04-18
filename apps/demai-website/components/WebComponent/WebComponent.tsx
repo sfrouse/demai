@@ -40,9 +40,9 @@ export const WebComponent: React.FC<WebComponentProps> = (
       <ComponentRenderer
         key={`wc-${replacement.sys.id}`}
         entry={replacement}
-        webComp={viewBindings.id}
-        attrs={{} /*finalAttrs*/}
-        slot={slot}
+        // webComp={viewBindings.id}
+        // attrs={{} /*finalAttrs*/}
+        // slot={slot}
         params={params}
       />
     );

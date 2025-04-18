@@ -1,10 +1,11 @@
 {
-  "name": "website",
+  "name": "demai-website",
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "yalc add demai-design-system-core",
     "dev": "npm run build:updatedsys && next dev -p 4000",
-    "build": "npm run build:updatedsys && npm run build:cdefs && npm run build:next",
+    "build": "npm run build:updatedsys && npm run build:next",
     "build:next": "next build",
     "build:updatedsys": "node ./scripts/updateDesignSystem.mjs",
     "build:cdefs": "node ./scripts/copyCDefs.mjs",
@@ -40,7 +41,6 @@
     "@types/react-dom": "^18",
     "contentful-readme-generator": "^0.0.25",
     "demai-design-system-core": "file:.yalc/demai-design-system-core",
-    "demai-web-components": "file:.yalc/demai-web-components",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.5",
     "eslint-config-prettier": "^9.1.0",
