@@ -201,7 +201,7 @@ export class AIAction {
     }
 
     // --- Data Management ---------------------------------------------------------
-    private async _loadNeededData() {
+    protected async _loadNeededData() {
         this.updateSnapshot({
             isLoading: true,
         });
