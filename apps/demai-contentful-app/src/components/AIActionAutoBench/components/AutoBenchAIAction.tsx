@@ -5,6 +5,7 @@ import { AIActionPhase } from "../../../ai/AIAction/AIActionTypes";
 import LoadingIcon from "../../Loading/LoadingIcon";
 import * as icons from "@contentful/f36-icons";
 import useAIState from "../../../contexts/AIStateContext/useAIState";
+import Stopwatch from "../../Stopwatch/Stopwatch";
 
 const AutoBenchAIAction = ({
     aiAction,
@@ -131,6 +132,10 @@ const AutoBenchAIAction = ({
                 </div>
             </Flex>
             <div>
+                <Stopwatch
+                    startTime={aiActionSnapshot.startRunTime}
+                    finalTime={aiActionSnapshot.runTime}
+                />
                 {aiActionSnapshot.isRunning ? (
                     <LoadingIcon key={`${aiAction.key}-loading`} />
                 ) : null}

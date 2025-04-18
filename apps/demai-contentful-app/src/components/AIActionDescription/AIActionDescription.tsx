@@ -16,8 +16,9 @@ const AIActionDescription = forwardRef<
     {
         aiAction: AIAction;
         aiActionSnapshot: AIActionSnapshot;
+        robust?: boolean;
     }
->(({ aiAction, aiActionSnapshot }, ref) => {
+>(({ aiAction, aiActionSnapshot, robust = false }, ref) => {
     if (!aiAction) return null;
     const { setInspectedContent } = useAIState();
     const [systemHtml, setSystemHtml] = useState<string>("");
@@ -112,8 +113,9 @@ const AIActionDescription = forwardRef<
                     <span>{aiAction.introMessage}</span>
                 </div>
             </div>
+
             {/* USER PROMPT */}
-            {aiActionSnapshot.userContent && (
+            {robust && aiActionSnapshot.userContent && (
                 <div
                     style={{
                         padding: `0 ${tokens.spacingL}`,
@@ -136,7 +138,9 @@ const AIActionDescription = forwardRef<
                         padding: `0 ${tokens.spacingL}`,
                     }}
                 >
-                    <AIActionDescriptionTitle title="Full Prompt" />
+                    <AIActionDescriptionTitle
+                        title={robust ? "Full Prompt" : "Prompt"}
+                    />
                     <div
                         style={{
                             overflow: "hidden",
@@ -153,25 +157,33 @@ const AIActionDescription = forwardRef<
                     </div>
                 </div>
             )}
+
             {/* SYSTEM */}
-            <div
-                style={{
-                    padding: `0 ${tokens.spacingL}`,
-                }}
-            >
-                <AIActionDescriptionTitle title="System" />
-                <div>
-                    <span dangerouslySetInnerHTML={{ __html: systemHtml }} />
-                </div>
-            </div>
-            <div
-                style={{
-                    padding: `0 ${tokens.spacingL}`,
-                }}
-            >
-                <AIActionDescriptionTitle title="Tools" />
-                <span>{toolsHtml || "none"}</span>
-            </div>
+            {robust && (
+                <>
+                    <div
+                        style={{
+                            padding: `0 ${tokens.spacingL}`,
+                        }}
+                    >
+                        <AIActionDescriptionTitle title="System" />
+                        <div>
+                            <span
+                                dangerouslySetInnerHTML={{ __html: systemHtml }}
+                            />
+                        </div>
+                    </div>
+                    <div
+                        style={{
+                            padding: `0 ${tokens.spacingL}`,
+                        }}
+                    >
+                        <AIActionDescriptionTitle title="Tools" />
+                        <span>{toolsHtml || "none"}</span>
+                    </div>
+                </>
+            )}
+
             {/* RESPONSE */}
             {aiActionSnapshot.response && (
                 <div
@@ -182,30 +194,35 @@ const AIActionDescription = forwardRef<
                     <Flex flexDirection="row" alignItems="center">
                         <AIActionDescriptionTitle title="Response" />
                         <div style={{ flex: 1 }}></div>
-                        <ButtonXs
-                            onClick={() => {
-                                setInspectedContent(
-                                    safeJSONStringify(
-                                        aiActionSnapshot.runAIArg,
-                                    ),
-                                );
-                            }}
-                        >
-                            Args
-                        </ButtonXs>
-                        <ButtonXs
-                            onClick={() => {
-                                console.log("TEST");
-                                setInspectedContent(
-                                    safeJSONStringify(
-                                        aiActionSnapshot.runAIResults,
-                                    ),
-                                );
-                            }}
-                        >
-                            Results
-                        </ButtonXs>
+                        {robust && (
+                            <>
+                                <ButtonXs
+                                    onClick={() => {
+                                        setInspectedContent(
+                                            safeJSONStringify(
+                                                aiActionSnapshot.runAIArg,
+                                            ),
+                                        );
+                                    }}
+                                >
+                                    Args
+                                </ButtonXs>
+                                <ButtonXs
+                                    onClick={() => {
+                                        console.log("TEST");
+                                        setInspectedContent(
+                                            safeJSONStringify(
+                                                aiActionSnapshot.runAIResults,
+                                            ),
+                                        );
+                                    }}
+                                >
+                                    Results
+                                </ButtonXs>
+                            </>
+                        )}
                     </Flex>
+
                     <span
                         dangerouslySetInnerHTML={{ __html: responseHtml }}
                     ></span>
@@ -220,30 +237,35 @@ const AIActionDescription = forwardRef<
                     <Flex flexDirection="row" alignItems="center">
                         <AIActionDescriptionTitle title="Execution Results" />
                         <div style={{ flex: 1 }}></div>
-                        <ButtonXs
-                            onClick={() => {
-                                setInspectedContent(
-                                    safeJSONStringify(
-                                        aiActionSnapshot.runExeAIArg,
-                                    ),
-                                );
-                            }}
-                        >
-                            Args
-                        </ButtonXs>
-                        <ButtonXs
-                            onClick={() => {
-                                console.log("TEST", aiActionSnapshot);
-                                setInspectedContent(
-                                    safeJSONStringify(
-                                        aiActionSnapshot.runExeAIResults,
-                                    ),
-                                );
-                            }}
-                        >
-                            Results
-                        </ButtonXs>
+                        {robust && (
+                            <>
+                                <ButtonXs
+                                    onClick={() => {
+                                        setInspectedContent(
+                                            safeJSONStringify(
+                                                aiActionSnapshot.runExeAIArg,
+                                            ),
+                                        );
+                                    }}
+                                >
+                                    Args
+                                </ButtonXs>
+                                <ButtonXs
+                                    onClick={() => {
+                                        console.log("TEST", aiActionSnapshot);
+                                        setInspectedContent(
+                                            safeJSONStringify(
+                                                aiActionSnapshot.runExeAIResults,
+                                            ),
+                                        );
+                                    }}
+                                >
+                                    Results
+                                </ButtonXs>
+                            </>
+                        )}
                     </Flex>
+
                     <span
                         dangerouslySetInnerHTML={{
                             __html: executionResponseHtml,

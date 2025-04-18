@@ -118,8 +118,8 @@ const Page = () => {
                 validateSpace();
                 // DEFAULT ROUTE
                 setRoute({
-                    navigation: "pages",
-                    aiActions: NAVIGATION["pages"].aiActions,
+                    navigation: "test",
+                    aiActions: NAVIGATION["test"].aiActions,
                     aiActionFocus: 0,
                     // navigation: "prospect",
                     // aiActions: NAVIGATION["prospect"].aiActions,

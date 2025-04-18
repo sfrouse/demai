@@ -1,8 +1,9 @@
 export enum AIModels {
-  gpt4Turbo = "gpt-4-turbo",
-  gpt4oMini = "gpt-4o-mini",
-  gpt4o = "gpt-4o",
-  gpt4oSearchPreview = "gpt-4o-search-preview",
+    gpt4Turbo = "gpt-4-turbo",
+    gpt4oMini = "gpt-4o-mini",
+    gpt4o = "gpt-4o",
+    gpt4oSearchPreview = "gpt-4o-search-preview",
+    dalle3 = "dall-e-3",
 }
 
 export const OPEN_AI_MODEL = AIModels.gpt4o;
@@ -12,41 +13,41 @@ export const OPEN_AI_TEMPERATURE = 0.7;
 export const OPEN_AI_TOP_P = 0;
 
 export type AIPromptSelect = {
-  options: (string | { label: string; value: string })[];
-  value: string;
+    options: (string | { label: string; value: string })[];
+    value: string;
 };
 
 export enum MCP_TYPES {
-  CONTENTFUL = "CONTENTFUL",
-  NONE = "NONE",
+    CONTENTFUL = "CONTENTFUL",
+    NONE = "NONE",
 }
 
 export type AIPromptMessage = {
-  role: "system" | "user" | "assistant";
-  content: string | null;
+    role: "system" | "user" | "assistant";
+    content: string | null;
 };
 
 export type AIPrompt = {
-  model?: AIModels;
-  messages: (AIPromptMessage | (() => AIPromptMessage | AIPromptMessage[]))[];
-  template: AIPromptTemplate;
-  temperature?: number;
-  max_tokens?: number;
-  top_p?: number;
-  tools?: any;
-  tool_choice?: "auto" | "none";
-  mcp?: MCP_TYPES;
+    model?: AIModels;
+    messages: (AIPromptMessage | (() => AIPromptMessage | AIPromptMessage[]))[];
+    template: AIPromptTemplate;
+    temperature?: number;
+    max_tokens?: number;
+    top_p?: number;
+    tools?: any;
+    tool_choice?: "auto" | "none";
+    mcp?: MCP_TYPES;
 };
 
 export type AIPromptTemplateSystemMessage = {
-  content: string;
+    content: string;
 };
 export type AIPromptTemplateUserMessage = AIPromptTemplateSystemMessage & {
-  contentPrefix?: (string | AIPromptSelect)[];
+    contentPrefix?: (string | AIPromptSelect)[];
 };
 
 export type AIPromptTemplate = {
-  system: AIPromptTemplateSystemMessage;
-  user: AIPromptTemplateUserMessage;
-  mcp: MCP_TYPES;
+    system: AIPromptTemplateSystemMessage;
+    user: AIPromptTemplateUserMessage;
+    mcp: MCP_TYPES;
 };

@@ -18,6 +18,7 @@ import { CreateWebComponentAction } from "../ai/AIAction/actions/designSystem/Cr
 import { CreateBindingAction } from "../ai/AIAction/actions/designSystem/CreateBindingAction";
 import { AIActionConstructor } from "../contexts/AIStateContext/AIStateRouting";
 import { CreatePageControllerTool } from "../ai/AIAction/actions/designSystem/layouts/CreatePageControllerAction";
+import { AssetCreationAction } from "../ai/AIAction/actions/contentful/AssetCreationAction";
 
 type NAVIGATION_ENTRY = {
     label: string;
@@ -72,6 +73,13 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         end: true,
         aiActions: [CreatePageControllerTool],
     },
+    test: {
+        label: "Testing",
+        section_header: "Testing",
+        end: true,
+        aiActions: [AssetCreationAction],
+    },
+
     space: {
         label: "Space",
         section_header: "Configuration",

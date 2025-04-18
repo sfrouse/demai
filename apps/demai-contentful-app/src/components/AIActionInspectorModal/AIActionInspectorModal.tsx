@@ -2,7 +2,6 @@ import { Button, Modal } from "@contentful/f36-components";
 import useAIState from "../../contexts/AIStateContext/useAIState";
 import AIActionDescription from "../AIActionDescription/AIActionDescription";
 import { AIAction, useAIAction } from "../../ai/AIAction/AIAction";
-import AIActionDescriptionToolbar from "../AIActionDescription/components/AIActionDescriptionToolbar";
 import AutoBenchAIAction from "../AIActionAutoBench/components/AutoBenchAIAction";
 
 const AIActionInspectorModalModal = () => {
@@ -30,6 +29,7 @@ const AIActionInspectorModalModal = () => {
                         <AIActionDescription
                             aiAction={inspectedAIAction}
                             aiActionSnapshot={aiActionSnapshot}
+                            robust={true}
                         />
                     </Modal.Content>
                     <AutoBenchAIAction
