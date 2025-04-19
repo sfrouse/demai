@@ -8,24 +8,33 @@ export function processContextContent(
     contextContentSelections: AIActionContextContentSelections,
     output: string[] = [],
 ): string[] {
-    contextContent?.map((item) => {
+    contextContent?.forEach((item) => {
         if (typeof item === "string") {
             if (item !== "[BREAK]") {
                 output.push(item);
             }
         } else {
-            const val =
+            const selectedValue =
                 contextContentSelections[item.id] ||
                 item.defaultValue ||
-                (item.options[0] as any);
-            output.push(`\`${val}\``);
-            if (item.paths) {
-                let path, pathIndex;
-                if (item.paths) {
-                    pathIndex = item.options.indexOf(val);
-                    pathIndex = pathIndex === -1 ? 0 : pathIndex;
-                    path = item.paths[pathIndex];
+                item.options[0];
+
+            let label = selectedValue;
+
+            // Render label instead of raw option
+            if (item.labels) {
+                const labelIndex = item.options.indexOf(selectedValue);
+                if (labelIndex !== -1) {
+                    label = item.labels[labelIndex];
                 }
+            }
+
+            output.push(`\`${label}\``);
+
+            // Handle nested paths
+            if (item.paths) {
+                const index = item.options.indexOf(selectedValue);
+                const path = item.paths[index === -1 ? 0 : index];
                 if (path) {
                     processContextContent(
                         path,
@@ -36,5 +45,6 @@ export function processContextContent(
             }
         }
     });
+
     return output;
 }

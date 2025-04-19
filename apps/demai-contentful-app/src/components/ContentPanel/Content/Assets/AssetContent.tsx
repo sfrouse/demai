@@ -109,7 +109,6 @@ const AssetsContent = () => {
                                 (asset.fields.file as any)?.["en-US"]
                                     ?.fileName ||
                                 asset.sys.id;
-
                             return (
                                 <DmaiContentRow
                                     key={`asset-${asset.sys.id}`}
@@ -117,6 +116,13 @@ const AssetsContent = () => {
                                         sdk.navigator.openAsset(asset.sys.id, {
                                             slideIn: true,
                                         })
+                                    }
+                                    imageUrl={
+                                        (
+                                            asset.fields.file as {
+                                                [key: string]: { url: string };
+                                            }
+                                        )?.["en-US"]?.url || ""
                                     }
                                     deleteOnClick={() => handleDelete(asset)}
                                     publishOnClick={() => handlePublish(asset)}

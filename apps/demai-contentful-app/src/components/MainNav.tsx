@@ -19,6 +19,7 @@ import { CreateBindingAction } from "../ai/AIAction/actions/designSystem/CreateB
 import { AIActionConstructor } from "../contexts/AIStateContext/AIStateRouting";
 import { CreatePageControllerTool } from "../ai/AIAction/actions/designSystem/layouts/CreatePageControllerAction";
 import { AssetCreationAction } from "../ai/AIAction/actions/contentful/AssetCreationAction";
+import { CreateAssetForEntryAction } from "../ai/AIAction/actions/contentful/CreateAssetForEntryAction";
 
 type NAVIGATION_ENTRY = {
     label: string;
@@ -50,7 +51,7 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
     assets: {
         label: "Assets",
         end: true,
-        aiActions: [AssetCreationAction],
+        aiActions: [CreateAssetForEntryAction, AssetCreationAction],
     },
     // personalization: {
     //     label: "Personalization",

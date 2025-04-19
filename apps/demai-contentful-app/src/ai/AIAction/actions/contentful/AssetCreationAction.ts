@@ -9,17 +9,22 @@ import { AIAction } from "../../AIAction";
 import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
 import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import createAndSaveAsset from "./utils/createAndSaveAsset";
+import { Asset } from "contentful-management";
 
 export class AssetCreationAction extends AIAction {
     static label = "Asset Creation";
 
     async loadNeededData(): Promise<void> {
-        this.loadProperty("assets");
+        // this.loadProperty("assets");
     }
 
     async postExeDataUpdates(): Promise<void> {
         this.loadProperty("assets", true);
     }
+
+    assetNameOverride: string | undefined;
+    assetDescriptionOverride: string | undefined;
+    asset: Asset | undefined;
 
     constructor(
         config: AIActionConfig,
@@ -51,7 +56,10 @@ export class AssetCreationAction extends AIAction {
 
         this.updateSnapshot({
             isRunning: true,
-            request: this.content(contentState),
+            request: this.createRequest(
+                contentState,
+                this.ignoreContextContent,
+            ),
             startRunTime: Date.now(),
             startExecutionRunTime: Date.now(),
         });
@@ -61,7 +69,11 @@ export class AssetCreationAction extends AIAction {
         const newAsset = await createAndSaveAsset(
             this,
             this.content(contentState),
+            this.assetNameOverride,
+            this.assetDescriptionOverride,
         );
+
+        this.asset = newAsset.asset;
 
         if (newAsset.success) {
             this.updateSnapshot({
@@ -104,7 +116,7 @@ ${newAsset.asset.fields.description["en-US"]}:
     async runExe(
         addError: (err: AppError) => void,
     ): Promise<AIActionExecuteResults> {
-        const runResults = await this.run(addError);
+        await this.run(addError);
         return {
             success: true,
             result: "executed in run",

@@ -8,10 +8,12 @@ import { AIAction } from "../../../AIAction";
 export default async function createAndSaveAsset(
     aiAction: AIAction,
     prompt: string,
+    assetNameOverride?: string,
+    assetDescriptionOverride?: string,
 ) {
     try {
         const formData = new FormData();
-        formData.append("prompt", prompt);
+        formData.append("prompt", prompt.substring(0, 4000));
         const res = await fetch(
             // "http://localhost:4000/api/img",
             "https://demai-git-main-scott-f-rouses-projects.vercel.app/api/img",
@@ -34,12 +36,19 @@ export default async function createAndSaveAsset(
 
         const upload = await env.createUpload({ file: file as any });
 
+        const cleanUpName = (name: string, limit: number = 50) => {
+            return name.replace(/[^a-zA-Z\s]/g, "").slice(0, limit);
+        };
+
         // 3. Create and publish asset
         const asset = await env.createAsset({
             fields: {
-                title: { "en-US": prompt },
+                title: { "en-US": cleanUpName(assetNameOverride || prompt) },
                 description: {
-                    "en-US": prompt,
+                    "en-US": cleanUpName(
+                        assetDescriptionOverride || prompt,
+                        255,
+                    ),
                 },
                 file: {
                     "en-US": {

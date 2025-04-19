@@ -10,7 +10,7 @@ import getEntryStatus from "../../../utils/entryStatus";
 import scrollBarStyles from "../../../utils/ScrollBarMinimal.module.css";
 import Divider from "../../../Divider";
 import LoadingStyles from "../../../Loading/LoadingStyles";
-import { Entry } from "contentful";
+import { Asset, Entry } from "contentful";
 
 const EntriesContent = () => {
     const sdk = useSDK<PageAppSDK>();
@@ -181,6 +181,27 @@ const EntriesContent = () => {
                                         ] || title,
                                     );
                                 }
+
+                                // IMAGES
+                                let imageUrl: string | undefined;
+                                const imageField =
+                                    contentType &&
+                                    contentType.fields.find(
+                                        (field) =>
+                                            field.type === "Link" &&
+                                            field.linkType === "Asset",
+                                    );
+                                if (imageField) {
+                                    const image = entry.fields[imageField?.id];
+                                    if (image) {
+                                        imageUrl = (image as Asset)?.fields
+                                            ?.file?.url as string;
+                                        imageUrl = imageUrl
+                                            ? `https:${imageUrl}`
+                                            : undefined;
+                                    }
+                                }
+
                                 return (
                                     <DmaiContentRow
                                         key={`ctype-${entry.sys.id}`}
@@ -192,6 +213,7 @@ const EntriesContent = () => {
                                                 },
                                             );
                                         }}
+                                        imageUrl={imageUrl}
                                         deleteOnClick={async () =>
                                             handleDelete(entry)
                                         }

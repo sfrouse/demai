@@ -1,6 +1,6 @@
 import { OpenAI } from "openai";
 
-export const maxDuration = 60; // This function can run for a maximum of 5 seconds
+export const maxDuration = 60;
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -30,18 +30,6 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  //   console.log("req.body", req, await req.formData());
-  //   return new Response(JSON.stringify({ error: "No prompt found" }), {
-  //     status: 200,
-  //     headers: {
-  //       "Access-Control-Allow-Origin": "*",
-  //       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  //       "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-  // }
-
   const formData = await req.formData();
   const prompt = formData.get("prompt") as string;
   if (!prompt) {

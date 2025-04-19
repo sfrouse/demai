@@ -17,6 +17,7 @@ interface DmaiContentRowProps {
     id?: string;
     status?: EntityStatus | "none";
     description?: string;
+    imageUrl?: string;
     onClick?: () => void;
     badges?: { text: string; variant: "primary" | "secondary" }[];
     editOnClick?: () => void;
@@ -30,6 +31,7 @@ export default function DmaiContentRow({
     id,
     status,
     description,
+    imageUrl,
     onClick,
     badges,
     editOnClick,
@@ -53,31 +55,75 @@ export default function DmaiContentRow({
             >
                 <Flex flexDirection="row" gap="spacingS">
                     <Flex flexDirection="column" style={{ flex: 1 }}>
-                        <Flex flexDirection="row" alignItems="center">
-                            <div
+                        <Flex
+                            flexDirection="row"
+                            alignItems="center"
+                            style={{ gap: tokens.spacingXs }}
+                        >
+                            <Flex
+                                flexDirection="column"
                                 style={{
                                     flex: 1,
-                                    position: "relative",
-                                    height: 20, // ick
                                 }}
                             >
                                 <div
                                     style={{
-                                        position: "absolute",
-                                        left: 0,
-                                        right: 0,
-                                        top: 0,
-                                        bottom: 0,
-                                        whiteSpace: "nowrap",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        color: tokens.gray800,
-                                        fontSize: tokens.fontSizeL,
+                                        position: "relative",
                                     }}
                                 >
-                                    {title}
+                                    &nbsp;
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            left: 0,
+                                            right: 0,
+                                            top: 0,
+                                            bottom: 0,
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            color: tokens.gray800,
+                                            fontSize: tokens.fontSizeL,
+                                        }}
+                                    >
+                                        {title}
+                                    </div>
                                 </div>
-                            </div>
+                                {id && (
+                                    <span
+                                        key={`comp-id-${id}`}
+                                        style={{
+                                            fontSize: 11,
+                                            color: tokens.gray600,
+                                        }}
+                                    >
+                                        {" "}
+                                        {id}
+                                    </span>
+                                )}{" "}
+                                {description && (
+                                    <Text
+                                        fontSize="fontSizeS"
+                                        style={{
+                                            color: tokens.gray700,
+                                            marginBottom: 4,
+                                        }}
+                                    >
+                                        {description}
+                                    </Text>
+                                )}
+                            </Flex>
+                            {imageUrl && (
+                                <img
+                                    src={imageUrl}
+                                    alt={title}
+                                    style={{
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: 3,
+                                    }}
+                                />
+                            )}
                             {status && status !== "none" && (
                                 <EntityStatusBadge
                                     key={`comp-badge-${id}`}
@@ -87,29 +133,7 @@ export default function DmaiContentRow({
                                 />
                             )}
                         </Flex>
-                        {id && (
-                            <span
-                                key={`comp-id-${id}`}
-                                style={{
-                                    fontSize: 11,
-                                    color: tokens.gray600,
-                                }}
-                            >
-                                {" "}
-                                {id}
-                            </span>
-                        )}{" "}
-                        {description && (
-                            <Text
-                                fontSize="fontSizeS"
-                                style={{
-                                    color: tokens.gray700,
-                                    marginBottom: 4,
-                                }}
-                            >
-                                {description}
-                            </Text>
-                        )}
+
                         {badges && (
                             <Flex gap={tokens.spacingXs}>
                                 {badges.map((badge) => (
