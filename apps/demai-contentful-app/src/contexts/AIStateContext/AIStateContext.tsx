@@ -3,6 +3,7 @@ import { AIStateRoute } from "./AIStateRouting";
 import { AIStateContext } from "./useAIState";
 import { AIAction } from "../../ai/AIAction/AIAction";
 import { AIActionConfig } from "../../ai/AIAction/AIActionTypes";
+import { Environment } from "contentful-management";
 
 // Define the shape of the context
 export interface AIStateContextType {
@@ -44,6 +45,7 @@ export const AIStateProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
     const [aiActionConfig, setAIActionConfig] = useState<AIActionConfig>();
     const [aiAction, setAIAction] = useState<AIAction>();
+    // const [environment, setEnvironment] = useState<Environment>();
     const [inspectedAIAction, setInspectedAIAction] = useState<AIAction>();
     const [autoExecute, setAutoExecute] = useState<boolean>(false);
     const [ignoreContextContent, setIgnoreContextContent] =

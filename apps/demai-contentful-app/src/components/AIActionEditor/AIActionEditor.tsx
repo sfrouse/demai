@@ -105,10 +105,7 @@ const AIActionEditor = () => {
                     <div style={{ flex: 1 }}></div>
                     <Button
                         onClick={() => {
-                            aiAction.updateSnapshot({
-                                userContent: "",
-                                contextContentSelections: {},
-                            });
+                            aiAction?.reset();
                         }}
                         variant="transparent"
                     >

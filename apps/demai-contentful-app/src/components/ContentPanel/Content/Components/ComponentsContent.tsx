@@ -9,7 +9,6 @@ import CompDetailContent, {
 import tokens from "@contentful/f36-tokens";
 import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import getEntryStatus from "../../../utils/entryStatus";
-import LoadingPage from "../../../Loading/LoadingPage";
 import { EditComponentAction } from "../../../../ai/AIAction/actions/designSystem/EditComponentAction";
 import { Entry } from "contentful-management";
 import { useSDK } from "@contentful/react-apps-toolkit";

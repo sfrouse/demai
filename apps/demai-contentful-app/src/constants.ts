@@ -7,3 +7,6 @@ export const CONTENT_PANEL_MAX_WIDTH_SMALL = 300;
 
 export const DEMAI_GENERATED_PROPERTY_IDENTIFIER = `${DESIGN_SYSTEM_PREFIX}GeneratedIdentifier`;
 export const DEMAI_SYSTEM_PROPERTY_IDENTIFIER = `${DESIGN_SYSTEM_PREFIX}SystemIdentifier`;
+
+export const DEMAI_GENERATED_TAG_ID = "demaiGenerated";
+export const DEMAI_GENERATED_TAG_NAME = "DemAI Generated";

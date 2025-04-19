@@ -150,9 +150,10 @@ export class AIAction {
     updateSnapshot(updates?: Partial<AIActionSnapshot>) {
         if (!updates) return;
         for (const [key, value] of Object.entries(updates)) {
-            if (value !== undefined) {
-                (this as any)[key] = value;
-            }
+            // console.log("key", key);
+            // if (value !== undefined) {
+            (this as any)[key] = value;
+            // }
         }
         this._snapshot = this.createSnapshot();
         this.notify();
@@ -439,6 +440,10 @@ export class AIAction {
 
     redo() {
         this.updateSnapshot({
+            // difference to reset is that we keep the userContent
+            // and contextContentSelections
+            // userContent: "",
+            // contextContentSelections: {},
             phase: AIActionPhase.prompting,
             isRunning: false,
             executionResponse: "",
@@ -446,6 +451,15 @@ export class AIAction {
             request: "",
             childActions: [],
             errors: [],
+            startExecutionRunTime: undefined,
+            executeRunTime: undefined,
+            startRunTime: undefined,
+            runTime: undefined,
+            runAIArg: undefined,
+            runAIResults: undefined,
+            runExeAIArg: undefined,
+            runExeAIResults: undefined,
+            isLoading: false,
         });
     }
 
@@ -460,7 +474,17 @@ export class AIAction {
             request: "",
             childActions: [],
             errors: [],
+            startExecutionRunTime: undefined,
+            executeRunTime: undefined,
+            startRunTime: undefined,
+            runTime: undefined,
+            runAIArg: undefined,
+            runAIResults: undefined,
+            runExeAIArg: undefined,
+            runExeAIResults: undefined,
+            isLoading: false,
         });
+        console.log("this", this);
     }
 }
 

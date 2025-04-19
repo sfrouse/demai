@@ -14,6 +14,8 @@ import getContentTypes from "./services/getContentTypes";
 import getEntries from "./services/getEntries";
 import { useError } from "../ErrorContext/ErrorContext";
 import getPageControllers from "./services/getPageControllers";
+import { getAssetsByTag } from "./services/getAssets";
+import { DEMAI_GENERATED_TAG_ID } from "../../constants";
 
 // Define the shape of your session data
 export interface ContentState {
@@ -26,6 +28,7 @@ export interface ContentState {
     components?: contentful.Entry[];
     component?: contentful.Entry;
     entries?: contentful.Entry[];
+    assets?: contentful.Asset[];
     pageControllers?: contentful.Entry[];
     research?: {
         fields: ContentStateResearch;
@@ -170,6 +173,17 @@ export const ContentStateProvider: React.FC<{ children: React.ReactNode }> = ({
                     }
                     case "entries":
                         payload = await getEntries(previewClient, addError);
+                        break;
+                    case "assets":
+                        const params = sdk.parameters
+                            .installation as AppInstallationParameters;
+                        payload = await getAssetsByTag(
+                            params.cma,
+                            sdk.ids.space,
+                            sdk.ids.environment,
+                            DEMAI_GENERATED_TAG_ID,
+                            addError,
+                        );
                         break;
                     case "pageControllers":
                         payload = await getPageControllers(

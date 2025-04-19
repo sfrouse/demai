@@ -11,7 +11,7 @@ import ProspectContent from "./Content/Research/ProspectContent";
 import ErrorsContent from "./Content/Errors/ErrorsContent";
 import SettingsContent from "./Content/SettingsContent";
 import PageControllers from "./Content/PageControllers/PageControllers";
-import PageControllerDetail from "./Content/PageControllers/PageControllerDetail";
+import AssetsContent from "./Content/Assets/AssetContent";
 
 const ContentPanel = () => {
     const { route } = useAIState();
@@ -32,6 +32,8 @@ const ContentPanel = () => {
                 return <SettingsContent />;
             case "entries":
                 return <EntriesContent />;
+            case "assets":
+                return <AssetsContent />;
             case "research":
                 return <ResearchContent />;
             case "prospect":

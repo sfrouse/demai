@@ -132,13 +132,17 @@ const AutoBenchAIAction = ({
                 </div>
             </Flex>
             <div>
-                <Stopwatch
+                {/* <Stopwatch
                     startTime={aiActionSnapshot.startRunTime}
                     finalTime={aiActionSnapshot.runTime}
-                />
+                /> */}
                 {aiActionSnapshot.isRunning ? (
-                    <LoadingIcon key={`${aiAction.key}-loading`} />
-                ) : null}
+                    <Stopwatch
+                        startTime={aiActionSnapshot.startRunTime}
+                        finalTime={aiActionSnapshot.runTime}
+                    />
+                ) : // <LoadingIcon key={`${aiAction.key}-loading`} />
+                null}
             </div>
             <IconButton
                 size="small"

@@ -45,8 +45,12 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
     },
     entries: {
         label: "Entries",
-        end: true,
         aiActions: [CreateEntryAction],
+    },
+    assets: {
+        label: "Assets",
+        end: true,
+        aiActions: [AssetCreationAction],
     },
     // personalization: {
     //     label: "Personalization",
@@ -73,12 +77,12 @@ export const NAVIGATION: { [key: string]: NAVIGATION_ENTRY } = {
         end: true,
         aiActions: [CreatePageControllerTool],
     },
-    test: {
-        label: "Testing",
-        section_header: "Testing",
-        end: true,
-        aiActions: [AssetCreationAction],
-    },
+    // test: {
+    //     label: "Testing",
+    //     section_header: "Testing",
+    //     end: true,
+    //     aiActions: [AssetCreationAction],
+    // },
 
     space: {
         label: "Space",
