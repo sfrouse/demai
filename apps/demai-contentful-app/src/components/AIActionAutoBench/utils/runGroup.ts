@@ -12,6 +12,7 @@ import { AppError } from "../../../contexts/ErrorContext/ErrorContext";
 import { NAVIGATION } from "../../MainNav";
 import { DesignSystemGroupAction } from "../../../ai/AIAction/actions/designSystem/groups/DesignSystemGroupAction";
 import { ContentfulAssetsGroupAction } from "../../../ai/AIAction/actions/contentful/groups/ContentfulAssetsGroupAction";
+import { DeleteGeneratedResearch } from "../../../ai/AIAction/actions/research/DeleteGeneratedResearch";
 
 export default async function runGroup(
     groupId: string,
@@ -32,6 +33,7 @@ export default async function runGroup(
     let validateDemAI = false;
     switch (groupId) {
         case "research":
+            notifyFirst = true;
             newLocalAIActionConstructor = ResearchGroupAction;
             setRoute({
                 navigation: "research",
@@ -64,6 +66,10 @@ export default async function runGroup(
                 aiActions: NAVIGATION["design_tokens"].aiActions,
                 aiActionFocus: 0,
             });
+            break;
+        case "deleteGeneratedResearch":
+            notifyFirst = true;
+            newLocalAIActionConstructor = DeleteGeneratedResearch;
             break;
         case "deleteGenerated":
             notifyFirst = true;

@@ -7,6 +7,7 @@ import useAIState from "../../../../contexts/AIStateContext/useAIState";
 import LoadingStyles from "../../../Loading/LoadingStyles";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { PageAppSDK } from "@contentful/app-sdk";
+import { DEMAI_WEBSITE_URL } from "../../../../constants";
 
 const PageControllerDetail = () => {
     const sdk = useSDK<PageAppSDK>();
@@ -58,7 +59,7 @@ const PageControllerDetail = () => {
                         height: "100%",
                         border: "none",
                     }}
-                    src={`http://localhost:3000${route?.pageControllerSlug}?space=${sdk.ids.space}&env=${sdk.ids.environment}`}
+                    src={`${DEMAI_WEBSITE_URL}${route?.pageControllerSlug}?space=${sdk.ids.space}&env=${sdk.ids.environment}`}
                 ></iframe>
             </Flex>
         </>

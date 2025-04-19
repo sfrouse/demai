@@ -11,6 +11,10 @@ import { CreateEntryAction } from "../CreateEntryAction";
 export class ContentfulEntryPerCTypeAction extends AIAction {
     static label = "Contentful Entry Per CType Group";
 
+    async postExeDataUpdates(): Promise<void> {
+        await Promise.all([this.loadProperty("entries", true)]);
+    }
+
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {
         const results: AIActionRunResults = {
             success: true,
@@ -25,7 +29,7 @@ export class ContentfulEntryPerCTypeAction extends AIAction {
         });
 
         // need the latest
-        const ctypes = await getContentTypes(this.config); // this.getContentState().contentTypes;
+        const ctypes = await getContentTypes(this.config);
         let children: AIAction[] = [];
 
         if (ctypes) {
@@ -60,6 +64,7 @@ export class ContentfulEntryPerCTypeAction extends AIAction {
             runTime: Date.now() - this.startRunTime!,
             executeRunTime: Date.now() - this.startExecutionRunTime!,
         });
+        await this._postExeDataUpdates();
         return results;
     }
 

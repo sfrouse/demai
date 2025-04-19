@@ -93,15 +93,22 @@ const AIActionAutoBench = ({
                             variant="primary"
                             isLoading={isLoading}
                             onClick={async () => {
-                                setIsLoading(true);
-                                const newLocalAIAction = new MoneyAction(
-                                    aiActionConfig,
-                                    getContentState,
-                                    loadProperty,
-                                );
-                                setLocalAIAction(newLocalAIAction);
-                                newLocalAIAction.run(addError);
-                                setIsLoading(false);
+                                const answer = await sdk.dialogs.openConfirm({
+                                    title: "Delete Confirmation",
+                                    message:
+                                        "This will delete content, are you sure?",
+                                });
+                                if (answer === true) {
+                                    setIsLoading(true);
+                                    const newLocalAIAction = new MoneyAction(
+                                        aiActionConfig,
+                                        getContentState,
+                                        loadProperty,
+                                    );
+                                    setLocalAIAction(newLocalAIAction);
+                                    newLocalAIAction.run(addError);
+                                    setIsLoading(false);
+                                }
                             }}
                         >
                             Show Me the Money
@@ -144,6 +151,9 @@ const AIActionAutoBench = ({
                                     <Select.Option value="-----">
                                         -------
                                     </Select.Option>
+                                    <Select.Option value="deleteGeneratedResearch">
+                                        Delete DemAI Generated Research
+                                    </Select.Option>
                                     <Select.Option value="deleteGenerated">
                                         Delete DemAI Generated Content
                                     </Select.Option>
@@ -177,6 +187,12 @@ const AIActionAutoBench = ({
                             </Button>
                         </Flex>
                     </Flex>
+                    {localAIAction && localAIActionSnapshot && (
+                        <AutoBenchAIAction
+                            aiAction={localAIAction}
+                            corners={false}
+                        />
+                    )}
                     <Flex
                         flexDirection="column"
                         className={scrollBarStyles["scrollbar-minimal"]}
@@ -215,36 +231,29 @@ const AIActionAutoBench = ({
                                         <React.Fragment
                                             key={`group-${childAction.key}`}
                                         >
-                                            {childAction.childActions.length >
-                                            1 ? (
-                                                childAction.childActions.map(
-                                                    (nestedChild) => (
-                                                        <AutoBenchAIAction
-                                                            key={`nested-${nestedChild.key}`}
-                                                            aiAction={
-                                                                nestedChild
-                                                            }
-                                                        />
-                                                    ),
-                                                )
-                                            ) : (
-                                                <AutoBenchAIAction
-                                                    key={`solo-${childAction.key}`}
-                                                    aiAction={childAction}
-                                                />
-                                            )}
+                                            <AutoBenchAIAction
+                                                key={`solo-${childAction.key}`}
+                                                aiAction={childAction}
+                                            />
+                                            {childAction.childActions.length > 1
+                                                ? childAction.childActions.map(
+                                                      (nestedChild) => (
+                                                          <AutoBenchAIAction
+                                                              key={`nested-${nestedChild.key}`}
+                                                              aiAction={
+                                                                  nestedChild
+                                                              }
+                                                              isChild={true}
+                                                          />
+                                                      ),
+                                                  )
+                                                : null}
                                         </React.Fragment>
                                     );
                                 },
                             )}
                         </Flex>
                     </Flex>
-                    {localAIAction && localAIActionSnapshot && (
-                        <AutoBenchAIAction
-                            aiAction={localAIAction}
-                            corners={false}
-                        />
-                    )}
                     <Flex
                         flexDirection="row"
                         justifyContent="flex-end"

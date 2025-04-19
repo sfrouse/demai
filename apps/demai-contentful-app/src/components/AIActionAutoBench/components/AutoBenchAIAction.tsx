@@ -9,9 +9,11 @@ import Stopwatch from "../../Stopwatch/Stopwatch";
 const AutoBenchAIAction = ({
     aiAction,
     corners = true,
+    isChild = false,
 }: {
     aiAction: AIAction;
     corners?: boolean;
+    isChild?: boolean;
 }) => {
     const { setInspectedAIAction } = useAIState();
     const aiActionSnapshot = useAIAction(aiAction);
@@ -51,7 +53,9 @@ const AutoBenchAIAction = ({
             flexDirection="row"
             alignItems="center"
             style={{
-                padding: `${tokens.spacingS} ${tokens.spacingXs} ${tokens.spacingS} ${tokens.spacingM}`,
+                padding: isChild
+                    ? `${tokens.spacingXs} ${tokens.spacingXs} ${tokens.spacingXs} ${tokens.spacingL}`
+                    : `${tokens.spacingS} ${tokens.spacingXs} ${tokens.spacingS} ${tokens.spacingM}`,
                 borderRadius: corners ? tokens.borderRadiusSmall : 0,
                 color: foreColor,
                 backgroundColor: bgColor,
@@ -61,9 +65,11 @@ const AutoBenchAIAction = ({
             <Flex flexDirection="column" style={{ flex: 1 }}>
                 <div
                     style={{
-                        fontSize: tokens.fontSizeS,
-                        lineHeight: tokens.lineHeightS,
-                        fontWeight: tokens.fontWeightDemiBold,
+                        fontSize: isChild ? 11 : tokens.fontSizeS,
+                        lineHeight: isChild ? "12px" : tokens.lineHeightS,
+                        fontWeight: isChild
+                            ? tokens.fontWeightNormal
+                            : tokens.fontWeightDemiBold,
                         position: "relative",
                     }}
                 >
@@ -87,7 +93,7 @@ const AutoBenchAIAction = ({
                         </span>
                     </div>
                 </div>
-                {aiActionSnapshot.request && (
+                {!isChild && aiActionSnapshot.request && (
                     <div
                         key={`${aiAction.key}-request`}
                         style={{

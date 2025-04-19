@@ -16,6 +16,7 @@ import test from "./test";
 import publishPageControllers from "./publishPageControllers";
 import { Entry } from "contentful";
 import Divider from "../../../Divider";
+import { DEMAI_WEBSITE_URL } from "../../../../constants";
 
 const PageControllers = () => {
     const sdk = useSDK<PageAppSDK>();
@@ -234,7 +235,7 @@ const PageControllers = () => {
                                                         e: React.MouseEvent,
                                                     ) => {
                                                         window.open(
-                                                            `http://localhost:4000${entry.fields.slug}?space=${sdk.ids.space}&env=${sdk.ids.environment}`,
+                                                            `${DEMAI_WEBSITE_URL}${entry.fields.slug}?space=${sdk.ids.space}&env=${sdk.ids.environment}`,
                                                             "_blank",
                                                         );
                                                         e.stopPropagation();
@@ -264,7 +265,7 @@ const PageControllers = () => {
                                     height: "100%",
                                     border: "none",
                                 }}
-                                src={`http://localhost:3000${route?.pageControllerSlug}?space=${sdk.ids.space}&env=${sdk.ids.environment}`}
+                                src={`${DEMAI_WEBSITE_URL}${route?.pageControllerSlug}?space=${sdk.ids.space}&env=${sdk.ids.environment}`}
                             ></iframe>
                         </div>
                     </Flex>

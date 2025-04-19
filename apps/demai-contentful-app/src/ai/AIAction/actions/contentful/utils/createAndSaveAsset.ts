@@ -1,9 +1,7 @@
-import {
-    DEMAI_GENERATED_TAG_ID,
-    DEMAI_GENERATED_TAG_NAME,
-} from "../../../../../constants";
+import { DEMAI_WEBSITE_URL } from "../../../../../constants";
 import createCMAEnvironment from "../../../../../contexts/AIStateContext/utils/createCMAEnvironment";
 import { AIAction } from "../../../AIAction";
+import addDemaiTag from "./addDemaiTag";
 
 export default async function createAndSaveAsset(
     aiAction: AIAction,
@@ -16,7 +14,7 @@ export default async function createAndSaveAsset(
         formData.append("prompt", prompt.substring(0, 4000));
         const res = await fetch(
             // "http://localhost:4000/api/img",
-            "https://demai-git-main-scott-f-rouses-projects.vercel.app/api/img",
+            `${DEMAI_WEBSITE_URL}/api/img`,
             {
                 method: "POST",
                 body: formData,
@@ -66,30 +64,7 @@ export default async function createAndSaveAsset(
             },
         });
 
-        // Add a tag titled "demai-generated" to the asset
-        const tagId = DEMAI_GENERATED_TAG_ID;
-        const tagName = DEMAI_GENERATED_TAG_NAME;
-
-        // Check if the tag exists, if not, create it
-        let tag;
-        try {
-            tag = await env.getTag(tagId);
-        } catch {
-            tag = await env.createTag(tagId, tagName);
-        }
-
-        // Link the tag to the asset
-        asset.metadata = {
-            tags: [
-                {
-                    sys: {
-                        type: "Link",
-                        linkType: "Tag",
-                        id: tagId,
-                    },
-                },
-            ],
-        };
+        await addDemaiTag(env, asset);
 
         // ✅ Save metadata before processing/publishing
         await asset.update();

@@ -17,7 +17,7 @@ export async function getAssetsByTag(
 
         const assets = await env.getAssets({
             "metadata.tags.sys.id[in]": tagId,
-            limit: 1000, // optional: adjust as needed
+            limit: 1000,
         });
 
         return assets.items;

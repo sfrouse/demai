@@ -180,6 +180,7 @@ ${contentState.research?.fields.products}
                 phase: AIActionPhase.executed,
                 executeRunTime: Date.now() - this.startExecutionRunTime!,
             });
+            await this._postExeDataUpdates();
             return results;
         } else {
             return results;

@@ -106,6 +106,25 @@ const ResearchContent = () => {
                             {research.fields.prospect && (
                                 <Heading>{research.fields.prospect}</Heading>
                             )}
+                            {research.fields.mainWebsite && (
+                                <>
+                                    <ContentSectionHeader
+                                        title={"Main Website"}
+                                    />
+                                    <Paragraph>
+                                        <a
+                                            href={research.fields.mainWebsite}
+                                            target="_new"
+                                            style={{
+                                                color: tokens.blue600,
+                                                textDecoration: "none",
+                                            }}
+                                        >
+                                            {research.fields.mainWebsite}
+                                        </a>
+                                    </Paragraph>
+                                </>
+                            )}
                             {research.fields.solutionEngineerDescription && (
                                 <>
                                     <ContentSectionHeader

@@ -10,3 +10,6 @@ export const DEMAI_SYSTEM_PROPERTY_IDENTIFIER = `${DESIGN_SYSTEM_PREFIX}SystemId
 
 export const DEMAI_GENERATED_TAG_ID = "demaiGenerated";
 export const DEMAI_GENERATED_TAG_NAME = "DemAI Generated";
+
+export const DEMAI_WEBSITE_URL =
+    "https://demai-git-main-scott-f-rouses-projects.vercel.app";

@@ -1,5 +1,3 @@
-import { DEMAI_GENERATED_TAG_ID } from "../../../../../constants";
-import createCMAEnvironment from "../../../../../contexts/AIStateContext/utils/createCMAEnvironment";
 import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
 import { AIAction } from "../../../AIAction";
 import {
@@ -105,6 +103,7 @@ export class ContentfulAssetsGroupAction extends AIAction {
             runTime: Date.now() - this.startRunTime!,
             executeRunTime: Date.now() - this.startExecutionRunTime!,
         });
+        await this._postExeDataUpdates();
         return results;
     }
 

@@ -1,6 +1,7 @@
 import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
 import { AIAction } from "../../../AIAction";
 import { AIActionPhase, AIActionRunResults } from "../../../AIActionTypes";
+import { DeleteGeneratedResearch } from "../DeleteGeneratedResearch";
 import { ResearchFromWebSiteAction } from "../ResearchFromWebSiteAction";
 import { StylesFromWebSiteAction } from "../StylesFromWebSiteAction";
 
@@ -23,6 +24,11 @@ export class ResearchGroupAction extends AIAction {
         });
 
         this.addChildActions([
+            new DeleteGeneratedResearch(
+                this.config,
+                this.getContentState,
+                this.loadProperty,
+            ),
             new StylesFromWebSiteAction(
                 this.config,
                 this.getContentState,

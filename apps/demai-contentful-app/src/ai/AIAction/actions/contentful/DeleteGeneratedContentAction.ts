@@ -1,4 +1,4 @@
-import { createClient } from "contentful-management";
+import { Environment } from "contentful-management";
 import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
 import { AIAction } from "../../AIAction";
 import {
@@ -11,14 +11,19 @@ import {
     DEMAI_GENERATED_TAG_ID,
 } from "../../../../constants";
 import createCMAEnvironment from "../../../../contexts/AIStateContext/utils/createCMAEnvironment";
+import { DEMAI_COMPONENT_CTYPE_ID } from "../../../mcp/designSystemMCP/validate/ctypes/demaiComponentCType";
 
 export class DeleteGeneratedContentAction extends AIAction {
     static label = "Delete Generated Content";
 
     async postExeDataUpdates(): Promise<void> {
-        await this.loadProperty("contentTypes", true);
-        await this.loadProperty("components", true);
-        await this.loadProperty("assets", true);
+        await Promise.all([
+            this.loadProperty("contentTypes", true),
+            this.loadProperty("components", true),
+            this.loadProperty("assets", true),
+            this.loadProperty("research", true),
+            this.loadProperty("entries", true),
+        ]);
     }
 
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {
@@ -34,7 +39,8 @@ export class DeleteGeneratedContentAction extends AIAction {
             startExecutionRunTime: Date.now(),
         });
 
-        await this.deletePriorAssets();
+        await this.deleteCompBindings(addError);
+        await this.deletePriorAssets(addError);
 
         const deleteResults = await this.deleteAllCTypes(
             DEMAI_GENERATED_PROPERTY_IDENTIFIER,
@@ -49,7 +55,7 @@ export class DeleteGeneratedContentAction extends AIAction {
             executeRunTime: Date.now() - this.startExecutionRunTime!,
         });
 
-        await this._postExeDataUpdates;
+        await this._postExeDataUpdates();
         return results;
     }
 
@@ -70,33 +76,79 @@ export class DeleteGeneratedContentAction extends AIAction {
         };
     }
 
-    async deletePriorAssets() {
-        const env = await createCMAEnvironment(
-            this.config.cma,
-            this.config.spaceId,
-            this.config.environmentId,
-        );
+    async deleteCompBindings(addError: (err: AppError) => void) {
+        try {
+            const env: Environment = await createCMAEnvironment(
+                this.config.cma,
+                this.config.spaceId,
+                this.config.environmentId,
+            );
 
-        const assets = await env.getAssets({
-            "metadata.tags.sys.id[in]": DEMAI_GENERATED_TAG_ID,
-            limit: 1000,
-        });
+            const compInfo = await env.getEntries({
+                content_type: DEMAI_COMPONENT_CTYPE_ID,
+                limit: 1000, // adjust as needed
+            });
 
-        const deleted: string[] = [];
-
-        for (const asset of assets.items) {
-            try {
-                if (asset.sys.publishedVersion) {
-                    await asset.unpublish();
+            const updated: string[] = [];
+            for (const entry of compInfo.items) {
+                if (entry.fields?.bindings?.["en-US"]) {
+                    entry.fields.bindings["en-US"] = [];
+                    const updatedEntry = await entry.update();
+                    if (entry.sys.publishedVersion) {
+                        await updatedEntry.publish();
+                    }
+                    updated.push(entry.sys.id);
                 }
-                await asset.delete();
-                deleted.push(asset.sys.id);
-            } catch (err) {
-                console.error(`Failed to delete asset ${asset.sys.id}:`, err);
             }
-        }
 
-        return deleted;
+            return { success: true, updated };
+        } catch (err) {
+            addError({
+                service: "Deleting all DemAI Assets",
+                message: "Error trying to delete assets related to DemAI",
+                details: `${err}`,
+            });
+        }
+    }
+
+    async deletePriorAssets(addError: (err: AppError) => void) {
+        try {
+            const env = await createCMAEnvironment(
+                this.config.cma,
+                this.config.spaceId,
+                this.config.environmentId,
+            );
+
+            const assets = await env.getAssets({
+                "metadata.tags.sys.id[in]": DEMAI_GENERATED_TAG_ID,
+                limit: 1000,
+            });
+
+            const deleted: string[] = [];
+
+            for (const asset of assets.items) {
+                try {
+                    if (asset.sys.publishedVersion) {
+                        await asset.unpublish();
+                    }
+                    await asset.delete();
+                    deleted.push(asset.sys.id);
+                } catch (err) {
+                    console.error(
+                        `Failed to delete asset ${asset.sys.id}:`,
+                        err,
+                    );
+                }
+            }
+
+            return deleted;
+        } catch (err) {
+            addError({
+                service: "Deleting all DemAI Assets",
+                message: "Error trying to delete assets related to DemAI",
+                details: `${err}`,
+            });
+        }
     }
 
     async deleteAllCTypes(
