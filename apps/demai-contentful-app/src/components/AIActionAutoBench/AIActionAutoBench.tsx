@@ -132,6 +132,9 @@ const AIActionAutoBench = ({
                                     <Select.Option value="contentful">
                                         Contentful Group
                                     </Select.Option>
+                                    <Select.Option value="contentfulAssets">
+                                        Contentful Assets Group
+                                    </Select.Option>
                                     <Select.Option value="designSystem">
                                         Design System Group
                                     </Select.Option>

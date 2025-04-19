@@ -2,7 +2,6 @@ import { Flex, IconButton } from "@contentful/f36-components";
 import tokens from "@contentful/f36-tokens";
 import { AIAction, useAIAction } from "../../../ai/AIAction/AIAction";
 import { AIActionPhase } from "../../../ai/AIAction/AIActionTypes";
-import LoadingIcon from "../../Loading/LoadingIcon";
 import * as icons from "@contentful/f36-icons";
 import useAIState from "../../../contexts/AIStateContext/useAIState";
 import Stopwatch from "../../Stopwatch/Stopwatch";
@@ -132,17 +131,12 @@ const AutoBenchAIAction = ({
                 </div>
             </Flex>
             <div>
-                {/* <Stopwatch
-                    startTime={aiActionSnapshot.startRunTime}
-                    finalTime={aiActionSnapshot.runTime}
-                /> */}
                 {aiActionSnapshot.isRunning ? (
                     <Stopwatch
                         startTime={aiActionSnapshot.startRunTime}
                         finalTime={aiActionSnapshot.runTime}
                     />
-                ) : // <LoadingIcon key={`${aiAction.key}-loading`} />
-                null}
+                ) : null}
             </div>
             <IconButton
                 size="small"

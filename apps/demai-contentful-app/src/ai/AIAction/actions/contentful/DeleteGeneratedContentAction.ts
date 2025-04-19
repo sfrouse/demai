@@ -6,7 +6,11 @@ import {
     AIActionPhase,
     AIActionRunResults,
 } from "../../AIActionTypes";
-import { DEMAI_GENERATED_PROPERTY_IDENTIFIER } from "../../../../constants";
+import {
+    DEMAI_GENERATED_PROPERTY_IDENTIFIER,
+    DEMAI_GENERATED_TAG_ID,
+} from "../../../../constants";
+import createCMAEnvironment from "../../../../contexts/AIStateContext/utils/createCMAEnvironment";
 
 export class DeleteGeneratedContentAction extends AIAction {
     static label = "Delete Generated Content";
@@ -14,6 +18,7 @@ export class DeleteGeneratedContentAction extends AIAction {
     async postExeDataUpdates(): Promise<void> {
         await this.loadProperty("contentTypes", true);
         await this.loadProperty("components", true);
+        await this.loadProperty("assets", true);
     }
 
     async run(addError: (err: AppError) => void): Promise<AIActionRunResults> {
@@ -29,6 +34,8 @@ export class DeleteGeneratedContentAction extends AIAction {
             startExecutionRunTime: Date.now(),
         });
 
+        await this.deletePriorAssets();
+
         const deleteResults = await this.deleteAllCTypes(
             DEMAI_GENERATED_PROPERTY_IDENTIFIER,
             addError,
@@ -41,6 +48,8 @@ export class DeleteGeneratedContentAction extends AIAction {
             runTime: Date.now() - this.startRunTime!,
             executeRunTime: Date.now() - this.startExecutionRunTime!,
         });
+
+        await this._postExeDataUpdates;
         return results;
     }
 
@@ -61,16 +70,45 @@ export class DeleteGeneratedContentAction extends AIAction {
         };
     }
 
+    async deletePriorAssets() {
+        const env = await createCMAEnvironment(
+            this.config.cma,
+            this.config.spaceId,
+            this.config.environmentId,
+        );
+
+        const assets = await env.getAssets({
+            "metadata.tags.sys.id[in]": DEMAI_GENERATED_TAG_ID,
+            limit: 1000,
+        });
+
+        const deleted: string[] = [];
+
+        for (const asset of assets.items) {
+            try {
+                if (asset.sys.publishedVersion) {
+                    await asset.unpublish();
+                }
+                await asset.delete();
+                deleted.push(asset.sys.id);
+            } catch (err) {
+                console.error(`Failed to delete asset ${asset.sys.id}:`, err);
+            }
+        }
+
+        return deleted;
+    }
+
     async deleteAllCTypes(
         ctypeIdentifier: string,
         addError: (err: AppError) => void,
     ) {
         try {
-            const client = createClient({
-                accessToken: this.config.cma,
-            });
-            const space = await client.getSpace(this.config.spaceId);
-            const env = await space.getEnvironment(this.config.environmentId);
+            const env = await createCMAEnvironment(
+                this.config.cma,
+                this.config.spaceId,
+                this.config.environmentId,
+            );
 
             const contentTypes = await env.getContentTypes({ limit: 1000 });
 
@@ -79,7 +117,7 @@ export class DeleteGeneratedContentAction extends AIAction {
             for (const contentType of contentTypes.items) {
                 // if (contentType.sys.id.indexOf(`${DESIGN_SYSTEM_PREFIX}-`) !== 0) {
                 const demaiPropIdentifier = contentType.fields.find(
-                    (field) => field.id === ctypeIdentifier,
+                    (field: any) => field.id === ctypeIdentifier,
                 );
                 if (demaiPropIdentifier) {
                     totalEntries = await this.deleteAllEntriesByContentType(
@@ -117,11 +155,11 @@ export class DeleteGeneratedContentAction extends AIAction {
     ) {
         let total = totalDeleted;
         try {
-            const client = createClient({
-                accessToken: this.config.cma,
-            });
-            const space = await client.getSpace(this.config.spaceId);
-            const env = await space.getEnvironment(this.config.environmentId);
+            const env = await createCMAEnvironment(
+                this.config.cma,
+                this.config.spaceId,
+                this.config.environmentId,
+            );
 
             const entries = await env.getEntries({
                 content_type: contentTypeIdToDelete,

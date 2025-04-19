@@ -3,13 +3,13 @@ import {
     AIActionPhase,
     AIActionRunResults,
     AIActionSnapshot,
-} from "../../AIActionTypes";
-import { ContentState } from "../../../../contexts/ContentStateContext/ContentStateContext";
-import entryToAI from "../../utils/entryToAI";
+} from "../../../AIActionTypes";
+import { ContentState } from "../../../../../contexts/ContentStateContext/ContentStateContext";
+import entryToAI from "../../../utils/entryToAI";
 import { AssetCreationAction } from "./AssetCreationAction";
-import { AppError } from "../../../../contexts/ErrorContext/ErrorContext";
+import { AppError } from "../../../../../contexts/ErrorContext/ErrorContext";
 import { Entry } from "contentful";
-import createCMAEnvironment from "../../../../contexts/AIStateContext/utils/createCMAEnvironment";
+import createCMAEnvironment from "../../../../../contexts/AIStateContext/utils/createCMAEnvironment";
 
 export class CreateAssetForEntryAction extends AssetCreationAction {
     static label = "Create Asset for Entry";

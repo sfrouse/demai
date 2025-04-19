@@ -18,8 +18,8 @@ import { CreateWebComponentAction } from "../ai/AIAction/actions/designSystem/Cr
 import { CreateBindingAction } from "../ai/AIAction/actions/designSystem/CreateBindingAction";
 import { AIActionConstructor } from "../contexts/AIStateContext/AIStateRouting";
 import { CreatePageControllerTool } from "../ai/AIAction/actions/designSystem/layouts/CreatePageControllerAction";
-import { AssetCreationAction } from "../ai/AIAction/actions/contentful/AssetCreationAction";
-import { CreateAssetForEntryAction } from "../ai/AIAction/actions/contentful/CreateAssetForEntryAction";
+import { CreateAssetForEntryAction } from "../ai/AIAction/actions/contentful/assets/CreateAssetForEntryAction";
+import { AssetCreationAction } from "../ai/AIAction/actions/contentful/assets/AssetCreationAction";
 
 type NAVIGATION_ENTRY = {
     label: string;

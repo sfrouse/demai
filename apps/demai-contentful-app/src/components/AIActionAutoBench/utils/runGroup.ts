@@ -11,6 +11,7 @@ import { ContentState } from "../../../contexts/ContentStateContext/ContentState
 import { AppError } from "../../../contexts/ErrorContext/ErrorContext";
 import { NAVIGATION } from "../../MainNav";
 import { DesignSystemGroupAction } from "../../../ai/AIAction/actions/designSystem/groups/DesignSystemGroupAction";
+import { ContentfulAssetsGroupAction } from "../../../ai/AIAction/actions/contentful/groups/ContentfulAssetsGroupAction";
 
 export default async function runGroup(
     groupId: string,
@@ -47,6 +48,15 @@ export default async function runGroup(
                 aiActionFocus: 0,
             });
             break;
+        case "contentfulAssets": {
+            newLocalAIActionConstructor = ContentfulAssetsGroupAction;
+            setRoute({
+                navigation: "assets",
+                aiActions: NAVIGATION["assets"].aiActions,
+                aiActionFocus: 0,
+            });
+            break;
+        }
         case "designSystem":
             newLocalAIActionConstructor = DesignSystemGroupAction;
             setRoute({
@@ -97,5 +107,11 @@ export default async function runGroup(
             await newLocalAIAction.run(addError);
             setIsLoading(false);
         }
+    } else {
+        console.error("No action found for groupId:", groupId);
+        addError({
+            service: "runGroup",
+            message: `No action found for groupId: ${groupId}`,
+        });
     }
 }

@@ -5,6 +5,7 @@ import {
     AIActionPhase,
     AIActionRunResults,
 } from "../AIActionTypes";
+import { ContentfulAssetsGroupAction } from "./contentful/groups/ContentfulAssetsGroupAction";
 import { ContentfulGroupAction } from "./contentful/groups/ContentfulGroupAction";
 import { DesignSystemGroupAction } from "./designSystem/groups/DesignSystemGroupAction";
 import { ResearchGroupAction } from "./research/groups/ResearchGroupAction";
@@ -32,6 +33,11 @@ export class MoneyAction extends AIAction {
                 this.loadProperty,
             ),
             new ContentfulGroupAction(
+                this.config,
+                this.getContentState,
+                this.loadProperty,
+            ),
+            new ContentfulAssetsGroupAction(
                 this.config,
                 this.getContentState,
                 this.loadProperty,

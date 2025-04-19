@@ -128,7 +128,11 @@ export default function DmaiContentRow({
                                 <EntityStatusBadge
                                     key={`comp-badge-${id}`}
                                     size="small"
-                                    style={{ marginLeft: 6 }}
+                                    style={{
+                                        marginLeft: 6,
+                                        minWidth: 68,
+                                        justifyContent: "center",
+                                    }}
                                     entityStatus={status}
                                 />
                             )}

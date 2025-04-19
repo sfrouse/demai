@@ -70,7 +70,6 @@ export default async function createAndSaveAsset(
         const tagId = DEMAI_GENERATED_TAG_ID;
         const tagName = DEMAI_GENERATED_TAG_NAME;
 
-        console.log("tagId, { name: tagName }", tagId, { name: tagName });
         // Check if the tag exists, if not, create it
         let tag;
         try {
@@ -78,7 +77,7 @@ export default async function createAndSaveAsset(
         } catch {
             tag = await env.createTag(tagId, tagName);
         }
-        console.log("tag", tag);
+
         // Link the tag to the asset
         asset.metadata = {
             tags: [
