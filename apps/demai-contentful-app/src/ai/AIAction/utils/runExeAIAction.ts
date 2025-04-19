@@ -113,7 +113,6 @@ ${aiAction.response}`,
                         phase: AIActionPhase.executed,
                         errors: [`${err}`],
                     });
-                    await aiAction.postExeDataUpdates();
                     return {
                         success: false,
                         errors: [`${err}`],
@@ -137,7 +136,6 @@ ${aiAction.response}`,
             }`,
             errors: [],
         });
-        await aiAction.postExeDataUpdates();
         return {
             success: true,
             result: aiAction.executionResponse,
@@ -169,7 +167,6 @@ ${aiAction.response}`,
             phase: AIActionPhase.executed,
             errors: [`${err}`],
         });
-        await aiAction.postExeDataUpdates();
         return {
             success: false,
             errors: [`${err}`],

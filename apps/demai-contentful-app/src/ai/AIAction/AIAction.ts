@@ -26,6 +26,7 @@ import { nanoid } from "nanoid";
 import runAIAction from "./utils/runAIAction";
 import runExeAIAction from "./utils/runExeAIAction";
 import { ChatCompletionMessageToolCall } from "openai/resources/index.mjs";
+import { a } from "vitest/dist/suite-dWqIFb_-.js";
 
 export class AIAction {
     static label: string = "Open";
@@ -214,9 +215,20 @@ export class AIAction {
     }
 
     // for subclasses
-    async loadNeededData() {}
+    protected async loadNeededData() {}
 
-    async postExeDataUpdates() {}
+    protected async _postExeDataUpdates() {
+        this.updateSnapshot({
+            isLoading: true,
+        });
+        await this.postExeDataUpdates();
+
+        this.updateSnapshot({
+            isLoading: false,
+        });
+    }
+
+    protected async postExeDataUpdates() {}
     // --- Data Management --------------------------------------------------------
 
     async run(
@@ -270,6 +282,7 @@ export class AIAction {
         await this._loadNeededData();
         const contentState = this.getContentState();
         const exeResults = await runExeAIAction(this, contentState, addError);
+        await this._postExeDataUpdates();
         return exeResults;
     }
 

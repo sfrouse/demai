@@ -71,9 +71,9 @@ export class AssetCreationAction extends AIAction {
 *Asset :*
 ${newAsset.asset.fields.description["en-US"]}:
 
-<img src="${newAsset.asset.fields.file["en-US"].url}" alt="${newAsset.asset.fields.title["en-US"]}" width="200" height="200" />
+<img src="${newAsset.asset.fields.file["en-US"].url}" alt="${newAsset.asset.fields.title["en-US"]}" width="400" height="400" />
 
-[Contentful Asset](https://app.contentful.com/spaces/${this.config.spaceId}/environments/${this.config.environmentId}/assets/${newAsset.asset.sys.id})
+[View Contentful Asset](https://app.contentful.com/spaces/${this.config.spaceId}/environments/${this.config.environmentId}/assets/${newAsset.asset.sys.id})
 
 
 `,
@@ -97,6 +97,7 @@ ${newAsset.asset.fields.description["en-US"]}:
             });
         }
 
+        await this._postExeDataUpdates();
         return results;
     }
 
